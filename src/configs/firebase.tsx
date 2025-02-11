@@ -4,17 +4,17 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
-   apiKey: "AIzaSyANbTK7idlri0R7xn5g4wd3PvBJ_dzKbjo",
-   authDomain: "btd-assist.firebaseapp.com",
-   projectId: "btd-assist",
-   storageBucket: "btd-assist.firebasestorage.app",
-   messagingSenderId: "962057276915",
-   appId: "1:962057276915:web:b83ce0b370c6a9fd495686",
-   measurementId: "G-1KL06ZSYC5",
+   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+   appId: import.meta.env.VITE_FIREBASE_APP_ID,
+   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 export const app = initializeApp(firebaseConfig);
 export const analytics = getAnalytics(app);
-export const auth = getAuth(app); 
+export const auth = getAuth(app);
 export const googleAuth = new GoogleAuthProvider();
 export const db = getFirestore(app);
