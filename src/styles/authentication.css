@@ -1,0 +1,151 @@
+body {
+   display: flex;
+   place-content: center;
+}
+
+.auth {
+   background-color: var(--background-primary-color);
+   padding: 30px 25px;
+   display: flex;
+   flex-direction: column;
+   font-family: "oxygen", Helvetica, sans-serif;
+   font-size: 1rem;
+   border-radius: 20px;
+   width: 75vw;
+   max-width: 600px;
+}
+
+.auth h1 {
+   font-size: 2rem;
+   padding: 0 12px;
+   text-align: center;
+   margin-bottom: 50px;
+}
+
+.email-signin-input,
+.password-signin-input {
+   display: flex;
+   flex-direction: column;
+   padding-bottom: 20px;
+}
+
+.email-signin-input label,
+.password-signin-input label {
+   color: var(--dark-gray-accent);
+   font-weight: 500;
+   font-size: 0.9rem;
+   padding-bottom: 5px;
+}
+
+.email-signin-input input,
+.password-signin-input input {
+   padding: 3px 5px;
+   border-radius: 10px;
+   height: 40px;
+   background-color: #fff7f2;
+   border: none;
+   font-weight: 500;
+   font-size: 1rem;
+   font-family: "oxygen", Helvetica, sans-serif;
+   box-shadow: 0 4px 17px rgba(255, 203, 203, 0.1);
+}
+
+.signin-btn {
+   background-color: rgb(250, 91, 37);
+   box-shadow: 0 4px 17px rgba(0, 0, 0, 0.1);
+   border-radius: 12px;
+   padding: 10px 0;
+   margin: 5px 0;
+   border: none;
+   color: white;
+   transition: 0.2s all;
+   height: 38px;
+   width: 100%;
+}
+
+.signin-btn:hover {
+   background-color: rgb(255, 68, 0);
+}
+
+.signin-btn:active {
+   opacity: 0.8;
+}
+
+.auth p {
+   text-align: center;
+   font-size: 0.8rem;
+   color: var(--dark-gray-accent);
+}
+
+.auth strong {
+   color: rgb(105, 105, 105);
+}
+
+.auth strong:hover {
+   color: rgb(255, 61, 61);
+   cursor: pointer;
+}
+
+.alternative-signin {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 10px;
+   margin: 10px 0;
+}
+
+.alternative-signin p {
+   color: rgb(105, 105, 105);
+}
+
+.light-grey-divider {
+   flex: 1;
+   height: 1px;
+   background-color: lightgray;
+}
+
+.google-signin {
+   background-color: white;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   padding: 10px 0;
+   border: 1px solid black;
+   border-radius: 10px;
+   transition: all 0.2s;
+   width: 100%;
+}
+
+.google-signin svg {
+   height: 16px;
+   margin-right: 8px;
+}
+
+.google-signin p {
+   font-family: "oxygen", Helvetica, sans-serif;
+   font-size: 1.2rem;
+   font-weight: 600;
+}
+
+.google-signin:hover {
+   background-color: rgba(255, 244, 237, 0.453);
+}
+
+.google-signin:active {
+   opacity: 0.8;
+}
+
+.error-message {
+   color: red;
+   font-size: 0.8rem;
+   text-align: center;
+   margin-top: -10px;
+   margin-bottom: 15px;
+}
+
+.theme-toggle-sign-in {
+   position: absolute;
+   bottom: 2%;
+   right: 1%;
+}
+

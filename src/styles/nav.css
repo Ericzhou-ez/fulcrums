@@ -1,7 +1,7 @@
 @keyframes fadeIn {
    0% {
       opacity: 0;
-      transform: translateY(20px); /* Optional subtle slide-in */
+      transform: translateY(10px);
    }
    100% {
       opacity: 1;
@@ -39,6 +39,20 @@
 .nav-logo img {
    height: 30px;
    width: 30px;
+   border-radius: 50%;
+   -webkit-user-drag: none;
+   animation: fadeIn 0.3s ease-in forwards;
+}
+
+.profile-container {
+   display: flex;
+   place-content: center;
+}
+
+.profile-container img {
+   height: 30px;
+   width: 30px;
+   border-radius: 50%;
    -webkit-user-drag: none;
    animation: fadeIn 0.3s ease-in forwards;
 }

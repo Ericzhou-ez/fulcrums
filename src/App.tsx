@@ -8,8 +8,11 @@ import {
 } from "@mui/material";
 import Nav from "./components/nav";
 import { signOut, onAuthStateChanged } from "firebase/auth";
-import { auth } from "./configs/firebase";
 import Footer from "./components/footer";
+import { auth } from "./configs/firebase";
+import Dashboard from "./pages/dashboard";
+import AppRoutes from "./routes/appRoutes";
+import { BrowserRouter } from "react-router";
 
 function App() {
    const [mode, setMode] = useState(() =>
@@ -112,25 +115,24 @@ function App() {
       setMode((prev) => (prev === "light" ? "dark" : "light"));
    };
 
+   const handleSignOut = async () => await signOut(auth);
+
    return (
       <div className="app">
          <ThemeProvider theme={theme}>
             <CssBaseline />
-
-            <Nav
-               user={user}
-               signedIn={signedIn}
-               handleSignOut={async () => await signOut(auth)}
-               isModalOpen={isModalOpen}
-               setIsModalOpen={setIsModalOpen}
-               toggleModal={toggleModal}
-            />
-
-            <Container>
-              <Typography variant="h1">Hello Richard</Typography>
-            </Container>
-
-            <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
+            <BrowserRouter>
+               <AppRoutes
+                  signedIn={signedIn}
+                  user={user}
+                  handleSignOut={handleSignOut}
+                  isModalOpen={isModalOpen}
+                  setIsModalOpen={setIsModalOpen}
+                  toggleModal={toggleModal}
+                  theme={theme}
+                  handleToggleTheme={handleToggleTheme}
+               />
+            </BrowserRouter>
          </ThemeProvider>
       </div>
    );

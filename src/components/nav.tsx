@@ -36,16 +36,25 @@ export default function Nav({
                   className="profile-modal"
                   style={{
                      position: "absolute",
-                     top: "50px",
+                     top: "40px",
                      right: "0",
-                     background: "white",
+                     background: "var(--background-secondary-color)",
                      borderRadius: "5px",
                      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.2)",
                      zIndex: 100,
                      padding: "10px",
                   }}
                >
-                  <Button variant="contained" color="secondary" onClick={toggleModal}>
+                  <Button
+                     variant="contained"
+                     color="secondary"
+                     onClick={() => {
+                        toggleModal();
+                        handleSignOut();
+
+                        return;
+                     }}
+                  >
                      退出
                   </Button>
                </div>
