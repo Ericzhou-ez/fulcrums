@@ -15,7 +15,12 @@ import { Typography } from "@mui/material";
 import ThemeSwitch from "./themeSwitch";
 import { Link } from "react-router-dom";
 
-const Footer = ({ theme, handleToggleTheme }) => {
+interface FooterProps {
+   theme: string;
+   handleToggleTheme: () => void;
+}
+
+const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
    const isDark = theme === "dark";
 
    return (
@@ -51,7 +56,6 @@ const Footer = ({ theme, handleToggleTheme }) => {
                <div className="theme-btn-container">
                   <ThemeSwitch
                      handleToggleTheme={handleToggleTheme}
-                     theme={theme}
                   />
                </div>
             </div>

@@ -15,14 +15,47 @@ import AppRoutes from "./routes/appRoutes";
 import { BrowserRouter } from "react-router";
 import Loading from "./components/loading";
 
-function App() {
-   const [mode, setMode] = useState(() =>
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-         ? "dark"
-         : "light"
-   ); // Default to device theme
+type User = {
+   name: string;
+   photo: string;
+};
 
-   const [user, setUser] = useState(null);
+declare module "@mui/material/styles" {
+   interface TypeBackground {
+      secondary: string;
+   }
+}
+
+function App() {
+   const [mode, setMode] = useState<"light" | "dark">(() => {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light" || savedTheme === "dark") {
+         return savedTheme;
+      }
+      return window.matchMedia("(prefers-color-scheme: dark)").matches
+         ? "dark"
+         : "light";
+   });
+
+   useEffect(() => {
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+      const handleThemeChange = (e: MediaQueryListEvent) => {
+         const newMode = e.matches ? "dark" : "light";
+         setMode(newMode);
+         localStorage.setItem("theme", newMode); // Save updated theme to localStorage
+      };
+
+      mediaQuery.addEventListener("change", handleThemeChange);
+      return () => mediaQuery.removeEventListener("change", handleThemeChange);
+   }, []);
+
+   useEffect(() => {
+      localStorage.setItem("theme", mode);
+   }, [mode]);
+   // Default to device theme
+
+   const [user, setUser] = useState<User | null>(null);
    const [signedIn, setSignedIn] = useState(false);
    const [loading, setLoading] = useState(true);
    const [isModalOpen, setIsModalOpen] = useState(false);
@@ -55,14 +88,14 @@ function App() {
             palette: {
                mode,
                primary: {
-                  main: "#f5bf46", // Orange
+                  main: "#f5bf46",
                },
                secondary: {
-                  main: "#ff6161", // Accent red
+                  main: "#ff6161",
                },
                background: {
                   default: mode === "light" ? "#ffffff" : "#121212",
-                  secondary: mode === "light" ? "#f7f7f7" : "#1e1e1e", // New background secondary color
+                  secondary: mode === "light" ? "#f7f7f7" : "#1e1e1e",
                },
                text: {
                   primary: mode === "light" ? "#000000" : "#ffffff",
@@ -121,11 +154,10 @@ function App() {
                ) : (
                   <AppRoutes
                      signedIn={signedIn}
+                     toggleModal={toggleModal}
                      user={user}
                      handleSignOut={handleSignOut}
                      isModalOpen={isModalOpen}
-                     setIsModalOpen={setIsModalOpen}
-                     toggleModal={toggleModal}
                      theme={theme}
                      handleToggleTheme={handleToggleTheme}
                   />

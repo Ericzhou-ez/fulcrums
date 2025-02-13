@@ -59,13 +59,17 @@ const ThemeSwitch = styled(Switch)(({ theme }) => ({
    },
 }));
 
-const ThemeToggle = ({ handleToggleTheme }) => {
-   const theme = useTheme(); // Access the current theme directly
+interface ThemeToggleProps {
+   handleToggleTheme: () => void; 
+}
+
+const ThemeToggle: React.FC<ThemeToggleProps> = ({ handleToggleTheme }) => {
+   const theme = useTheme(); 
 
    return (
       <div style={{ display: "flex", alignItems: "center" }}>
          <ThemeSwitch
-            checked={theme.palette.mode === "dark"}
+            checked={theme.palette.mode === "dark"} 
             onChange={handleToggleTheme}
          />
       </div>

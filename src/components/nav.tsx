@@ -1,18 +1,28 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import "../styles/nav.css";
 import Logo from "../assets/images/logo.svg";
 import DefaultProfile from "/src/assets/icons/profile.svg";
 import { Button } from "@mui/material";
 import { Links } from "react-router-dom";
 
-export default function Nav({
+interface NavProps {
+   signedIn: boolean;
+   user: {
+      name: string;
+      photo: string;
+   };
+   handleSignOut: () => void;
+   isModalOpen: boolean;
+   toggleModal: () => void;
+}
+
+const Nav: React.FC<NavProps> = ({
    signedIn,
    user,
    handleSignOut,
    isModalOpen,
-   setIsModalOpen,
    toggleModal,
-}) {
+}) => {
    return (
       <div className="nav">
          <div className="nav-logo-container">
@@ -79,10 +89,12 @@ export default function Nav({
          ) : (
             <div className="nav-links">
                <a href="/dashboard">
-                  <button className="cta-btn-join">Login</button>
+                  <button className="cta-btn-join">登陆</button>
             </a>
             </div>
          )}
       </div>
    );
 }
+
+export default Nav;

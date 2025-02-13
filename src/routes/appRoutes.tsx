@@ -10,10 +10,9 @@ export interface AppRoutesProps {
    user: any;
    handleSignOut: () => Promise<void>;
    isModalOpen: boolean;
-   setIsModalOpen: (value: boolean) => void;
-   toggleModal: () => void;
    theme: any;
    handleToggleTheme: () => void;
+   toggleModal: () => void;
 }
 
 const AppRoutes: React.FC<AppRoutesProps> = ({
@@ -21,10 +20,9 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
    user,
    handleSignOut,
    isModalOpen,
-   setIsModalOpen,
-   toggleModal,
    theme,
    handleToggleTheme,
+   toggleModal,
 }) => {
    return (
       <Routes>
@@ -36,8 +34,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                   <Navigate to="/dashboard" />
                ) : (
                   <SignInPage
-                     signedIn={signedIn}
-                     user={user}
                      theme={theme}
                      handleToggleTheme={handleToggleTheme}
                   />
@@ -52,11 +48,10 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                signedIn ? (
                   <Dashboard
                      signedIn={signedIn}
+                     toggleModal={toggleModal}
                      user={user}
                      handleSignOut={handleSignOut}
                      isModalOpen={isModalOpen}
-                     setIsModalOpen={setIsModalOpen}
-                     toggleModal={toggleModal}
                      theme={theme}
                      handleToggleTheme={handleToggleTheme}
                   />

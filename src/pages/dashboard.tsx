@@ -1,56 +1,46 @@
-import React, { useMemo, useState, useEffect } from "react";
-import {
-   createTheme,
-   ThemeProvider,
-   CssBaseline,
-   Container,
-   Typography,
-} from "@mui/material";
+import React from "react";
+import { createTheme, ThemeProvider, CssBaseline, Container, Typography } from "@mui/material";
 import Nav from "../components/nav";
-import { signOut, onAuthStateChanged } from "firebase/auth";
 import Footer from "../components/footer";
-import '../styles/dashboard.css';
+import "../styles/dashboard.css";
+import { Auth } from "firebase/auth";  
 
 interface DashboardProps {
-   user: any;
+   user: { name: string; photo: string };
    signedIn: boolean;
-   auth: any;
    isModalOpen: boolean;
-   setIsModalOpen: (value: boolean) => void;
-   toggleModal: () => void;
-   theme: any;
+   theme: string;
    handleToggleTheme: () => void;
    handleSignOut: () => Promise<void>;
+   toggleModal: () => void;
 }
 
-export default function Dashboard({
+const Dashboard: React.FC<DashboardProps> = ({
    user,
    signedIn,
-   auth,
    isModalOpen,
-   setIsModalOpen,
-   toggleModal,
    theme,
    handleToggleTheme,
    handleSignOut,
-}) {
+   toggleModal,
+}) => {
    return (
       <div className="dashboard">
          <Nav
             user={user}
             signedIn={signedIn}
-            handleSignOut={async () => await signOut(auth)}
-            isModalOpen={isModalOpen}
-            setIsModalOpen={setIsModalOpen}
-            toggleModal={toggleModal}
             handleSignOut={handleSignOut}
+            isModalOpen={isModalOpen}
+            toggleModal={toggleModal}
          />
 
          <Container>
-            <Typography variant="h1">Hello Richard</Typography>
+            <Typography variant="h1">Hello {user?.name || "User"}!</Typography>
          </Container>
 
          <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
       </div>
    );
-}
+};
+
+export default Dashboard;
