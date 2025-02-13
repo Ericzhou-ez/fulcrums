@@ -37,8 +37,8 @@
 }
 
 .nav-logo img {
-   height: 30px;
-   width: 30px;
+   height: 40px;
+   width: 40px;
    border-radius: 50%;
    -webkit-user-drag: none;
    animation: fadeIn 0.3s ease-in forwards;
@@ -55,4 +55,39 @@
    border-radius: 50%;
    -webkit-user-drag: none;
    animation: fadeIn 0.3s ease-in forwards;
+}
+
+.nav-logo-container {
+   display: flex;
+   align-items: center;
+   gap: 2px;
+    
+   p {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 700;
+   }
+}
+
+.cta-btn-join {
+   background-color: var(--background-color) !important;
+   padding: 8px 16px !important;
+   color: var(--text-secondary-color) !important;
+   font-weight: 500;
+   font-size: 1rem;
+   border: none;
+   border-radius: 40px;
+}
+
+button:hover {
+   cursor: pointer;
+   opacity: 0.9;
+}
+
+button:active {
+   opacity: 0.7;
+}
+
+.nav-links a {
+   all: unset !important;
 }

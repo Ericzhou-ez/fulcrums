@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import SignInPage from "../pages/SignInPage";
 import Dashboard from "../pages/dashboard";
 import NotFoundPage from "../pages/NotFoundPage";
+import Home from "../pages/home";
 
 export interface AppRoutesProps {
    signedIn: boolean;
@@ -32,7 +33,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
             path="/signin"
             element={
                signedIn ? (
-                  <Navigate to="/" />
+                  <Navigate to="/dashboard" />
                ) : (
                   <SignInPage
                      signedIn={signedIn}
@@ -46,7 +47,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
 
          {/* Main Dashboard route */}
          <Route
-            path="/"
+            path="/dashboard"
             element={
                signedIn ? (
                   <Dashboard
@@ -65,11 +66,16 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
             }
          />
 
-         {/* Catch-all redirect */}
+         {/* marketing page */}
          <Route
-            path="*"
-            element={<NotFoundPage />}
+            path="/"
+            element={
+               <Home theme={theme} handleToggleTheme={handleToggleTheme} />
+            }
          />
+
+         {/* Catch-all redirect */}
+         <Route path="*" element={<NotFoundPage />} />
       </Routes>
    );
 };
