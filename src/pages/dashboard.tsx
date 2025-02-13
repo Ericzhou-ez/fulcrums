@@ -9,6 +9,7 @@ import {
 import Nav from "../components/nav";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import Footer from "../components/footer";
+import '../styles/dashboard.css';
 
 interface DashboardProps {
    user: any;
@@ -34,7 +35,7 @@ export default function Dashboard({
    handleSignOut,
 }) {
    return (
-      <React.Fragment>
+      <div className="dashboard">
          <Nav
             user={user}
             signedIn={signedIn}
@@ -50,6 +51,6 @@ export default function Dashboard({
          </Container>
 
          <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
-      </React.Fragment>
+      </div>
    );
 }

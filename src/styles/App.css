@@ -1,4 +1,3 @@
 body {
-   transition: all 0.3s ease-in-out;
-   padding-top: 7vh;
+   transition: background-color color 0.2s ease-in-out;
 }

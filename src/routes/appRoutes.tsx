@@ -1,8 +1,8 @@
-// src/routes/appRoutes.tsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import SignInPage from "../pages/SignInPage";
 import Dashboard from "../pages/dashboard";
+import NotFoundPage from "../pages/NotFoundPage";
 
 export interface AppRoutesProps {
    signedIn: boolean;
@@ -43,6 +43,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                )
             }
          />
+
          {/* Main Dashboard route */}
          <Route
             path="/"
@@ -63,10 +64,11 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                )
             }
          />
+
          {/* Catch-all redirect */}
          <Route
             path="*"
-            element={<Navigate to={signedIn ? "/" : "/signin"} />}
+            element={<NotFoundPage />}
          />
       </Routes>
    );

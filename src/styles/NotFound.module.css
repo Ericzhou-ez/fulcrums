@@ -1,0 +1,84 @@
+.notFound {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 50%, #111, #000);
+  color: #e0e0e0;
+  font-family: 'Roboto', sans-serif;
+  overflow: hidden;
+}
+
+.errorCode {
+  font-size: clamp(8rem, 25vmin, 20rem);
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 800;
+  margin: 0;
+  position: relative;
+  animation: swingLight 3s infinite alternate ease-in-out;
+  background: radial-gradient(circle, #ededed, #999898);
+  background-size: 500% 500%;
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.8);
+}
+
+.errorCode::after {
+  content: "404";
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: rgba(0, 0, 0, 0.4);
+  filter: blur(0.3rem);
+}
+
+.info {
+  text-align: center;
+  max-width: 600px;
+  margin-top: 2rem;
+  margin: 0 8vw;
+}
+
+.info h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.info p {
+  font-size: 1rem;
+  font-weight: 300;
+  margin-bottom: 2rem;
+  color: rgba(224, 224, 224, 0.8);
+}
+
+a {
+  display: inline-block;
+  padding: 1rem 4rem;
+  background: #4e4e4e;
+  color: #f0f0f0;
+  border-radius: 50px;
+  text-transform: uppercase;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+a:hover {
+  background: #6e6e6e;
+}
+
+@keyframes swingLight {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 50% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}

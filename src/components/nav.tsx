@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "../styles/nav.css";
 import Logo from "../assets/images/logo.svg";
-import DefaultProfile from "../assets/icons/profile.svg";
+import DefaultProfile from "/src/assets/icons/profile.svg";
 import { Button } from "@mui/material";
 
 export default function Nav({
@@ -15,13 +15,23 @@ export default function Nav({
    return (
       <div className="nav">
          <div className="nav-logo">
-            <img src={Logo} alt="Logo" />
+            <a
+               href="/"
+               style={{
+                  all: "unset",
+                  cursor: "pointer",
+                  display: "flex",
+                  placeContent: "center",
+               }}
+            >
+               <img src={Logo} alt="Logo" />
+            </a>
          </div>
 
          <div className="profile-container" style={{ position: "relative" }}>
             <img
-               src={user?.photo || DefaultProfile}
-               alt={user?.name || "Sign In"}
+               src={user.photo ? user.photo : DefaultProfile}
+               alt={user.name || "p"}
                className="user-photo"
                style={{
                   borderRadius: "50%",
