@@ -1,3 +1,23 @@
 .dashboard {
    margin-top: 150px;
 }
+
+.excel-button {
+   padding: 8px 18px !important;
+   background-color: #52b5c6 !important;
+   color: var(--background-primary) !important;
+   font-weight: 600 !important;
+   text-transform: none !important;
+   border-radius: 50px !important;
+   font-size: 0.8rem !important;
+}
+
+.pdf-button {
+   padding: 8px 18px !important;
+   background-color: var(--font-secondary-color) !important;
+   color: var(--background-primary) !important;
+   font-weight: 600 !important;
+   text-transform: none !important;
+   border-radius: 50px !important;
+    font-size: 0.8rem !important;
+}

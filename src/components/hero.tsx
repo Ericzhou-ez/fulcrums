@@ -9,7 +9,7 @@ export default function Hero() {
             align="center"
             sx={{
                fontSize: {
-                  xs: "3.4rem",
+                  xs: "3rem",
                   sm: "4.5rem",
                   md: "6.2rem",
                   lg: "7rem",
@@ -23,7 +23,7 @@ export default function Hero() {
             }}
             className="hero-title"
          >
-            产品追踪, 报价,<br></br>报关,{" "}
+            报价到报关<br></br>
             <span className="clipped-text">一键搞定!</span>
          </Typography>
 

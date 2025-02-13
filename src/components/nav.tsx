@@ -89,7 +89,7 @@ const Nav: React.FC<NavProps> = ({
          ) : (
             <div className="nav-links">
                <a href="/dashboard">
-                  <button className="cta-btn-join">登陆</button>
+                  <button className="cta-btn-join">登录</button>
             </a>
             </div>
          )}
