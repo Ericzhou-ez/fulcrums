@@ -68,9 +68,6 @@ function App() {
                   primary: mode === "light" ? "#000000" : "#ffffff",
                   secondary: mode === "light" ? "#555555" : "#cccccc",
                },
-               tertiary: {
-                  main: mode === "light" ? "#888888" : "#444444", // Additional gray tone
-               },
             },
             typography: {
                fontFamily: "Oxygen, Helvetica, Arial, sans-serif",
@@ -81,7 +78,7 @@ function App() {
 
    useEffect(() => {
       // Sync all theme colors to CSS variables
-      const { primary, secondary, background, text, tertiary } = theme.palette;
+      const { primary, secondary, background, text } = theme.palette;
       document.documentElement.style.setProperty(
          "--primary-color",
          primary.main
@@ -105,10 +102,6 @@ function App() {
       document.documentElement.style.setProperty(
          "--text-secondary-color",
          text.secondary
-      );
-      document.documentElement.style.setProperty(
-         "--tertiary-color",
-         tertiary.main
       );
    }, [theme]);
 

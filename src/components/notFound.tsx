@@ -15,7 +15,7 @@ export default function NotFound() {
          <div className={styles.info}>
             <h2>我们找不到该页面</h2>
             <p>您访问的页面不存在，可能从未创建过。我们为此表示歉意。</p>
-            <a href="/dashboard">回到首页</a>
+            <a href="/">回到首页</a>
          </div>
       </div>
    );
