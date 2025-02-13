@@ -10,7 +10,7 @@ interface DashboardProps {
    user: { name: string; photo: string };
    signedIn: boolean;
    isModalOpen: boolean;
-   theme: string;
+   theme: any;
    handleToggleTheme: () => void;
    handleSignOut: () => Promise<void>;
    toggleModal: () => void;
