@@ -59,54 +59,56 @@ const SignInPage: React.FC<SignInPageProps> = ({
    }
 
    return (
-      <div className="auth">
-         <h1>{isUserSigningUp ? "创建账户" : "欢迎回来"}</h1>
+      <React.Fragment>
+         <div className="auth">
+            <h1>{isUserSigningUp ? "创建账户" : "欢迎回来"}</h1>
 
-         <div className="email-signin-input">
-            <label>邮箱</label>
-            <input
-               type="email"
-               required
-               value={email}
-               onChange={(e) => setEmail(e.target.value)}
-            />
+            <div className="email-signin-input">
+               <label>邮箱</label>
+               <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+               />
+            </div>
+            <div className="password-signin-input">
+               <label>密码</label>
+               <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+               />
+            </div>
+
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
+
+            <button className="signin-btn" onClick={handleAuthAction}>
+               {isUserSigningUp ? "注册" : "登录"}
+            </button>
+
+            <p>
+               {isUserSigningUp ? "已经有账号了？" : "还没有账号？"}
+               <strong>
+                  <span
+                     onClick={() => setIsUserSigningUp(!isUserSigningUp)}
+                     style={{ cursor: "pointer", textDecoration: "underline" }}
+                  >
+                     {isUserSigningUp ? "登录" : "注册"}
+                  </span>
+               </strong>
+            </p>
+
+            <button className="google-signin" onClick={handleGoogleSignIn}>
+               使用 Google 继续
+            </button>
          </div>
-         <div className="password-signin-input">
-            <label>密码</label>
-            <input
-               type="password"
-               required
-               value={password}
-               onChange={(e) => setPassword(e.target.value)}
-            />
-         </div>
-
-         {errorMessage && <p className="error-message">{errorMessage}</p>}
-
-         <button className="signin-btn" onClick={handleAuthAction}>
-            {isUserSigningUp ? "注册" : "登录"}
-         </button>
-
-         <p>
-            {isUserSigningUp ? "已经有账号了？" : "还没有账号？"}
-            <strong>
-               <span
-                  onClick={() => setIsUserSigningUp(!isUserSigningUp)}
-                  style={{ cursor: "pointer", textDecoration: "underline" }}
-               >
-                  {isUserSigningUp ? "登录" : "注册"}
-               </span>
-            </strong>
-         </p>
-
-         <button className="google-signin" onClick={handleGoogleSignIn}>
-            使用 Google 继续
-         </button>
 
          <div style={{ position: "absolute", bottom: "0", left: "0" }}>
             <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
          </div>
-      </div>
+      </React.Fragment>
    );
 };
 

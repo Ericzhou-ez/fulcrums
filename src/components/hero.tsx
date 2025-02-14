@@ -9,7 +9,7 @@ export default function Hero() {
             align="center"
             sx={{
                fontSize: {
-                  xs: "3rem",
+                  xs: "3.1rem",
                   sm: "4.5rem",
                   md: "6.2rem",
                   lg: "6.5rem",
@@ -32,14 +32,14 @@ export default function Hero() {
             align="center"
             sx={{
                fontSize: {
-                  xs: "0.6rem",
-                  sm: "0.8rem",
-                  md: "1rem",
-                  lg: "1.2rem",
+                  xs: "0.7rem",
+                  sm: "1rem",
+                  md: "1.2rem",
+                  lg: "1.4rem",
                },
                fontWeight: "600",
                color: "text.secondary",
-               marginBottom: "45px",
+               marginBottom: "30px",
             }}
             className="hero-h2-description"
          >

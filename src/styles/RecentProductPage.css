@@ -8,9 +8,9 @@
   gap: 5px !important;
 }
 
-.title-recent, .cards-grid {
+/* .title-recent, .cards-grid {
   padding: 0 24px;
-}
+} */
 
 .title-recent {
   display: flex;

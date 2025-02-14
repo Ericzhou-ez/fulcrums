@@ -6,7 +6,7 @@ import { useTheme } from "@mui/material/styles";
 const ThemeSwitch = styled(Switch)(({ theme }) => ({
    width: 50,
    height: 30,
-   padding: 7,
+   padding: 8,
    "& .MuiSwitch-switchBase": {
       margin: 1,
       padding: 0,
