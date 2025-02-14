@@ -45,7 +45,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                   />
                </Link>
 
-               <Link to="/">
+               <Link to="/recent">
                   <img src={isDark ? RecentDark : RecentLight} alt="Recent" />
                </Link>
 

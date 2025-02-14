@@ -6,6 +6,8 @@ import DescriptionDark from "../assets/icons/description-dark.svg";
 import RecentLight from "../assets/icons/recent-light.svg";
 import RecentDark from "../assets/icons/recent-dark.svg";
 import CardSlider from "./cardSlider";
+import AddLightBtn from "../assets/icons/add-light.svg";
+
 
 interface DashboardOverviewProps {
    theme: Theme;
@@ -31,7 +33,17 @@ export default function DashboardOverview({ theme }: DashboardOverviewProps) {
                sx={{ alignItems: "flex-start" }}
             >
                <Box sx={{ flex: "1 1 auto" }}>
-                  <Typography variant="h1" fontSize="4rem">
+                  <Typography
+                     variant="h1"
+                     sx={{
+                        fontSize: {
+                           xs: "3rem",
+                           sm: "3.2rem",
+                           md: "3.5rem",
+                           lg: "4rem",
+                        },
+                     }}
+                  >
                      概括
                   </Typography>
                </Box>
@@ -73,7 +85,7 @@ export default function DashboardOverview({ theme }: DashboardOverviewProps) {
                </Stack>
                {/* <SimpleSlider /> */}
 
-               <CardSlider />
+               <CardSlider isDarkMode={isDarkMode} />
             </Box>
 
             {/* “保存” section */}
@@ -104,9 +116,13 @@ export default function DashboardOverview({ theme }: DashboardOverviewProps) {
                   </Typography>
                </Stack>
 
-               <CardSlider />
+               <CardSlider isDarkMode={isDarkMode} />
             </Box>
          </Stack>
+
+         <button className="add-product">
+            <img src={AddLightBtn} alt="+" />
+         </button>
       </Box>
    );
 }

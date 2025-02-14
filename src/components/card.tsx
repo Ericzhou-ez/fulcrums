@@ -8,6 +8,10 @@ import {
    Stack,
    IconButton,
 } from "@mui/material";
+import EditLight from "../assets/icons/edit-light.svg";
+import EditDark from "../assets/icons/edit-dark.svg";
+import HeartLight from "../assets/icons/heart-light.svg";
+import HeartDark from "../assets/icons/heart-dark.svg";
 
 interface CardItem {
    id: number;
@@ -19,9 +23,10 @@ interface CardItem {
 
 interface CardProps {
    item: CardItem;
+   isDarkMode: boolean;
 }
 
-export default function ProductCard({ item }: CardProps) {
+export default function ProductCard({ item, isDarkMode }: CardProps) {
    return (
       <Card
          sx={{
@@ -66,12 +71,32 @@ export default function ProductCard({ item }: CardProps) {
                   {item.postedTime}
                </Typography>
 
-               <Stack direction="row" spacing={1}>
+               <Stack direction="row">
                   <IconButton size="small">
-                     <img src="../assets/icons/edit-dark.svg" alt="o" />
+                     {isDarkMode ? (
+                        <img src={EditDark} alt="o" className="product-icons" />
+                     ) : (
+                        <img
+                           src={EditLight}
+                           alt="|"
+                           className="product-icons"
+                        />
+                     )}
                   </IconButton>
                   <IconButton size="small">
-                     <img src="../assets/icons/heart-light.svg" alt="o" />
+                     {isDarkMode ? (
+                        <img
+                           src={HeartDark}
+                           alt="o"
+                           className="product-icons"
+                        />
+                     ) : (
+                        <img
+                           src={HeartLight}
+                           alt="|"
+                           className="product-icons"
+                        />
+                     )}
                   </IconButton>
                </Stack>
             </Box>

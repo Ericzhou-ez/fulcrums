@@ -1,10 +1,10 @@
 .dashboard {
-   margin-top: 150px;
+   margin-top: 120px;
 }
 
 .excel-button {
    padding: 8px 18px !important;
-   background-color: #52b5c6 !important;
+   background-color: #ffaa64 !important;
    color: var(--background-primary) !important;
    font-weight: 600 !important;
    text-transform: none !important;
@@ -24,6 +24,10 @@
 
 .product-image {
    -webkit-user-drag: none;
+}
+
+img {
+  -webkit-user-drag: none;
 }
 
 .card-slider {
@@ -63,3 +67,30 @@
   flex: 0 0 auto;    
 }
 
+.add-product {
+  border: none;
+  background-color: var(--text-primary-color);
+  height: 45px;
+  width: 45px;
+  border-radius: 50%;
+  position: fixed;
+  bottom: 3vh;
+  left: calc(50vw - 22.5px);
+  background: linear-gradient(90deg, #ff3131, #ff914d);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 1s ease !important;
+}
+
+.add-product:hover {
+  opacity: 1 !important;
+  background: linear-gradient(150deg, #fd2626, #ffba90);
+}
+
+.add-product:active {
+  opacity: 0.8;
+}
+
+.product-icons {
+  width: 20px;
+  height: 20px;
+}

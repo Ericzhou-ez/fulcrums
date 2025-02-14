@@ -12,7 +12,7 @@ export default function Components() {
             Components
          </Typography>
 
-         <CardSlider />
+         {/* <CardSlider /> */}
       </div>
    );
 }

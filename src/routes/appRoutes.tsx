@@ -5,6 +5,8 @@ import Dashboard from "../pages/dashboard";
 import NotFoundPage from "../pages/NotFoundPage";
 import Home from "../pages/home";
 import Components from "../pages/components";
+import RecentProductsPage from "../pages/recentPage";
+import PrivateRoute from "./privateRoute";
 
 export interface AppRoutesProps {
    signedIn: boolean;
@@ -46,7 +48,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
          <Route
             path="/dashboard"
             element={
-               signedIn ? (
+               <PrivateRoute signedIn={signedIn}>
                   <Dashboard
                      signedIn={signedIn}
                      toggleModal={toggleModal}
@@ -56,25 +58,36 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                      theme={theme}
                      handleToggleTheme={handleToggleTheme}
                   />
-               ) : (
-                  <Navigate to="/signin" />
-               )
+               </PrivateRoute>
             }
          />
 
          {/* Component dev route */}
-         <Route
-            path="/components"
-            element={
-               <Components />
-            }
-         />
+         <Route path="/components" element={<Components />} />
 
          {/* marketing page */}
          <Route
             path="/"
             element={
                <Home theme={theme} handleToggleTheme={handleToggleTheme} />
+            }
+         />
+
+         {/* recently added products page */}
+         <Route
+            path="/recent"
+            element={
+               <PrivateRoute signedIn={signedIn}>
+                  <RecentProductsPage
+                     signedIn={signedIn}
+                     toggleModal={toggleModal}
+                     user={user}
+                     handleSignOut={handleSignOut}
+                     isModalOpen={isModalOpen}
+                     theme={theme}
+                     handleToggleTheme={handleToggleTheme}
+                  />
+               </PrivateRoute>
             }
          />
 

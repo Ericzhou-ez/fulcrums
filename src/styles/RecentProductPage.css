@@ -1,0 +1,51 @@
+.recent-products-page {
+   margin-top: 110px;
+   padding: 10px 24px !important;
+   box-sizing: border-box !important;
+}
+
+.card-flex {
+  gap: 5px !important;
+}
+
+.title-recent, .cards-grid {
+  padding: 0 24px;
+}
+
+.title-recent {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 15px;
+}
+
+.cards-grid {
+  display: grid;
+  gap: clamp(10px, 2vw, 16px);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+
+@media (min-width: 480px) {
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .cards-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1440px) {
+  .cards-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}

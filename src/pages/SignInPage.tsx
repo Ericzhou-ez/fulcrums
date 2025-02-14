@@ -7,6 +7,7 @@ import {
 } from "firebase/auth";
 import "../styles/authentication.css";
 import ThemeToggle from "../components/themeSwitch";
+import Footer from "../components/footer";
 
 interface SignInPageProps {
    theme: "light" | "dark";
@@ -102,8 +103,8 @@ const SignInPage: React.FC<SignInPageProps> = ({
             使用 Google 继续
          </button>
 
-         <div className="theme-toggle-sign-in">
-            <ThemeToggle handleToggleTheme={handleToggleTheme} />
+         <div style={{ position: "absolute", bottom: "0", left: "0" }}>
+            <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
          </div>
       </div>
    );

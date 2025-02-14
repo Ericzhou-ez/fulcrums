@@ -12,13 +12,13 @@ export default function Hero() {
                   xs: "3rem",
                   sm: "4.5rem",
                   md: "6.2rem",
-                  lg: "7rem",
+                  lg: "6.5rem",
                },
                fontWeight: 700,
                lineHeight: 1.2,
                color: "text.primary",
                margin: "0 40px",
-               marginBottom: "50px",
+               marginBottom: "20px",
                letterSpacing: "0.05rem",
             }}
             className="hero-title"
@@ -32,14 +32,14 @@ export default function Hero() {
             align="center"
             sx={{
                fontSize: {
-                  xs: "0.8rem",
-                  sm: "1rem",
-                  md: "1.2rem",
-                  lg: "1.5rem",
+                  xs: "0.6rem",
+                  sm: "0.8rem",
+                  md: "1rem",
+                  lg: "1.2rem",
                },
                fontWeight: "600",
                color: "text.secondary",
-               marginBottom: "30px",
+               marginBottom: "45px",
             }}
             className="hero-h2-description"
          >

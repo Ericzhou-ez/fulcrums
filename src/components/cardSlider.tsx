@@ -40,12 +40,16 @@ const mockData: CardItem[] = [
    // },
 ];
 
-export default function CardSlider() {
+interface CardSliderProp {
+   isDarkMode: boolean;
+}
+
+export default function CardSlider({ isDarkMode }: CardSliderProp) {
    return (
       <div className="card-slider">
          {mockData.map((item) => (
             <div className="card-slider-item" key={item.id}>
-               <ProductCard item={item} />
+               <ProductCard item={item} isDarkMode={isDarkMode} />
             </div>
          ))}
       </div>
