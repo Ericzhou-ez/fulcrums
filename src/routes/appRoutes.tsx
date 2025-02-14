@@ -4,6 +4,7 @@ import SignInPage from "../pages/SignInPage";
 import Dashboard from "../pages/dashboard";
 import NotFoundPage from "../pages/NotFoundPage";
 import Home from "../pages/home";
+import Components from "../pages/components";
 
 export interface AppRoutesProps {
    signedIn: boolean;
@@ -58,6 +59,14 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                ) : (
                   <Navigate to="/signin" />
                )
+            }
+         />
+
+         {/* Component dev route */}
+         <Route
+            path="/components"
+            element={
+               <Components />
             }
          />
 

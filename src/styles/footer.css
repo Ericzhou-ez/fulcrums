@@ -6,6 +6,10 @@
    width: 100%;
 }
 
+a {
+  all: unset !important;
+}
+
 .footer-divider {
    height: 4px;
    width: calc(100vw - 32px);

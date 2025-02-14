@@ -1,10 +1,11 @@
 import React from "react";
-import { Stack, Box, Grid, Typography, Button } from "@mui/material";
+import { Stack, Box, Typography, Button } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import DescriptionLight from "../assets/icons/description-light.svg";
 import DescriptionDark from "../assets/icons/description-dark.svg";
 import RecentLight from "../assets/icons/recent-light.svg";
 import RecentDark from "../assets/icons/recent-dark.svg";
+import CardSlider from "./cardSlider";
 
 interface DashboardOverviewProps {
    theme: Theme;
@@ -14,28 +15,43 @@ export default function DashboardOverview({ theme }: DashboardOverviewProps) {
    const isDarkMode = theme.palette.mode === "dark";
 
    return (
-      <Stack spacing={4} sx={{ margin: "0 20px" }}>
-         <Stack direction="row" spacing={3} sx={{ alignItems: "flex-start" }}>
-            <Box sx={{ flex: "1 1 auto" }}>
-               <Typography variant="h1" fontSize="4rem">
-                  概括
-               </Typography>
-            </Box>
-            <Stack spacing={2} direction="column">
-               <Button variant="contained" className="excel-button">
-                  导出为Excel
-               </Button>
-               <Button variant="contained" className="pdf-button">
-                  导出为PDF
-               </Button>
+      <Box
+         sx={{
+            margin: "0 auto",
+            px: 3,
+            maxWidth: "100vw",
+         }}
+         className="dashboard-overview"
+      >
+         <Stack spacing={4}>
+            {/* Header section */}
+            <Stack
+               direction="row"
+               spacing={3}
+               sx={{ alignItems: "flex-start" }}
+            >
+               <Box sx={{ flex: "1 1 auto" }}>
+                  <Typography variant="h1" fontSize="4rem">
+                     概括
+                  </Typography>
+               </Box>
+               <Stack spacing={2} direction="column">
+                  <Button variant="contained" className="excel-button">
+                     导出为Excel
+                  </Button>
+                  <Button variant="contained" className="pdf-button">
+                     导出为PDF
+                  </Button>
+               </Stack>
             </Stack>
-         </Stack>
 
-         {/* Grid container with items */}
-         <Grid container spacing={2}>
-            {/* 1st row */}
-            <Grid item xs={12} sx={{ margin: "20px 0" }}>
-               <Stack direction="row" spacing={1} alignItems="center">
+            <Box sx={{ my: 2 }}>
+               <Stack
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                  sx={{ mb: 1 }}
+               >
                   {isDarkMode ? (
                      <img
                         src={DescriptionDark}
@@ -55,11 +71,19 @@ export default function DashboardOverview({ theme }: DashboardOverviewProps) {
                      最近 &gt;
                   </Typography>
                </Stack>
-            </Grid>
+               {/* <SimpleSlider /> */}
 
-            {/* 2nd row */}
-            <Grid item xs={12} sx={{ margin: "20px 0" }}>
-               <Stack direction="row" spacing={1} alignItems="center">
+               <CardSlider />
+            </Box>
+
+            {/* “保存” section */}
+            <Box sx={{ my: 2 }}>
+               <Stack
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                  sx={{ mb: 1 }}
+               >
                   {isDarkMode ? (
                      <img
                         src={RecentDark}
@@ -79,8 +103,64 @@ export default function DashboardOverview({ theme }: DashboardOverviewProps) {
                      保存 &gt;
                   </Typography>
                </Stack>
-            </Grid>
-         </Grid>
-      </Stack>
+
+               <CardSlider />
+            </Box>
+         </Stack>
+      </Box>
+   );
+}
+
+function SimpleSlider() {
+   return (
+      <Box
+         sx={{
+            width: "100%",
+            overflowX: "auto",
+            display: "flex",
+            flexWrap: "nowrap",
+            gap: 2,
+            border: "1px solid red",
+            p: 2,
+            // Hide scrollbar in Chrome/Firefox (optional):
+            scrollbarWidth: "none", // Firefox
+            "&::-webkit-scrollbar": {
+               display: "none", // Chrome, Safari
+            },
+         }}
+      >
+         <Box
+            sx={{
+               flex: "0 0 auto",
+               minWidth: "400px",
+               height: "150px",
+               backgroundColor: "lightblue",
+            }}
+         />
+         <Box
+            sx={{
+               flex: "0 0 auto",
+               minWidth: "400px",
+               height: "150px",
+               backgroundColor: "lightgreen",
+            }}
+         />
+         <Box
+            sx={{
+               flex: "0 0 auto",
+               minWidth: "400px",
+               height: "150px",
+               backgroundColor: "lightcoral",
+            }}
+         />
+         <Box
+            sx={{
+               flex: "0 0 auto",
+               minWidth: "400px",
+               height: "150px",
+               backgroundColor: "lightgoldenrodyellow",
+            }}
+         />
+      </Box>
    );
 }
