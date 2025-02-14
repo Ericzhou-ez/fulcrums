@@ -30,7 +30,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
          <div className="footer-bottom">
             <div className="footer-logo">
                <img src={Logo} alt="logo" />
-               <h6>BT-Assist</h6>
+               <h6>BM-Assist</h6>
             </div>
 
             <div className="icon-container">

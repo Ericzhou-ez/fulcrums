@@ -25,23 +25,22 @@ const Nav: React.FC<NavProps> = ({
 }) => {
    return (
       <div className="nav">
-         <div className="nav-logo-container">
-            <div className="nav-logo">
-               <a
-                  href="/dashboard"
-                  style={{
-                     all: "unset",
-                     cursor: "pointer",
-                     display: "flex",
-                     placeContent: "center",
-                  }}
-               >
+         <a
+            href="/dashboard"
+            style={{
+               all: "unset",
+               cursor: "pointer",
+               display: "flex",
+               placeContent: "center",
+            }}
+         >
+            <div className="nav-logo-container">
+               <div className="nav-logo">
                   <img src={Logo} alt="Logo" />
-               </a>
+               </div>
+               <p>BM-Assist</p>
             </div>
-
-            <p>BT-Assist</p>
-         </div>
+         </a>
 
          {signedIn ? (
             <div className="profile-container" style={{ position: "relative" }}>
@@ -90,11 +89,11 @@ const Nav: React.FC<NavProps> = ({
             <div className="nav-links">
                <a href="/dashboard">
                   <button className="cta-btn-join">登录</button>
-            </a>
+               </a>
             </div>
          )}
       </div>
    );
-}
+};
 
 export default Nav;
