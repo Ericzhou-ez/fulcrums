@@ -9,7 +9,7 @@ export default function Hero() {
             align="center"
             sx={{
                fontSize: {
-                  xs: "3.1rem",
+                  xs: "3.5rem",
                   sm: "4.5rem",
                   md: "6.2rem",
                   lg: "6.5rem",
@@ -17,9 +17,9 @@ export default function Hero() {
                fontWeight: 700,
                lineHeight: 1.2,
                color: "text.primary",
-               margin: "0 40px",
+               margin: "0 10px",
                marginBottom: "20px",
-               letterSpacing: "0.05rem",
+               letterSpacing: "0.1rem",
             }}
             className="hero-title"
          >
@@ -32,18 +32,19 @@ export default function Hero() {
             align="center"
             sx={{
                fontSize: {
-                  xs: "0.7rem",
+                  xs: "0.8rem",
                   sm: "1rem",
                   md: "1.2rem",
                   lg: "1.4rem",
                },
                fontWeight: "600",
                color: "text.secondary",
-               marginBottom: "30px",
+               marginBottom: "80px",
+               fontStyle: "italic"
             }}
             className="hero-h2-description"
          >
-            BT-Assist 提供从产品采购到报关全流程管理.
+            BM-Assist 提供从产品采购到报关全流程管理.
          </Typography>
 
          <Stack
@@ -51,8 +52,8 @@ export default function Hero() {
             direction="row"
             justifyContent="center"
             className="cta-buttons"
-            gap="10px"
-
+            gap="5px"
+            marginBottom="50px"
             sx={{alignItems: "center"}}
          >
             <div className="animated-border">

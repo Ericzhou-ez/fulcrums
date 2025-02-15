@@ -3,6 +3,7 @@ import Footer from "../components/footer";
 import Hero from "../components/hero";
 import Nav from "../components/nav";
 import '../styles/home.css';
+import BottomCTA from "../components/bottomCta";
 
 interface HomeProps {
    theme: string;
@@ -23,6 +24,8 @@ const Home: React.FC<HomeProps> = ({ theme, handleToggleTheme }) => {
 
             <Hero />
          </div>
+
+         <BottomCTA theme={theme} />
 
          <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
       </React.Fragment>
