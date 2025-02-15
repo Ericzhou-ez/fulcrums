@@ -7,6 +7,7 @@ import Home from "../pages/home";
 import Components from "../pages/components";
 import RecentProductsPage from "../pages/recentPage";
 import PrivateRoute from "./privateRoute";
+import SavedPage from "../pages/savedPage";
 
 export interface AppRoutesProps {
    signedIn: boolean;
@@ -79,6 +80,24 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
             element={
                <PrivateRoute signedIn={signedIn}>
                   <RecentProductsPage
+                     signedIn={signedIn}
+                     toggleModal={toggleModal}
+                     user={user}
+                     handleSignOut={handleSignOut}
+                     isModalOpen={isModalOpen}
+                     theme={theme}
+                     handleToggleTheme={handleToggleTheme}
+                  />
+               </PrivateRoute>
+            }
+         />
+
+         {/* saved page */}
+         <Route
+            path="/saved"
+            element={
+               <PrivateRoute signedIn={signedIn}>
+                  <SavedPage
                      signedIn={signedIn}
                      toggleModal={toggleModal}
                      user={user}

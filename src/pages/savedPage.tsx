@@ -4,12 +4,10 @@ import ProductCard from "../components/minProductCard";
 import "../styles/RecentProductPage.css";
 import Nav from "../components/nav";
 import Footer from "../components/footer";
+import ClockLight from "../assets/icons/recent-light.svg";
+import ClockDark from "../assets/icons/recent-dark.svg";
 
-// Light/Dark icons for the top bar (optional)
-import ClockLight from "../assets/icons/description-light.svg";
-import ClockDark from "../assets/icons/description-dark.svg";
-
-export interface RecentProductsPageProps {
+export interface SavedPageProps {
    signedIn: boolean;
    user: any;
    handleSignOut: () => Promise<void>;
@@ -19,7 +17,7 @@ export interface RecentProductsPageProps {
    toggleModal: () => void;
 }
 
-const RecentProductsPage: React.FC<RecentProductsPageProps> = ({
+const SavedPage: React.FC<SavedPageProps> = ({
    signedIn,
    user,
    handleSignOut,
@@ -104,7 +102,7 @@ const RecentProductsPage: React.FC<RecentProductsPageProps> = ({
                src={clockIcon}
                height="30px"
                width="30px"
-               alt="o"
+               alt="Clock"
                className="top-bar-icon"
             />
             <Typography
@@ -119,9 +117,8 @@ const RecentProductsPage: React.FC<RecentProductsPageProps> = ({
                      lg: "2.8rem",
                   },
                }}
-               
             >
-               最近
+               保存
             </Typography>
          </div>
 
@@ -129,7 +126,12 @@ const RecentProductsPage: React.FC<RecentProductsPageProps> = ({
 
          <div className="cards-grid">
             {productList.map((item) => (
-               <ProductCard key={item.id} item={item} isDarkMode={isDarkMode} isRecent={true} />
+               <ProductCard
+                  key={item.id}
+                  item={item}
+                  isDarkMode={isDarkMode}
+                  isRecent={false}
+               />
             ))}
          </div>
 
@@ -138,4 +140,4 @@ const RecentProductsPage: React.FC<RecentProductsPageProps> = ({
    );
 };
 
-export default RecentProductsPage;
+export default SavedPage;

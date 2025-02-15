@@ -9,7 +9,7 @@ interface CardItem {
    image: string;
 }
 
-const mockData: CardItem[] = [
+let mockData: CardItem[] = [
    {
       id: 1,
       title: "财神蛇公仔毛绒玩具财神蛇公仔毛绒玩具",
@@ -31,27 +31,52 @@ const mockData: CardItem[] = [
       postedTime: "2小时前",
       image: "https://plushiedepot.com/cdn/shop/products/7033ad3817d7bbe408c5b57a3f65c19f.jpg?v=1724425679",
    },
-   // {
-   //    id: 4,
-   //    title: "示例商品3",
-   //    productId: "13100000000",
-   //    postedTime: "2小时前",
-   //    image: "https://plushiedepot.com/cdn/shop/products/7033ad3817d7bbe408c5b57a3f65c19f.jpg?v=1724425679",
-   // },
+   {
+      id: 4,
+      title: "示eofjewofjw",
+      productId: "13100000000",
+      postedTime: "2小时前",
+      image: "https://plushiedepot.com/cdn/shop/products/7033ad3817d7bbe408c5b57a3f65c19f.jpg?v=1724425679",
+   },
+   {
+      id: 5,
+      title: "示eofjewofjw",
+      productId: "13100000000",
+      postedTime: "2小时前",
+      image: "https://plushiedepot.com/cdn/shop/products/7033ad3817d7bbe408c5b57a3f65c19f.jpg?v=1724425679",
+   },
+   {
+      id: 6,
+      title: "示eofjewofjw",
+      productId: "13100000000",
+      postedTime: "2小时前",
+      image: "https://plushiedepot.com/cdn/shop/products/7033ad3817d7bbe408c5b57a3f65c19f.jpg?v=1724425679",
+   },
 ];
 
 interface CardSliderProp {
    isDarkMode: boolean;
+   isRecent: boolean;
 }
 
-export default function CardSlider({ isDarkMode }: CardSliderProp) {
+const CardSlider: React.FC<CardSliderProp> = ({ isDarkMode, isRecent }) => {
+   const dataToShow = isRecent ? mockData : false;
+
    return (
-      <div className="card-slider">
-         {mockData.map((item) => (
-            <div className="card-slider-item" key={item.id}>
-               <ProductCard item={item} isDarkMode={isDarkMode} />
-            </div>
-         ))}
+      <div className={dataToShow ? "card-slider" : "cta-data-input"}>
+         {dataToShow ? (
+            dataToShow.map((item) => (
+               <div className="card-slider-item" key={item.id}>
+                  <ProductCard item={item} isDarkMode={isDarkMode} />
+               </div>
+            ))
+         ) : isRecent ? (
+            <p>「上传内容即可开始」</p>
+         ) : (
+            <p>「保存项目以在此处查看」</p>
+         )}
       </div>
    );
-}
+};
+
+export default CardSlider;

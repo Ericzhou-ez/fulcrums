@@ -1,3 +1,4 @@
+import React from "react";
 import Footer from "../components/footer";
 import Hero from "../components/hero";
 import Nav from "../components/nav";
@@ -10,19 +11,21 @@ interface HomeProps {
 
 const Home: React.FC<HomeProps> = ({ theme, handleToggleTheme }) => {
    return (
-      <div className="home">
-         <Nav 
-            signedIn={false} 
-            user={{name: "", photo: ""}} 
-            handleSignOut={() => {}} 
-            isModalOpen={false} 
-            toggleModal={() => {}} 
-         />
+      <React.Fragment>
+         <div className="home">
+            <Nav
+               signedIn={false}
+               user={{ name: "", photo: "" }}
+               handleSignOut={() => {}}
+               isModalOpen={false}
+               toggleModal={() => {}}
+            />
 
-         <Hero />
-         
+            <Hero />
+         </div>
+
          <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
-      </div>
+      </React.Fragment>
    );
 };
 

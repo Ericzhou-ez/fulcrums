@@ -27,7 +27,7 @@
 
 .cta-login {
    background-color: var(--background-secondary-color) !important;
-   padding: 8px 20px !important;
+   padding: 10px 23px !important;
    color: var(--text-secondary-color) !important;
    font-weight: 500;
    font-size: 0.8rem;
@@ -41,7 +41,7 @@
 
 .cta-join-button-hero {
   background-color: var(--text-primary-color) !important;
-  padding: 8px 20px !important;
+  padding: 7px 18px !important;
   color: var(--background-color) !important;
   font-weight: 500;
   font-size: 0.8rem;
@@ -49,10 +49,13 @@
   border-radius: 50px;
   position: relative; 
   overflow: hidden; 
-  z-index: 1;
 }
 .hero-h2-description {
    animation: fadeIn 1.5s ease-in-out forwards;
+}
+
+.cta-join-button-hero:hover {
+   opacity: 1 !important;
 }
 
 @media (width <= 600px) {
@@ -67,14 +70,14 @@
 
 .animated-border {
   position: relative;
-  display: inline-block;      
+  display: inline-block;
   padding: 3px;
   font-weight: 600;
   color: #fff;
   background: #1c1f2b;
-  border-radius: 50px;       
+  border-radius: 50px;
   z-index: 1;
-  overflow: hidden;  
+  overflow: hidden;
 }
 
 .animated-border::before {
@@ -85,8 +88,7 @@
   width: 300%;
   height: 500%;
   border-radius: 50%;
-  transform: translate(-50%, -50%); 
-  
+  transform: translate(-50%, -50%);
   background: conic-gradient(
     from 0deg,
     #ff6464,
@@ -95,9 +97,14 @@
     #ff78c7,
     #ff6666
   );
-  
   z-index: -1;
   animation: spin 6s linear infinite;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.animated-border:hover::before {
+  opacity: 1;
 }
 
 @keyframes spin {

@@ -105,7 +105,7 @@ const SignInPage: React.FC<SignInPageProps> = ({
             </button>
          </div>
 
-         <div style={{ position: "absolute", bottom: "0", left: "0" }}>
+         <div>
             <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
          </div>
       </React.Fragment>

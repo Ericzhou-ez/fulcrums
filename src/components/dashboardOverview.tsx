@@ -1,5 +1,5 @@
 import React from "react";
-import { Stack, Box, Typography, Button } from "@mui/material";
+import { Stack, Box, Typography, Button, Link } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import DescriptionLight from "../assets/icons/description-light.svg";
 import DescriptionDark from "../assets/icons/description-dark.svg";
@@ -27,11 +27,7 @@ export default function DashboardOverview({ theme }: DashboardOverviewProps) {
       >
          <Stack spacing={4}>
             {/* Header section */}
-            <Stack
-               direction="row"
-               spacing={3}
-               sx={{ alignItems: "flex-start" }}
-            >
+            <Stack direction="row" spacing={3} sx={{ alignItems: "center" }}>
                <Box sx={{ flex: "1 1 auto" }}>
                   <Typography
                      variant="h1"
@@ -41,6 +37,7 @@ export default function DashboardOverview({ theme }: DashboardOverviewProps) {
                            sm: "3.2rem",
                            md: "3.5rem",
                            lg: "4rem",
+                           fontWeight: "400",
                         },
                      }}
                   >
@@ -58,65 +55,70 @@ export default function DashboardOverview({ theme }: DashboardOverviewProps) {
             </Stack>
 
             <Box sx={{ my: 2 }}>
-               <Stack
-                  direction="row"
-                  spacing={1}
-                  alignItems="center"
-                  sx={{ mb: 1 }}
-               >
-                  {isDarkMode ? (
-                     <img
-                        src={DescriptionDark}
-                        alt="Description Icon"
-                        width={25}
-                        height={25}
-                     />
-                  ) : (
-                     <img
-                        src={DescriptionLight}
-                        alt="Description Icon"
-                        width={25}
-                        height={25}
-                     />
-                  )}
-                  <Typography variant="h5" fontSize="1.3rem">
-                     最近 &gt;
-                  </Typography>
-               </Stack>
+               <Link href="/recent">
+                  <Stack
+                     direction="row"
+                     spacing={1}
+                     alignItems="center"
+                     sx={{ mb: 1, borderRadius: "20px", cursor: "pointer" }}
+                  >
+                     {isDarkMode ? (
+                        <img
+                           src={DescriptionDark}
+                           alt="Description Icon"
+                           width={25}
+                           height={25}
+                        />
+                     ) : (
+                        <img
+                           src={DescriptionLight}
+                           alt="Description Icon"
+                           width={25}
+                           height={25}
+                        />
+                     )}
+                     <Typography variant="h5" fontSize="1.3rem">
+                        最近 &gt;
+                     </Typography>
+                  </Stack>
+               </Link>
+
                {/* <SimpleSlider /> */}
 
-               <CardSlider isDarkMode={isDarkMode} />
+               <CardSlider isDarkMode={isDarkMode} isRecent={true} />
             </Box>
 
             {/* “保存” section */}
             <Box sx={{ my: 2 }}>
-               <Stack
-                  direction="row"
-                  spacing={1}
-                  alignItems="center"
-                  sx={{ mb: 1 }}
-               >
-                  {isDarkMode ? (
-                     <img
-                        src={RecentDark}
-                        alt="Recent Icon"
-                        width={25}
-                        height={25}
-                     />
-                  ) : (
-                     <img
-                        src={RecentLight}
-                        alt="Recent Icon"
-                        width={25}
-                        height={25}
-                     />
-                  )}
-                  <Typography variant="h5" fontSize="1.3rem">
-                     保存 &gt;
-                  </Typography>
-               </Stack>
+               <Link href="/saved">
+                  <Stack
+                     direction="row"
+                     spacing={1}
+                     alignItems="center"
+                     sx={{ mb: 1, cursor: "pointer" }}
+                  >
+                     {isDarkMode ? (
+                        <img
+                           src={RecentDark}
+                           alt="Recent Icon"
+                           width={25}
+                           height={25}
+                        />
+                     ) : (
+                        <img
+                           src={RecentLight}
+                           alt="Recent Icon"
+                           width={25}
+                           height={25}
+                        />
+                     )}
+                     <Typography variant="h5" fontSize="1.3rem">
+                        保存 &gt;
+                     </Typography>
+                  </Stack>
+               </Link>
 
-               <CardSlider isDarkMode={isDarkMode} />
+               <CardSlider isDarkMode={isDarkMode} isRecent={false} />
             </Box>
          </Stack>
 

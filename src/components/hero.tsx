@@ -52,6 +52,8 @@ export default function Hero() {
             justifyContent="center"
             className="cta-buttons"
             gap="10px"
+
+            sx={{alignItems: "center"}}
          >
             <div className="animated-border">
                <a href="/">

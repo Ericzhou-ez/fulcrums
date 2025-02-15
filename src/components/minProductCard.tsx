@@ -6,7 +6,8 @@ import EditLight from "../assets/icons/edit-light.svg";
 import EditDark from "../assets/icons/edit-dark.svg";
 import HeartLight from "../assets/icons/heart-light.svg";
 import HeartDark from "../assets/icons/heart-dark.svg";
-import { r } from "react-router/dist/development/fog-of-war-CCAcUMgB";
+import CancelLight from "../assets/icons/x-light.svg";
+import CancelDark from "../assets/icons/x-dark.svg";
 
 interface CardItem {
    id: number;
@@ -18,12 +19,14 @@ interface CardItem {
 interface CardProps {
    item: CardItem;
    isDarkMode: boolean;
+   isRecent: boolean;
 }
 
-export default function ProductCard({ item, isDarkMode }: CardProps) {
+export default function ProductCard({ item, isDarkMode, isRecent }: CardProps) {
    // Pick icons based on dark/light mode
    const editIcon = isDarkMode ? EditDark : EditLight;
    const heartIcon = isDarkMode ? HeartDark : HeartLight;
+   const deleteIcon = isDarkMode ? CancelDark : CancelLight;
 
    return (
       <Card
@@ -63,7 +66,7 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
                   <IconButton size="small">
                      <img
                         src={editIcon}
-                        alt="edit-icon"
+                        alt="\"
                         width="18"
                         height="18"
                      />
@@ -71,11 +74,21 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
                   <IconButton size="small">
                      <img
                         src={heartIcon}
-                        alt="heart-icon"
+                        alt="o"
                         width="18"
                         height="18"
                      />
                   </IconButton>
+                  {isRecent && (
+                     <IconButton size="small">
+                        <img
+                           src={deleteIcon}
+                           alt="x"
+                           width="18"
+                           height="18"
+                        />
+                     </IconButton>
+                  )}
                </div>
                <Typography variant="caption" color="textSecondary">
                   {item.postedTime}
