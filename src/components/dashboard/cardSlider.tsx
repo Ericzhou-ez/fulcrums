@@ -1,5 +1,5 @@
 import React from "react";
-import ProductCard from "./card";
+import ProductCard from "./minProductCard";
 
 interface CardItem {
    id: number;
@@ -67,7 +67,6 @@ let mockData: CardItem[] = [
       image: "/public/demo/O1CN01pln4jM203FPjV7zaX_!!2214227246793-0-cib.220x220.jpg",
    },
 ];
-
 
 interface CardSliderProp {
    isDarkMode: boolean;

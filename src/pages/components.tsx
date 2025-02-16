@@ -1,5 +1,4 @@
 import { Typography } from "@mui/material";
-import CardSlider from "../components/cardSlider";
 
 export default function Components() {
    return (

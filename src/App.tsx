@@ -6,14 +6,14 @@ import {
    Container,
    Typography,
 } from "@mui/material";
-import Nav from "./components/nav";
+import Nav from "./components/core/nav";
 import { signOut, onAuthStateChanged } from "firebase/auth";
-import Footer from "./components/footer";
+import Footer from "./components/core/footer";
 import { auth } from "./configs/firebase";
-import Dashboard from "./pages/dashboard";
+import Dashboard from "./pages/dashboard/dashboard";
 import AppRoutes from "./routes/appRoutes";
 import { BrowserRouter } from "react-router";
-import Loading from "./components/loading";
+import Loading from "./components/core/loading";
 
 type User = {
    name: string;

@@ -1,18 +1,15 @@
 import React from "react";
 import "@theme-toggles/react/css/Classic.css";
-import { Classic } from "@theme-toggles/react";
-import "../styles/footer.css";
-import HomeLight from "../assets/icons/home-light.svg";
-import HomeDark from "../assets/icons/home-dark.svg";
-import DescriptionLight from "../assets/icons/description-light.svg";
-import DescriptionDark from "../assets/icons/description-dark.svg";
-import RecentLight from "../assets/icons/recent-light.svg";
-import RecentDark from "../assets/icons/recent-dark.svg";
-import HeartLight from "../assets/icons/heart-light.svg";
-import HeartDark from "../assets/icons/heart-dark.svg";
-import Logo from "../assets/images/logo.svg";
+import "../../styles/footer.css";
+import HomeLight from "../../assets/icons/home-light.svg";
+import HomeDark from "../../assets/icons/home-dark.svg";
+import RecentLight from "../../assets/icons/recent-light.svg";
+import RecentDark from "../../assets/icons/recent-dark.svg";
+import HeartLight from "../../assets/icons/heart-light.svg";
+import HeartDark from "../../assets/icons/heart-dark.svg";
+import Logo from "../../assets/images/logo.svg";
 import { Typography } from "@mui/material";
-import ThemeSwitch from "./themeSwitch";
+import ThemeSwitch from "../core/themeSwitch"
 import { Link } from "react-router-dom";
 
 interface FooterProps {

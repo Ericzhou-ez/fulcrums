@@ -7,10 +7,10 @@ import Container from "@mui/material/Container";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 
-import CTADark from "../assets/images/home-cta-dark.png";
-import CTALight from "../assets/images/home-cta-light.png";
-import Triangle from "../assets/images/home-rectangles.svg";
-import Cosmic from "../assets/images/home-cosmic.svg";
+import CTADark from "../../assets/images/home-cta-dark.png";
+import CTALight from "../../assets/images/home-cta-light.png";
+import Triangle from "../../assets/images/home-rectangles.svg";
+import Cosmic from "../../assets/images/home-cosmic.svg";
 
 interface BottomCTAProps {
    theme: any;

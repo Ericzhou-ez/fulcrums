@@ -1,11 +1,11 @@
 import React from "react";
 import { Typography } from "@mui/material";
-import ProductCard from "../components/minProductCard";
-import "../styles/RecentProductPage.css";
-import Nav from "../components/nav";
-import Footer from "../components/footer";
-import ClockLight from "../assets/icons/recent-light.svg";
-import ClockDark from "../assets/icons/recent-dark.svg";
+import ProductCard from "../../components/dashboard/minProductCard";
+import "../../styles/RecentProductPage.css";
+import Nav from "../../components/core/nav";
+import Footer from "../../components/core/footer";
+import ClockLight from "../../assets/icons/recent-light.svg";
+import ClockDark from "../../assets/icons/recent-dark.svg";
 
 export interface SavedPageProps {
    signedIn: boolean;
@@ -126,11 +126,7 @@ const SavedPage: React.FC<SavedPageProps> = ({
 
          <div className="cards-grid">
             {productList.map((item) => (
-               <ProductCard
-                  key={item.id}
-                  item={item}
-                  isDarkMode={isDarkMode}
-               />
+               <ProductCard key={item.id} item={item} isDarkMode={isDarkMode} />
             ))}
          </div>
 

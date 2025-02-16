@@ -8,11 +8,11 @@ import {
    Stack,
    Box,
 } from "@mui/material";
-import Nav from "../components/nav";
-import Footer from "../components/footer";
-import "../styles/dashboard.css";
+import Nav from "../../components/core/nav";
+import Footer from "../../components/core/footer";
+import "../../styles/dashboard.css";
 import { Auth } from "firebase/auth";
-import DashboardOverview from "../components/dashboardOverview";
+import DashboardOverview from "../../components/dashboard/dashboardOverview";
 
 interface DashboardProps {
    user: { name: string; photo: string };

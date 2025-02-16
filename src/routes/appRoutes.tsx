@@ -1,13 +1,13 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import SignInPage from "../pages/SignInPage";
-import Dashboard from "../pages/dashboard";
+import Dashboard from "../pages/dashboard/dashboard";
 import NotFoundPage from "../pages/NotFoundPage";
-import Home from "../pages/home";
+import Home from "../pages/marketing/home";
 import Components from "../pages/components";
-import RecentProductsPage from "../pages/recentPage";
+import RecentProductsPage from "../pages/dashboard/recentPage";
 import PrivateRoute from "./privateRoute";
-import SavedPage from "../pages/savedPage";
+import SavedPage from "../pages/dashboard/savedPage";
 
 export interface AppRoutesProps {
    signedIn: boolean;

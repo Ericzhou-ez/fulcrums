@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import "../styles/nav.css";
-import Logo from "../assets/images/logo.svg";
+import "../../styles/nav.css";
+import Logo from "../../assets/images/logo.svg";
 import DefaultProfile from "/src/assets/icons/profile.svg";
 import { Button } from "@mui/material";
 import { Links } from "react-router-dom";

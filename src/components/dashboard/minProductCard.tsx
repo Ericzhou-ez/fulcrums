@@ -2,12 +2,12 @@ import React from "react";
 import { Card, CardContent, Typography, IconButton } from "@mui/material";
 
 // Light/Dark icons
-import EditLight from "../assets/icons/edit-light.svg";
-import EditDark from "../assets/icons/edit-dark.svg";
-import HeartLight from "../assets/icons/heart-light.svg";
-import HeartDark from "../assets/icons/heart-dark.svg";
-import CancelLight from "../assets/icons/x-light.svg";
-import CancelDark from "../assets/icons/x-dark.svg";
+import EditLight from "../../assets/icons/edit-light.svg";
+import EditDark from "../../assets/icons/edit-dark.svg";
+import HeartLight from "../../assets/icons/heart-light.svg";
+import HeartDark from "../../assets/icons/heart-dark.svg";
+import CancelLight from "../../assets/icons/x-light.svg";
+import CancelDark from "../../assets/icons/x-dark.svg";
 
 interface CardItem {
    id: number;

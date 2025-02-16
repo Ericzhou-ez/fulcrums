@@ -6,8 +6,8 @@ import {
    signInWithPopup,
 } from "firebase/auth";
 import "../styles/authentication.css";
-import ThemeToggle from "../components/themeSwitch";
-import Footer from "../components/footer";
+import ThemeToggle from "../components/core/themeSwitch";
+import Footer from "../components/core/footer";
 
 interface SignInPageProps {
    theme: "light" | "dark";

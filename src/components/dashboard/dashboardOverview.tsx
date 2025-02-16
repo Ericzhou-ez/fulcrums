@@ -1,13 +1,12 @@
 import React from "react";
 import { Stack, Box, Typography, Button, Link } from "@mui/material";
 import { Theme } from "@mui/material/styles";
-import DescriptionLight from "../assets/icons/description-light.svg";
-import DescriptionDark from "../assets/icons/description-dark.svg";
-import RecentLight from "../assets/icons/recent-light.svg";
-import RecentDark from "../assets/icons/recent-dark.svg";
-import CardSlider from "./cardSlider";
-import AddLightBtn from "../assets/icons/add-light.svg";
-
+import DescriptionLight from "../../assets/icons/description-light.svg";
+import DescriptionDark from "../../assets/icons/description-dark.svg";
+import RecentLight from "../../assets/icons/recent-light.svg";
+import RecentDark from "../../assets/icons/recent-dark.svg";
+import AddLightBtn from "../../assets/icons/add-light.svg";
+import CardSlider from "../dashboard/cardSlider";
 
 interface DashboardOverviewProps {
    theme: Theme;

@@ -1,13 +1,13 @@
 import React from "react";
 import { Typography } from "@mui/material";
-import ProductCard from "../components/minProductCard";
-import "../styles/RecentProductPage.css";
-import Nav from "../components/nav";
-import Footer from "../components/footer";
+import ProductCard from "../../components/dashboard/minProductCard";
+import "../../styles/RecentProductPage.css";
+import Nav from "../../components/core/nav";
+import Footer from "../../components/core/footer";
 
 // Light/Dark icons for the top bar (optional)
-import ClockLight from "../assets/icons/description-light.svg";
-import ClockDark from "../assets/icons/description-dark.svg";
+import ClockLight from "../../assets/icons/description-light.svg";
+import ClockDark from "../../assets/icons/description-dark.svg";
 
 export interface RecentProductsPageProps {
    signedIn: boolean;
@@ -119,13 +119,12 @@ const RecentProductsPage: React.FC<RecentProductsPageProps> = ({
                      lg: "2.8rem",
                   },
                }}
-               
             >
                最近
             </Typography>
          </div>
 
-         <div className="gradient-divider" ></div>
+         <div className="gradient-divider"></div>
 
          <div className="cards-grid">
             {productList.map((item) => (
