@@ -1,5 +1,5 @@
 import React from "react";
-import ProductCard from "./minProductCard";
+import ProductCard from "./card";
 
 interface CardItem {
    id: number;
@@ -74,7 +74,7 @@ interface CardSliderProp {
 }
 
 const CardSlider: React.FC<CardSliderProp> = ({ isDarkMode, isRecent }) => {
-   const dataToShow = isRecent ? mockData : false;
+   const dataToShow = mockData;
 
    return (
       <div className={dataToShow ? "card-slider" : "cta-data-input"}>

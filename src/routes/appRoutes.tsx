@@ -40,6 +40,11 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                   <SignInPage
                      theme={theme}
                      handleToggleTheme={handleToggleTheme}
+                     user={user}
+                     signedIn={signedIn}
+                     handleSignOut={handleSignOut}
+                     isModalOpen={isModalOpen}
+                     toggleModal={toggleModal}
                   />
                )
             }

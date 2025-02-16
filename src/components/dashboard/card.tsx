@@ -8,10 +8,10 @@ import {
    Stack,
    IconButton,
 } from "@mui/material";
-import EditLight from "../assets/icons/edit-light.svg";
-import EditDark from "../assets/icons/edit-dark.svg";
-import HeartLight from "../assets/icons/heart-light.svg";
-import HeartDark from "../assets/icons/heart-dark.svg";
+import EditLight from "../../assets/icons/edit-light.svg";
+import EditDark from "../../assets/icons/edit-dark.svg";
+import HeartLight from "../../assets/icons/heart-light.svg";
+import HeartDark from "../../assets/icons/heart-dark.svg";
 
 interface CardItem {
    id: number;
@@ -30,7 +30,10 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
    return (
       <Card
          sx={{
-            width: 230,
+            width: {
+               xs: "230px",
+               md: "270px",
+            },
             borderRadius: 5,
             boxShadow: 1,
             overflow: "hidden",

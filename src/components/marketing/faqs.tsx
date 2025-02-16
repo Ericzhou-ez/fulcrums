@@ -36,9 +36,7 @@ const faqs = [
 
 export function Faqs() {
    return (
-      <Box
-         sx={{ bgcolor: "var(--mui-palette-background-level1)", py: "80px" }}
-      >
+      <Box sx={{ bgcolor: "var(--mui-palette-background-level1)", py: "80px" }}>
          <Container maxWidth="md">
             <Stack spacing={4}>
                <Stack maxWidth="700px" sx={{ mx: "auto" }}>
@@ -56,12 +54,32 @@ export function Faqs() {
                         />
                      </Box>
                      <Typography
-                        sx={{ textAlign: "center", fontWeight: "500" }}
+                        sx={{
+                           textAlign: "center",
+                           fontWeight: "500",
+                           fontSize: {
+                              xs: "2.5rem",
+                              sm: "3rem",
+                              md: "3.3rem",
+                              lg: "3.5rem",
+                           },
+                        }}
                         variant="h3"
                      >
                         常见问题
                      </Typography>
-                     <Typography color="text.secondary">
+                     <Typography
+                        color="text.secondary"
+                        textAlign={"center"}
+                        sx={{
+                           fontSize: {
+                              xs: "0.8rem",
+                              sm: "1rem",
+                              md: "1.1rem",
+                              lg: "1.2rem",
+                           },
+                        }}
+                     >
                         如果您有其他问题，请通过
                         <a href="mailto:zhoueric882@gmail.com">
                            <span className="email-mailto">电子邮件</span>
@@ -93,7 +111,7 @@ function Faq({ answer, question }: FaqProps) {
       <Card
          sx={{
             p: 3,
-            transition: "all 0.2s ease",
+            transition: "all 0.3s ease !important",
             borderRadius: "20px",
             boxShadow: "0 4px 12px rgba(0, 0, 0, 0.04)",
          }}
@@ -109,7 +127,15 @@ function Faq({ answer, question }: FaqProps) {
             >
                <Typography
                   variant="subtitle1"
-                  sx={{ fontWeight: "500", fontSize: "1.1rem" }}
+                  sx={{
+                     fontWeight: "500",
+                     fontSize: {
+                        xs: "1rem",
+                        sm: "1.1rem",
+                        md: "1.2rem",
+                        lg: "1.3rem",
+                     },
+                  }}
                >
                   {question}
                </Typography>
@@ -118,9 +144,18 @@ function Faq({ answer, question }: FaqProps) {
             <Collapse in={isExpanded}>
                <Typography
                   color="text.secondary"
-                  sx={{ pt: 3 }}
+                  sx={{
+                     pt: 3,
+                     fontSize: {
+                        xs: "0.8rem",
+                        sm: "0.9rem",
+                        md: "1rem",
+                        lg: "1.1rem",
+                     },
+                     fontWeight: "400",
+                  }}
                   variant="body2"
-                  dangerouslySetInnerHTML={{ __html: answer }} 
+                  dangerouslySetInnerHTML={{ __html: answer }}
                />
             </Collapse>
          </Stack>

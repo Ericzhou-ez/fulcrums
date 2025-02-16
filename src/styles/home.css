@@ -69,6 +69,12 @@
    }
 }
 
+@media (width <= 600px) {
+   .cta-bottom-btn {
+      font-size: 0.7rem !important;
+   }
+}
+
 .animated-border {
    position: relative;
    display: inline-block;
@@ -126,15 +132,11 @@
    background: linear-gradient(90deg, #ff3131, #ff914d) !important;
 }
 
-@media (width <= 600px) {
-   .cta-bottom-btn {
-      font-size: 0.7rem !important;
-   }
-}
-
 .email-mailto {
    text-decoration: underline;
+   text-underline-offset: 0.15em; 
    cursor: pointer;
+   transition: all 0.3s ease;
 }
 
 .email-mailto:hover {

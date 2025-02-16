@@ -1,12 +1,11 @@
 body {
    display: flex;
-   justify-content: space-between;
    place-content: center;
 }
 
 .auth {
    background-color: var(--background-primary-color);
-   padding: 30px 25px;
+   padding: 150px 30px 25px 25px;
    display: flex;
    flex-direction: column;
    font-family: "oxygen", Helvetica, sans-serif;
@@ -14,13 +13,7 @@ body {
    border-radius: 20px;
    width: 84vw;
    max-width: 600px;
-}
-
-.auth h1 {
-   font-size: 2rem;
-   padding: 0 12px;
-   text-align: center;
-   margin-bottom: 50px;
+   margin: 0 auto;
 }
 
 .email-signin-input,

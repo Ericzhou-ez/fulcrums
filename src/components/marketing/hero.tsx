@@ -9,21 +9,22 @@ export default function Hero() {
             align="center"
             sx={{
                fontSize: {
-                  xs: "3.5rem",
-                  sm: "4.5rem",
+                  xs: "4rem",
+                  sm: "4.8rem",
                   md: "6.2rem",
                   lg: "6.5rem",
                },
                fontWeight: 700,
                lineHeight: 1.2,
                color: "text.primary",
-               margin: "0 10px",
+               margin: "0 15px",
                marginBottom: "20px",
-               letterSpacing: "0.1rem",
+               letterSpacing: "0.08rem",
             }}
             className="hero-title"
          >
-            报价到报关<br></br>
+            从报价到<span style={{ whiteSpace: "nowrap" }}>报关</span>
+            <br />
             <span className="clipped-text">一键搞定!</span>
          </Typography>
 
@@ -40,7 +41,7 @@ export default function Hero() {
                fontWeight: "600",
                color: "text.secondary",
                marginBottom: "80px",
-               fontStyle: "italic"
+               fontStyle: "italic",
             }}
             className="hero-h2-description"
          >
@@ -54,7 +55,7 @@ export default function Hero() {
             className="cta-buttons"
             gap="5px"
             marginBottom="50px"
-            sx={{alignItems: "center"}}
+            sx={{ alignItems: "center" }}
          >
             <div className="animated-border">
                <a href="/">

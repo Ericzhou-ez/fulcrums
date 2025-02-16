@@ -6,7 +6,7 @@ import DescriptionDark from "../../assets/icons/description-dark.svg";
 import RecentLight from "../../assets/icons/recent-light.svg";
 import RecentDark from "../../assets/icons/recent-dark.svg";
 import AddLightBtn from "../../assets/icons/add-light.svg";
-import CardSlider from "../dashboard/cardSlider";
+import CardSlider from "./cardSlider";
 
 interface DashboardOverviewProps {
    theme: Theme;

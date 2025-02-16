@@ -6,17 +6,28 @@ import {
    signInWithPopup,
 } from "firebase/auth";
 import "../styles/authentication.css";
-import ThemeToggle from "../components/core/themeSwitch";
 import Footer from "../components/core/footer";
+import Nav from "../components/core/nav";
+import { Typography } from "@mui/material";
 
 interface SignInPageProps {
    theme: "light" | "dark";
    handleToggleTheme: () => void;
+   user: any;
+   signedIn: boolean;
+   handleSignOut: () => void;
+   isModalOpen: boolean;
+   toggleModal: () => void;
 }
 
 const SignInPage: React.FC<SignInPageProps> = ({
    theme,
    handleToggleTheme,
+   user,
+   signedIn,
+   handleSignOut,
+   isModalOpen,
+   toggleModal,
 }) => {
    const [email, setEmail] = useState("");
    const [password, setPassword] = useState("");
@@ -60,8 +71,31 @@ const SignInPage: React.FC<SignInPageProps> = ({
 
    return (
       <React.Fragment>
+         <Nav
+            user={user}
+            signedIn={signedIn}
+            handleSignOut={handleSignOut}
+            isModalOpen={isModalOpen}
+            toggleModal={toggleModal}
+         />
+
          <div className="auth">
-            <h1>{isUserSigningUp ? "创建账户" : "欢迎回来"}</h1>
+            <Typography
+               variant="h1"
+               sx={{
+                  fontWeight: "600",
+                  fontSize: {
+                     xs: "2.8rem",
+                     sm: "3rem",
+                     md: "3.5rem",
+                     lg: "4rem",
+                  },
+                 textAlign: "center",
+                 marginBottom: "50px",
+               }}
+            >
+               {isUserSigningUp ? "创建账户" : "欢迎回来"}
+            </Typography>
 
             <div className="email-signin-input">
                <label>邮箱</label>
@@ -105,9 +139,7 @@ const SignInPage: React.FC<SignInPageProps> = ({
             </button>
          </div>
 
-         <div>
-            <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
-         </div>
+         <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
       </React.Fragment>
    );
 };
