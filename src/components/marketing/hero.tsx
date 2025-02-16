@@ -48,7 +48,7 @@ export default function Hero() {
                   },
                   fontWeight: 700,
                   lineHeight: 1.2,
-                  color: "text.primary",
+                  color: "#fff",
                   margin: "0 15px",
                   marginBottom: "20px",
                   letterSpacing: "0.08rem",
@@ -71,7 +71,7 @@ export default function Hero() {
                      lg: "1.4rem",
                   },
                   fontWeight: "600",
-                  color: "text.secondary",
+                  color: "#fcfcfc",
                   marginBottom: "80px",
                   fontStyle: "italic",
                }}
@@ -120,6 +120,8 @@ export default function Hero() {
                </div>
             </div>
          </div>
+
+         <div className="gradient-glow"></div>
       </div>
    );
 }
