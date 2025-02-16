@@ -19,10 +19,9 @@ interface CardItem {
 interface CardProps {
    item: CardItem;
    isDarkMode: boolean;
-   isRecent: boolean;
 }
 
-export default function ProductCard({ item, isDarkMode, isRecent }: CardProps) {
+export default function ProductCard({ item, isDarkMode }: CardProps) {
    // Pick icons based on dark/light mode
    const editIcon = isDarkMode ? EditDark : EditLight;
    const heartIcon = isDarkMode ? HeartDark : HeartLight;
@@ -64,31 +63,15 @@ export default function ProductCard({ item, isDarkMode, isRecent }: CardProps) {
             >
                <div style={{ display: "flex", marginBottom: "4px" }}>
                   <IconButton size="small">
-                     <img
-                        src={editIcon}
-                        alt="\"
-                        width="18"
-                        height="18"
-                     />
+                     <img src={editIcon} alt="\" width="18" height="18" />
                   </IconButton>
                   <IconButton size="small">
-                     <img
-                        src={heartIcon}
-                        alt="o"
-                        width="18"
-                        height="18"
-                     />
+                     <img src={heartIcon} alt="o" width="18" height="18" />
                   </IconButton>
-                  {isRecent && (
-                     <IconButton size="small">
-                        <img
-                           src={deleteIcon}
-                           alt="x"
-                           width="18"
-                           height="18"
-                        />
-                     </IconButton>
-                  )}
+
+                  <IconButton size="small">
+                     <img src={deleteIcon} alt="x" width="18" height="18" />
+                  </IconButton>
                </div>
                <Typography variant="caption" color="textSecondary">
                   {item.postedTime}

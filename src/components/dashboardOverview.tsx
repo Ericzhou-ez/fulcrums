@@ -54,6 +54,8 @@ export default function DashboardOverview({ theme }: DashboardOverviewProps) {
                </Stack>
             </Stack>
 
+            <div className="gradient-divider"></div>
+
             <Box sx={{ my: 2 }}>
                <Link href="/recent">
                   <Stack

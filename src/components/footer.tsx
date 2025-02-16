@@ -34,7 +34,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
             </div>
 
             <div className="icon-container">
-               <Link to="/">
+               <Link to="/dashboard">
                   <img src={isDark ? HomeDark : HomeLight} alt="Home" />
                </Link>
 

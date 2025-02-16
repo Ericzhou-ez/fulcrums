@@ -122,7 +122,7 @@ const SavedPage: React.FC<SavedPageProps> = ({
             </Typography>
          </div>
 
-         <div className="divider" />
+         <div className="gradient-divider" />
 
          <div className="cards-grid">
             {productList.map((item) => (
@@ -130,7 +130,6 @@ const SavedPage: React.FC<SavedPageProps> = ({
                   key={item.id}
                   item={item}
                   isDarkMode={isDarkMode}
-                  isRecent={false}
                />
             ))}
          </div>

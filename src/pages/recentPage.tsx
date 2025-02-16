@@ -125,11 +125,11 @@ const RecentProductsPage: React.FC<RecentProductsPageProps> = ({
             </Typography>
          </div>
 
-         <div className="divider" />
+         <div className="gradient-divider" ></div>
 
          <div className="cards-grid">
             {productList.map((item) => (
-               <ProductCard key={item.id} item={item} isDarkMode={isDarkMode} isRecent={true} />
+               <ProductCard key={item.id} item={item} isDarkMode={isDarkMode} />
             ))}
          </div>
 
