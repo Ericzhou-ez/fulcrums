@@ -128,6 +128,15 @@
 
 @media (width <= 600px) {
    .cta-bottom-btn {
-   font-size: 0.7rem !important;
+      font-size: 0.7rem !important;
+   }
 }
+
+.email-mailto {
+   text-decoration: underline;
+   cursor: pointer;
+}
+
+.email-mailto:hover {
+   color: #ff914d;
 }

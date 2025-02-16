@@ -4,6 +4,7 @@ import Hero from "../components/hero";
 import Nav from "../components/nav";
 import '../styles/home.css';
 import BottomCTA from "../components/bottomCta";
+import { Faqs } from "./faqs";
 
 interface HomeProps {
    theme: string;
@@ -24,6 +25,8 @@ const Home: React.FC<HomeProps> = ({ theme, handleToggleTheme }) => {
 
             <Hero />
          </div>
+
+         <Faqs />
 
          <BottomCTA theme={theme} />
 
