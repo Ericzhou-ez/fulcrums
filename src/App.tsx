@@ -145,26 +145,24 @@ function App() {
    const handleSignOut = async () => await signOut(auth);
 
    return (
-      <div className="app">
-         <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <BrowserRouter>
-               {loading ? (
-                  <Loading />
-               ) : (
-                  <AppRoutes
-                     signedIn={signedIn}
-                     toggleModal={toggleModal}
-                     user={user}
-                     handleSignOut={handleSignOut}
-                     isModalOpen={isModalOpen}
-                     theme={theme}
-                     handleToggleTheme={handleToggleTheme}
-                  />
-               )}
-            </BrowserRouter>
-         </ThemeProvider>
-      </div>
+      <ThemeProvider theme={theme}>
+         <CssBaseline />
+         <BrowserRouter>
+            {loading ? (
+               <Loading />
+            ) : (
+               <AppRoutes
+                  signedIn={signedIn}
+                  toggleModal={toggleModal}
+                  user={user}
+                  handleSignOut={handleSignOut}
+                  isModalOpen={isModalOpen}
+                  theme={theme}
+                  handleToggleTheme={handleToggleTheme}
+               />
+            )}
+         </BrowserRouter>
+      </ThemeProvider>
    );
 }
 

@@ -128,8 +128,8 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
             component="footer"
             sx={{
                borderTop: "1px solid var(--mui-palette-divider)",
-               pb: 6,
-               pt: { md: 15, xs: 6 },
+               pb: 4,
+               pt: { md: 10, xs: 4 },
             }}
          >
             <Container
@@ -141,7 +141,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                <Grid
                   container
                   spacing={3}
-                  justifyContent={{ xs: "center", md: "flex-start" }}
+                  justifyContent={{ xs: "left", md: "flex-start" }}
                >
                   <Grid
                      item
@@ -150,12 +150,12 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                      xs={12}
                      sx={{
                         order: { xs: 4, md: 1 },
-                        textAlign: { xs: "center", md: "left" },
+                        textAlign: "left",
                      }}
                   >
                      <Stack
                         spacing={1}
-                        alignItems={{ xs: "center", md: "flex-start" }}
+                        alignItems={{ xs: "center", sm: "flex-start" }}
                      >
                         <img
                            style={{ height: "100px", width: "100px" }}
@@ -175,17 +175,17 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                         key={section.key}
                         md={3}
                         sm={4}
-                        xs={12}
+                        xs={6}
                         sx={{
                            order: { md: index + 2, xs: index + 1 },
-                           textAlign: { xs: "center", md: "left" },
+                           textAlign: "left",
                         }}
                      >
                         <Typography
                            color="text.secondary"
                            variant="overline"
                            fontWeight="600"
-                           fontSize="1rem"
+                           sx={{fontSize: {sx: "0.75rem", md: "0.875rem"}}}
                         >
                            {section.title}
                         </Typography>
@@ -196,7 +196,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                               listStyle: "none",
                               m: 0,
                               p: 0,
-                              alignItems: { xs: "center", md: "flex-start" },
+                              alignItems: "flex-start",
                            }}
                         >
                            {section.items.map((item) => (
@@ -258,8 +258,8 @@ function NavItem({ href, external, title }: NavItemProps) {
                   : { component: RouterLink, to: href }
                : {})}
             color="text.primary"
-            variant="subtitle2"
             sx={{
+               fontSize: { xs: "0.68rem !important", md: "0.78rem !important" },
                textDecoration: "none",
                display: "inline-block",
                "&:hover": {

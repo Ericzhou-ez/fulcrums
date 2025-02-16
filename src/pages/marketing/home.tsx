@@ -23,7 +23,9 @@ const Home: React.FC<HomeProps> = ({ theme, handleToggleTheme }) => {
                toggleModal={() => {}}
             />
 
-            <Hero />
+            <div className="custome">
+               <Hero />
+            </div>
          </div>
 
          <Faqs />
