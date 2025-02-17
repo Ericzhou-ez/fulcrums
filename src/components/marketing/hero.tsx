@@ -38,7 +38,7 @@ export default function Hero() {
 
    return (
       <div className="parallax">
-      
+         <div className="light-beam"></div>
          <div
             className="hero-spacer"
             style={{ height: heroHeight, width: "100%" }}
@@ -94,6 +94,7 @@ export default function Hero() {
                   fontWeight: "600",
                   color: "#fcfcfc",
                   marginBottom: "80px",
+                  zIndex: 50,
                   fontStyle: "italic",
                }}
                className="hero-h2-description"
@@ -106,7 +107,7 @@ export default function Hero() {
                direction="row"
                justifyContent="center"
                className="cta-buttons"
-               marginBottom="50px"
+               marginBottom="100px"
                sx={{ alignItems: "center", gap: { xs: "5px", md: "10px" } }}
             >
                <div className="animated-border">
@@ -122,6 +123,7 @@ export default function Hero() {
 
          <div className="hero-video-wrapper">
             <div className="video-glow"></div>
+
             <div
                className="video-container"
                style={{
