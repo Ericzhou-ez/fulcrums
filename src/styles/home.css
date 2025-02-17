@@ -1,9 +1,8 @@
 .home {
    padding-top: 180px;
    overflow: hidden;
-
-   background: #1c0a01;
-   background: linear-gradient(180deg, #360a00, #5e3502);
+   background: #235497;
+   background: linear-gradient(0deg, rgb(22, 63, 121) 0%, rgb(1, 13, 23) 50%);
 }
 
 .hero-title {
@@ -109,7 +108,7 @@
       #ff6666
    );
    z-index: -1;
-   animation: spin 6s linear infinite;
+   animation: spin 2s linear infinite;
    opacity: 0;
    transition: opacity 0.6s ease;
 }
@@ -147,71 +146,68 @@
    color: #ff914d;
 }
 
-/* hero video */
-@keyframes randomGlow {
-   0% {
-      box-shadow: 
-         0 0 60px 30px rgba(255, 165, 0, 0.2),
-         30px 20px 100px 40px rgba(255, 100, 0, 0.15),
-         -20px -25px 80px 35px rgba(255, 200, 100, 0.1);
-   }
-   30% {
-      box-shadow: 
-         0 0 80px 40px rgba(255, 200, 0, 0.25),
-         25px 15px 120px 50px rgba(255, 140, 0, 0.2),
-         -25px -20px 100px 40px rgba(255, 170, 80, 0.15);
-   }
-   60% {
-      box-shadow: 
-         0 0 100px 50px rgba(255, 180, 0, 0.3),
-         -15px 25px 150px 60px rgba(255, 120, 0, 0.2),
-         20px -10px 120px 50px rgba(255, 220, 150, 0.15);
-   }
-   100% {
-      box-shadow: 
-         0 0 60px 50px rgba(255, 165, 0, 0.2),
-         30px 30px 100px 40px rgba(255, 100, 0, 0.15),
-         -20px -25px 80px 35px rgba(255, 200, 100, 0.1);
-   }
-}
-
 .video-container {
    position: relative;
    display: flex;
    justify-content: center;
    align-items: center;
    overflow: hidden;
-   border-top-left-radius: 20px;
-   border-top-right-radius: 20px;
+   border-top-left-radius: 30px;
+   border-top-right-radius: 30px;
    width: 75%;
-   max-width: 1200px;
+   max-width: 1000px;
    margin: 0 auto;
    background: rgba(208, 208, 208, 0.1);
+   border: 1px #b6a0ff solid;
    backdrop-filter: blur(50px);
+   z-index: 10;
+   box-shadow: 0px 0px 30px 10px rgba(110, 91, 169, 0.5);
    /* animation: randomGlow 3s infinite alternate ease-in-out; */
 }
 
+.hero-video-wrapper {
+   position: relative; 
+}
+
+.video-glow {
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%) scale(1.1);
+   width: 100%;
+   height: 120%;
+   z-index: 1;
+   pointer-events: none;
+
+   background: radial-gradient(
+      141.53% 114.68% at 87.46% 55.27%,
+      rgba(154, 124, 255, 0.8) 36.75%,
+      rgba(14, 10, 162, 0) 86%
+   );
+   filter: blur(50px);
+   opacity: 0.6;
+   mix-blend-mode: plus-lighter;
+}
 
 .video-inner {
    overflow: hidden;
-   border-top-left-radius: 20px;
-   border-top-right-radius: 20px;
+   border-top-left-radius: 25px;
+   border-top-right-radius: 25px;
    display: flex;
    justify-content: center;
    align-items: center;
    width: 100%;
-   padding: 0 15px;
-   padding-top: 15px;
-   z-index: 100;
+   padding: 0 22px;
+   padding-top: 20px;
 }
 
 .hero-video {
    width: 100%;
    height: auto;
    display: block;
-   border-top-left-radius: 20px;
-   border-top-right-radius: 20px;
-   z-index: 100;
+   border-top-left-radius: 25px;
+   border-top-right-radius: 25px;
+   z-index: 100 !important;
 }
 
 @media (width <= 500px) {
@@ -232,16 +228,27 @@
 }
 
 .hero {
-   position: relative;
-   z-index: 100;
+   z-index: 1;
+   top: 180px;
+}
+
+@media (width <= 600px) {
+   .hero {
+      top: 150px;
+   }
 }
 
 .gradient-glow {
-   background: linear-gradient(to top, rgba(255, 145, 72, 0.286) 0%, rgba(255,74,28,0) 60%);
+   background: linear-gradient(
+      to top,
+      rgba(255, 162, 100, 0.7) 0%,
+       rgba(14, 10, 162, 0) 90%
+   );
    position: absolute;
    bottom: 0;
    left: 0;
    width: 100%;
-   height: 50%;
-   z-index: 1 !important;
+   height: 55%;
+   z-index: 5 !important;
 }
+

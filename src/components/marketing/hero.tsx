@@ -3,13 +3,25 @@ import React, { useEffect, useState, useRef } from "react";
 
 export default function Hero() {
    const [scrollProgress, setScrollProgress] = useState(0);
+   const [heroHeight, setHeroHeight] = useState(0);
+   const heroRef = useRef<HTMLDivElement>(null);
    const videoRef = useRef<HTMLVideoElement>(null);
+
+   useEffect(() => {
+      const updateHeroHeight = () => {
+         if (heroRef.current) {
+            setHeroHeight(heroRef.current.offsetHeight);
+         }
+      };
+
+      updateHeroHeight();
+      window.addEventListener("resize", updateHeroHeight);
+      return () => window.removeEventListener("resize", updateHeroHeight);
+   }, []);
 
    useEffect(() => {
       const handleScroll = () => {
          const scrollY = window.scrollY;
-         const heroHeight =
-            (document.querySelector(".hero") as HTMLElement)?.offsetHeight || 600;
          const progress = Math.min(scrollY / heroHeight, 1);
          setScrollProgress(progress);
 
@@ -22,17 +34,26 @@ export default function Hero() {
 
       window.addEventListener("scroll", handleScroll);
       return () => window.removeEventListener("scroll", handleScroll);
-   }, []);
+   }, [heroHeight]);
 
    return (
       <div className="parallax">
+      
          <div
+            className="hero-spacer"
+            style={{ height: heroHeight, width: "100%" }}
+         />
+
+         <div
+            ref={heroRef}
             className="hero"
             style={{
-               opacity: 1 - scrollProgress,
-               transform: `scale(${1 - scrollProgress * 0.2})`,
-               transformOrigin: "top center", // Keeps the hero from moving up
-               position: "relative", // Ensures no unexpected shifts
+               opacity: 1 - scrollProgress * 1.2,
+               transform: `scale(${1 - scrollProgress * 0.4})`,
+               transformOrigin: "top center",
+               position: "fixed",
+               width: "100%",
+               zIndex: 10,
             }}
          >
             <Typography
@@ -100,6 +121,7 @@ export default function Hero() {
          </div>
 
          <div className="hero-video-wrapper">
+            <div className="video-glow"></div>
             <div
                className="video-container"
                style={{
@@ -115,7 +137,7 @@ export default function Hero() {
                      loop
                      muted
                      playsInline
-                     poster="/demo/demo-poster.jpg"
+                     poster="/public/demo/demo-poster.png"
                   />
                </div>
             </div>
