@@ -93,7 +93,7 @@ export default function Hero() {
                   },
                   fontWeight: "600",
                   color: "#fcfcfc",
-                  marginBottom: "80px",
+                  marginBottom: { xs: "20px", md: "50px" },
                   zIndex: 50,
                   fontStyle: "italic",
                }}
@@ -107,8 +107,7 @@ export default function Hero() {
                direction="row"
                justifyContent="center"
                className="cta-buttons"
-               marginBottom="100px"
-               sx={{ alignItems: "center", gap: { xs: "5px", md: "10px" } }}
+               sx={{ alignItems: "center", gap: { xs: "5px", md: "10px" }, marginBottom: {xs: "40px", md: "100px"} }}
             >
                <div className="animated-border">
                   <a href="/">

@@ -65,11 +65,11 @@
 
 @media (width <= 600px) {
    .cta-join-button-hero {
-      font-size: 0.9rem;
+      font-size: 0.8rem;
    }
 
    .cta-login {
-      font-size: 0.9rem;
+      font-size: 0.8rem;
    }
 }
 
