@@ -34,7 +34,7 @@
    padding: 8px 23px !important;
    color: var(--text-secondary-color) !important;
    font-weight: 500;
-   font-size: 1.2rem;
+   font-size: 1rem;
    border: none;
    border-radius: 50px !important;
    transition: all 0.3s ease;
@@ -49,7 +49,7 @@
    padding: 7px 18px !important;
    color: var(--background-color) !important;
    font-weight: 500;
-   font-size: 1.2rem;
+   font-size: 1rem;
    border: none;
    border-radius: 50px !important;
    position: relative;
@@ -213,7 +213,7 @@
 
 @media (width <= 500px) {
    .video-container {
-      width: 86%;
+      width: 100%;
    }
    .video-inner {
       padding: 0 10px;
@@ -221,6 +221,17 @@
    }
    .home {
       padding-top: 160px;
+   }
+
+   .hero-video-wrapper {
+      z-index: 10;
+      transform: translateX(15vw);
+   }
+}
+
+@media (width <= 500px) {
+   .video-container {
+      width: 120%;
    }
 }
 
