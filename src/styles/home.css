@@ -186,9 +186,9 @@
    width: 75%;
    max-width: 1200px;
    margin: 0 auto;
-   background: rgba(208, 208, 208, 0.2);
-   backdrop-filter: blur(20px);
-   animation: randomGlow 3s infinite alternate ease-in-out;
+   background: rgba(208, 208, 208, 0.1);
+   backdrop-filter: blur(50px);
+   /* animation: randomGlow 3s infinite alternate ease-in-out; */
 }
 
 
