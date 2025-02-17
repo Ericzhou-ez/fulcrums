@@ -17,7 +17,7 @@ const Home: React.FC<HomeProps> = ({ theme, handleToggleTheme }) => {
       const starContainer = document.querySelector(".star-container");
       if (!starContainer) return;
 
-      const numStars = 160; 
+      const numStars = 100; 
       const stars: HTMLDivElement[] = [];
 
       for (let i = 0; i < numStars; i++) {
