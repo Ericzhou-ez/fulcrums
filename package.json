@@ -16,6 +16,7 @@
     "@react-three/fiber": "^8.17.14",
     "@react-three/postprocessing": "^2.19.1",
     "@theme-toggles/react": "^4.1.0",
+    "@vercel/analytics": "^1.5.0",
     "firebase": "^11.3.0",
     "phosphor-icons": "^1.4.2",
     "phosphor-react": "^1.4.1",

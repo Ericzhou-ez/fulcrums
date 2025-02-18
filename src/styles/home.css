@@ -35,10 +35,10 @@
    pointer-events: none;
 
    background: radial-gradient(
-  141.53% 114.68% at 50% 50%,
-  rgb(255, 114, 6) 35%,
-  rgba(14, 10, 162, 0) 55%
-);
+      141.53% 114.68% at 50% 50%,
+      rgb(255, 114, 6) 35%,
+      rgba(14, 10, 162, 0) 55%
+   );
    filter: blur(50px);
    opacity: 0.7;
    mix-blend-mode: plus-lighter;
@@ -100,24 +100,6 @@
 
 .cta-join-button-hero:hover {
    opacity: 1 !important;
-}
-
-@media (width <= 600px) {
-   .cta-join-button-hero {
-      font-size: 0.8rem;
-      padding: 5px 15px !important;
-   }
-
-   .cta-login {
-      font-size: 0.8rem;
-      padding: 8px 20px !important;
-   }
-}
-
-@media (width <= 600px) {
-   .cta-bottom-btn {
-      font-size: 0.7rem !important;
-   }
 }
 
 .animated-border {
@@ -189,7 +171,9 @@
 }
 
 .hero-video-wrapper {
-   position: relative; 
+   z-index: 10;
+   position: relative;
+   transform: translateY(-2px);
 }
 
 .video-inner {
@@ -220,81 +204,91 @@
    z-index: 100 !important;
 }
 
-@media (width <= 500px) {
-   .video-container {
-      width: 100%;
-   }
-   .video-inner {
-      padding: 0 10px;
-      padding-top: 10px;
-   }
-   .home {
-      padding-top: 160px;
-   }
-
-   .hero-video-wrapper {
-      z-index: 10;
-      transform: translateX(10vw);
-   }
-}
-
-@media (width <= 500px) {
-   .video-container {
-      width: 120%;
-   }
-}
-
 .parallax {
    position: relative;
 }
 
 .hero {
-   z-index: 1;
    top: 180px;
+   z-index: 5;
 }
 
 @media (width <= 600px) {
    .hero {
       top: 150px;
    }
+   .video-inner {
+      padding: 0 10px;
+      padding-top: 10px;
+   }
+   .home {
+      padding-top: 180px;
+   }
+
+   .hero-video-wrapper {
+      z-index: 10;
+      transform: translateX(7vw);
+   }
+
+   .video-container {
+      width: 120%;
+   }
+   .cta-join-button-hero {
+      font-size: 0.8rem;
+      padding: 5px 15px !important;
+   }
+
+   .cta-login {
+      font-size: 0.8rem;
+      padding: 8px 20px !important;
+   }
+   .cta-bottom-btn {
+      font-size: 0.7rem !important;
+   }
 }
 
 .gradient-glow {
    background: linear-gradient(
       to top,
-      rgba(9, 82, 128, 0.8) 0%,
-       rgba(14, 10, 162, 0) 90%
+      rgba(18, 101, 152, 0.8) 0%,
+      rgba(14, 10, 162, 0) 80%
    );
    position: absolute;
    bottom: 0;
    left: 0;
    width: 100%;
    height: 55%;
-   z-index: 5 !important;
+   z-index: 4 !important;
+   pointer-events: none;
 }
 
 .star-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1; 
-    pointer-events: none;
-    overflow: hidden;
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   z-index: 1;
+   pointer-events: none;
+   overflow: hidden;
 }
 
 .star {
-    position: absolute;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
-    opacity: 0;
-    animation: twinkle infinite alternate ease-in-out;
+   position: absolute;
+   background-color: rgba(255, 255, 255, 0.8);
+   border-radius: 50%;
+   opacity: 0;
+   animation: twinkle infinite alternate ease-in-out;
 }
 
 @keyframes twinkle {
-    0% { opacity: 0; }
-    50% { opacity: 0.7; }
-    100% { opacity: 0; }
+   0% {
+      opacity: 0;
+   }
+   50% {
+      opacity: 0.7;
+   }
+   100% {
+      opacity: 0;
+   }
 }
-

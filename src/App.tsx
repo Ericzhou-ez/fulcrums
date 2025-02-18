@@ -15,6 +15,7 @@ import AppRoutes from "./routes/appRoutes";
 import { BrowserRouter } from "react-router";
 import Loading from "./components/core/loading";
 import ScrollToTop from "./components/core/scrollToTop";
+import { Analytics } from "@vercel/analytics/react";
 
 type User = {
    name: string;
@@ -147,6 +148,7 @@ function App() {
 
    return (
       <ThemeProvider theme={theme}>
+         <Analytics />
          <CssBaseline />
          <BrowserRouter>
             <ScrollToTop />
