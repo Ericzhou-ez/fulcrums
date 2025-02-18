@@ -36,6 +36,8 @@ export default function Hero() {
       return () => window.removeEventListener("scroll", handleScroll);
    }, [heroHeight]);
 
+   const computedOpacity = 1.1 - scrollProgress * 1.2;
+
    return (
       <React.Fragment>
          <div className="parallax">
@@ -48,7 +50,8 @@ export default function Hero() {
                ref={heroRef}
                className="hero"
                style={{
-                  opacity: 1.1 - scrollProgress * 1.2,
+                  opacity: computedOpacity < 0 ? 0 : computedOpacity,
+                  display: computedOpacity < 0 ? "none" : "block",
                   transform: `scale(${1 - scrollProgress * 0.4})`,
                   transformOrigin: "top center",
                   position: "fixed",
@@ -99,7 +102,7 @@ export default function Hero() {
                   }}
                   className="hero-h2-description"
                >
-                  BM-Assist 提供从产品采购到报关全流程管理.
+                  Fulcrum 提供从产品采购到报关全流程管理.
                </Typography>
 
                <Stack
@@ -152,10 +155,6 @@ export default function Hero() {
 
             <div className="gradient-glow"></div>
          </div>
-
-         {/* <div className="expect">
-
-         </div> */}
       </React.Fragment>
    );
 }

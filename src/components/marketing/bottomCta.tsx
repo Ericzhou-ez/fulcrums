@@ -124,7 +124,7 @@ export default function BottomCTA({ theme }: BottomCTAProps) {
                            },
                         }}
                      >
-                        无论是海量产品采购, 还是生成 Excel/PDF 报价, BM-Assist
+                        无论是海量产品采购, 还是生成 Excel/PDF 报价, Fulcrum
                         都能为您简化流程, 节省时间.
                      </Typography>
                   </Stack>
@@ -163,7 +163,7 @@ export default function BottomCTA({ theme }: BottomCTAProps) {
                      }}
                   >
                      <Box
-                     className="glass-morph"
+                        className="glass-morph"
                         sx={{
                            bgcolor: "#fa8c48",
                            filter: "blur(50px) !important",

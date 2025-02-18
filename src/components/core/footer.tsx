@@ -114,7 +114,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
             <div className="footer-bottom">
                <div className="footer-logo">
                   <img src={Logo} alt="logo" />
-                  <h6>BM-Assist</h6>
+                  <h6 style={{ color: "rgb(205, 106, 39)" }}>Fulcrum</h6>
                </div>
 
                <div className="icon-container">
@@ -174,7 +174,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                            alt="logo"
                         />
                         <Typography color="text.secondary" variant="caption">
-                           © {year} BATI-MAT DISTRIBUTION LIMITED. <br /> ©{" "}
+                           Powered by BATI-MAT DISTRIBUTION LIMITED.<br /> ©{" "}
                            {year} Eric Zhou.
                         </Typography>
                      </Stack>
@@ -196,7 +196,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                            color="text.secondary"
                            variant="overline"
                            fontWeight="600"
-                           sx={{fontSize: {sx: "0.75rem", md: "0.875rem"}}}
+                           sx={{ fontSize: { sx: "0.75rem", md: "0.875rem" } }}
                         >
                            {section.title}
                         </Typography>

@@ -105,12 +105,12 @@
 @media (width <= 600px) {
    .cta-join-button-hero {
       font-size: 0.8rem;
-      padding: 7px 18px !important;
+      padding: 5px 15px !important;
    }
 
    .cta-login {
       font-size: 0.8rem;
-      padding: 8px 23px !important;
+      padding: 8px 20px !important;
    }
 }
 

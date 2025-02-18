@@ -38,7 +38,7 @@ const Nav: React.FC<NavProps> = ({
                <div className="nav-logo">
                   <img src={Logo} alt="Logo" />
                </div>
-               <p>BM-Assist</p>
+               <p>Fulcrum</p>
             </div>
          </a>
 
