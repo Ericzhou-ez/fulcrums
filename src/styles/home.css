@@ -63,9 +63,10 @@
 }
 
 .clipped-text {
-   background: url(/public/img/heroClippedText.png) center/cover;
+   background-color: white;
+   /* background: url(/public/img/heroClippedText.png) center/cover;
    -webkit-background-clip: text;
-   -webkit-text-fill-color: transparent;
+   -webkit-text-fill-color: transparent; */
 }
 
 .cta-login {
