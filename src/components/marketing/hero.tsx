@@ -94,7 +94,7 @@ export default function Hero() {
                      fontWeight: "600",
                      color: "#fcfcfc",
                      marginBottom: { xs: "20px", md: "50px" },
-                     zIndex: 50,
+                     zIndex: 100,
                      fontStyle: "italic",
                   }}
                   className="hero-h2-description"
