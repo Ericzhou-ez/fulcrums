@@ -139,7 +139,7 @@ export default function Hero() {
                      <video
                         ref={videoRef}
                         className="hero-video"
-                        src="/demo/demo.mp4"
+                        src="https://github.githubassets.com/assets/code-1_desktop-7ab52aea3358.mp4"
                         autoPlay
                         loop
                         muted

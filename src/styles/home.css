@@ -1,4 +1,5 @@
 .home {
+   position: relative;
    padding-top: 180px;
    overflow: hidden;
    background: #235497;
@@ -203,6 +204,13 @@
    padding-top: 20px;
 }
 
+@media (width <= 768px) {
+   .video-inner {
+      padding: 0 10px;
+      padding-top: 12px;
+   }
+}
+
 .hero-video {
    width: 100%;
    height: auto;
@@ -226,7 +234,7 @@
 
    .hero-video-wrapper {
       z-index: 10;
-      transform: translateX(15vw);
+      transform: translateX(10vw);
    }
 }
 
