@@ -114,7 +114,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
             <div className="footer-bottom">
                <div className="footer-logo">
                   <img src={Logo} alt="logo" />
-                  <h6 style={{ color: "rgb(205, 106, 39)" }}>Fulcrum</h6>
+                  <h6>Fulcrum</h6>
                </div>
 
                <div className="icon-container">

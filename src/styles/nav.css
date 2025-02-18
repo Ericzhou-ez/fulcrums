@@ -67,7 +67,7 @@
       margin: 0;
       font-size: 1.2rem;
       font-weight: 700;
-      color: rgb(205, 106, 39);
+      color: var(--text-secondary-color);
    }
 }
 

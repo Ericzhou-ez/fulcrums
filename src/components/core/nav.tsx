@@ -26,7 +26,7 @@ const Nav: React.FC<NavProps> = ({
    return (
       <div className="nav">
          <a
-            href="/dashboard"
+            href={signedIn ? "/dashboard" : "/"}
             style={{
                all: "unset",
                cursor: "pointer",

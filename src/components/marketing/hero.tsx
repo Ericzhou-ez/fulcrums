@@ -51,7 +51,7 @@ export default function Hero() {
                className="hero"
                style={{
                   opacity: computedOpacity < 0 ? 0 : computedOpacity,
-                  display: computedOpacity < 0 ? "none" : "block",
+                  display: computedOpacity < 0.05 ? "none" : "block",
                   transform: `scale(${1 - scrollProgress * 0.4})`,
                   transformOrigin: "top center",
                   position: "fixed",
