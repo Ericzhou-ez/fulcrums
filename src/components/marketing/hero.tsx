@@ -51,12 +51,11 @@ export default function Hero() {
                className="hero"
                style={{
                   opacity: computedOpacity < 0 ? 0 : computedOpacity,
-                  display: computedOpacity < 0.05 ? "none" : "block",
+                  zIndex: computedOpacity < 0.03 ? "-5" : "1",
                   transform: `scale(${1 - scrollProgress * 0.4})`,
                   transformOrigin: "top center",
                   position: "fixed",
                   width: "100%",
-                  zIndex: 10,
                }}
             >
                <Typography
