@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import ThemeSwitch from "../core/themeSwitch";
 import { Link as RouterLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface FooterProps {
    theme: string;
@@ -44,6 +45,16 @@ const groups = [
             key: "signin",
             title: "Login",
             href: "/signin",
+         },
+         {
+            key: "recent",
+            title: "Recent",
+            href: "/recent",
+         },
+         {
+            key: "saved",
+            title: "Saved",
+            href: "/saved",
          },
       ],
    },
@@ -234,6 +245,8 @@ interface NavItemProps {
 }
 
 function NavItem({ href, external, title }: NavItemProps) {
+   const navigate = useNavigate();
+
    return (
       <Stack
          direction="row"
@@ -266,6 +279,13 @@ function NavItem({ href, external, title }: NavItemProps) {
                   textDecoration: "underline !important",
                },
                cursor: "pointer !important",
+            }}
+            onClick={(e) => {
+               if (!external && href) {
+                  e.preventDefault(); 
+                  navigate(href); 
+                  window.scrollTo({ top: 0, behavior: "smooth" }); 
+               }
             }}
          >
             {title}

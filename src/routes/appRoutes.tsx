@@ -8,6 +8,7 @@ import Components from "../pages/components";
 import RecentProductsPage from "../pages/dashboard/recentPage";
 import PrivateRoute from "./privateRoute";
 import SavedPage from "../pages/dashboard/savedPage";
+import ScrollToTop from "../components/core/scrollToTop";
 
 export interface AppRoutesProps {
    signedIn: boolean;
