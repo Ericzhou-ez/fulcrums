@@ -3,7 +3,7 @@
    padding-top: 180px;
    overflow: hidden;
    background: #235497;
-   background: linear-gradient(0deg, rgb(238, 109, 80) 0%, rgb(23, 1, 1) 75%);
+   background: linear-gradient(0deg, rgb(213, 88, 60) 0%, rgb(23, 1, 1) 70%);
 }
 
 .video-container {
@@ -262,7 +262,7 @@
 .gradient-glow {
    background: linear-gradient(
       to top,
-      rgba(4, 68, 108, 0.8) 0%,
+      rgba(9, 82, 128, 0.8) 0%,
        rgba(14, 10, 162, 0) 90%
    );
    position: absolute;
