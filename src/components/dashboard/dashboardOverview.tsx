@@ -22,6 +22,7 @@ export default function DashboardOverview({ theme }: DashboardOverviewProps) {
             px: 3,
             maxWidth: "100vw",
          }}
+         style={{ margin: "0 auto", padding: "0 1rem", maxWidth: "100vw" }}
          className="dashboard-overview"
       >
          <Stack spacing={4}>

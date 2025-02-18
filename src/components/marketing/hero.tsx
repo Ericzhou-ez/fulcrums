@@ -38,7 +38,6 @@ export default function Hero() {
 
    return (
       <div className="parallax">
-         <div className="light-beam"></div>
          <div
             className="hero-spacer"
             style={{ height: heroHeight, width: "100%" }}
@@ -48,7 +47,7 @@ export default function Hero() {
             ref={heroRef}
             className="hero"
             style={{
-               opacity: 1 - scrollProgress * 1.2,
+               opacity: 1.1 - scrollProgress * 1.2,
                transform: `scale(${1 - scrollProgress * 0.4})`,
                transformOrigin: "top center",
                position: "fixed",
@@ -64,8 +63,8 @@ export default function Hero() {
                   fontSize: {
                      xs: "4rem",
                      sm: "4.8rem",
-                     md: "6.2rem",
-                     lg: "6.5rem",
+                     md: "6.5rem",
+                     lg: "7.2rem",
                   },
                   fontWeight: 700,
                   lineHeight: 1.2,
