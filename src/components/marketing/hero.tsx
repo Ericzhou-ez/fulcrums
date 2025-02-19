@@ -1,7 +1,17 @@
 import { Stack, Typography } from "@mui/material";
 import React, { useEffect, useState, useRef } from "react";
 
-export default function Hero() {
+const demoVideo = [
+   "https://github.githubassets.com/assets/code-1_desktop-7ab52aea3358.mp4",
+   "https://github.githubassets.com/assets/secure-1_desktop-5a462aa7c6a6.webp",
+   "https://github.githubassets.com/assets/plan-1_desktop-849e8cffdf0b.webp",
+];
+
+interface HeroProps { 
+   activeIndex: number; 
+}
+
+export default function Hero({ activeIndex = 0 }: HeroProps) {
    const [scrollProgress, setScrollProgress] = useState(0);
    const [heroHeight, setHeroHeight] = useState(0);
    const heroRef = useRef<HTMLDivElement>(null);
@@ -101,7 +111,7 @@ export default function Hero() {
                   }}
                   className="hero-h2-description"
                >
-                  Fulcrum 提供从产品采购到报关全流程管理.
+                  Fulcrums 让产品追踪，报价，报关从未如此轻松.
                </Typography>
 
                <Stack
@@ -138,16 +148,21 @@ export default function Hero() {
                   }}
                >
                   <div className="video-inner">
-                     <video
-                        ref={videoRef}
-                        className="hero-video"
-                        src="https://github.githubassets.com/assets/code-1_desktop-7ab52aea3358.mp4"
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        poster="/public/demo/demo-poster.png"
-                     />
+                     {activeIndex === 0 ? (
+                        <video
+                           ref={videoRef}
+                           className="hero-video"
+                           src={demoVideo[activeIndex]}
+                           autoPlay
+                           loop
+                           muted
+                           playsInline
+                           poster="/public/demo/demo-poster.png"
+                        />
+                     ) : (
+                        <img className="hero-demo-img" src={demoVideo[activeIndex]}
+                        alt="img" />
+                     )}
                   </div>
                </div>
             </div>

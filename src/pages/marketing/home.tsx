@@ -5,7 +5,8 @@ import Nav from "../../components/core/nav";
 import "../../styles/home.css";
 import BottomCTA from "../../components/marketing/bottomCta";
 import { Faqs } from "../../components/marketing/faqs";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import FeatureSelector from "../../components/marketing/featureSelector";
 
 interface HomeProps {
    theme: string;
@@ -17,7 +18,7 @@ const Home: React.FC<HomeProps> = ({ theme, handleToggleTheme }) => {
       const starContainer = document.querySelector(".star-container");
       if (!starContainer) return;
 
-      const numStars = 100; 
+      const numStars = 100;
       const stars: HTMLDivElement[] = [];
 
       for (let i = 0; i < numStars; i++) {
@@ -30,7 +31,7 @@ const Home: React.FC<HomeProps> = ({ theme, handleToggleTheme }) => {
          const size = Math.random() * 3 + 1;
          star.style.width = `${size}px`;
          star.style.height = `${size}px`;
-         const duration = Math.random() * 5 + 3; 
+         const duration = Math.random() * 5 + 3;
          star.style.animationDuration = `${duration}s`;
 
          starContainer.appendChild(star);
@@ -38,9 +39,11 @@ const Home: React.FC<HomeProps> = ({ theme, handleToggleTheme }) => {
       }
 
       return () => {
-         stars.forEach((star) => star.remove()); 
+         stars.forEach((star) => star.remove());
       };
    }, []);
+
+    const [activeIndex, setActiveIndex] = useState(0);
 
    return (
       <React.Fragment>
@@ -55,10 +58,13 @@ const Home: React.FC<HomeProps> = ({ theme, handleToggleTheme }) => {
                toggleModal={() => {}}
             />
 
-            <div className="custome">
-               <Hero />
-            </div>
+            <Hero activeIndex={activeIndex} />
          </div>
+
+         <FeatureSelector
+            activeIndex={activeIndex}
+            setActiveIndex={setActiveIndex}
+         />
 
          <Faqs />
 
