@@ -11,9 +11,11 @@ import FeatureSelector from "../../components/marketing/featureSelector";
 interface HomeProps {
    theme: string;
    handleToggleTheme: () => void;
+   signedIn: boolean;
+   user: any;
 }
 
-const Home: React.FC<HomeProps> = ({ theme, handleToggleTheme }) => {
+const Home: React.FC<HomeProps> = ({ theme, handleToggleTheme, signedIn, user }) => {
    useEffect(() => {
       const starContainer = document.querySelector(".star-container");
       if (!starContainer) return;
@@ -43,7 +45,7 @@ const Home: React.FC<HomeProps> = ({ theme, handleToggleTheme }) => {
       };
    }, []);
 
-    const [activeIndex, setActiveIndex] = useState(0);
+    const [activeIndex, setActiveIndex] = useState(1);
 
    return (
       <React.Fragment>
@@ -51,8 +53,9 @@ const Home: React.FC<HomeProps> = ({ theme, handleToggleTheme }) => {
             <div className="star-container"></div>
 
             <Nav
-               signedIn={false}
-               user={{ name: "", photo: "" }}
+               signedIn={signedIn}
+               user={user}
+               home={true}
                handleSignOut={() => {}}
                isModalOpen={false}
                toggleModal={() => {}}

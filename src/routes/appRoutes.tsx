@@ -76,7 +76,12 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
          <Route
             path="/"
             element={
-               <Home theme={theme} handleToggleTheme={handleToggleTheme} />
+               <Home
+                  theme={theme}
+                  handleToggleTheme={handleToggleTheme}
+                  signedIn={signedIn}
+                  user={user}
+               />
             }
          />
 

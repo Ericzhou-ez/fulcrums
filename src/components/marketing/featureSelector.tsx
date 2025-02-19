@@ -54,8 +54,8 @@ export default function FeatureSelector({ setActiveIndex, activeIndex }: Feature
          className="hero-description"
          sx={{
             fontSize: {
-               xs: "0.6rem",
-               sm: "0.8rem",
+               xs: "0.78rem",
+               sm: "0.88rem",
                lg: "1.15rem",
             },
          }}
@@ -89,8 +89,9 @@ export default function FeatureSelector({ setActiveIndex, activeIndex }: Feature
             variant="subtitle1"
             px={3}
             align="center"
+            color="#a6a5a5"
             sx={{
-               maxWidth: "1000px",
+               maxWidth: { xs: "80%", sm: "50%", md: "40%", xl: "30%" },
                fontSize: "inherit",
             }}
          >

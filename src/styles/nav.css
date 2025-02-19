@@ -47,7 +47,19 @@
 .profile-container {
    display: flex;
    place-content: center;
+   align-items: center;
 }
+
+.profile-container a {
+   all: unset !important;
+   text-decoration: none !important;
+   color: inherit !important;
+   display: contents !important;
+   cursor: pointer !important;
+   width: fit-content !important;
+   height: fit-content !important;
+}
+
 
 .profile-container img {
    height: 30px;

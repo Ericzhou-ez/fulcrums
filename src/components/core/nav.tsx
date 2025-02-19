@@ -14,6 +14,7 @@ interface NavProps {
    handleSignOut: () => void;
    isModalOpen: boolean;
    toggleModal: () => void;
+   home: boolean;
 }
 
 const Nav: React.FC<NavProps> = ({
@@ -22,6 +23,7 @@ const Nav: React.FC<NavProps> = ({
    handleSignOut,
    isModalOpen,
    toggleModal,
+   home,
 }) => {
    return (
       <div className="nav">
@@ -44,17 +46,35 @@ const Nav: React.FC<NavProps> = ({
 
          {signedIn ? (
             <div className="profile-container" style={{ position: "relative" }}>
-               <img
-                  src={user.photo ? user.photo : DefaultProfile}
-                  alt={user.name || "p"}
-                  className="user-photo"
-                  style={{
-                     borderRadius: "50%",
-                     objectFit: "cover",
-                     cursor: "pointer",
-                  }}
-                  onClick={toggleModal}
-               />
+               {home ? (
+                  <a href="/dashboard">
+                     <img
+                        src={user.photo ? user.photo : DefaultProfile}
+                        alt={user.name || "p"}
+                        className="user-photo"
+                        style={{
+                           borderRadius: "50%",
+                           objectFit: "cover",
+                           cursor: "pointer",
+                           width: "35px",
+                           height: "35px",
+                        }}
+                        onClick={toggleModal}
+                     />
+                  </a>
+               ) : (
+                  <img
+                     src={user.photo ? user.photo : DefaultProfile}
+                     alt={user.name || "p"}
+                     className="user-photo"
+                     style={{
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                        cursor: "pointer",
+                     }}
+                     onClick={toggleModal}
+                  />
+               )}
 
                {isModalOpen && (
                   <div
