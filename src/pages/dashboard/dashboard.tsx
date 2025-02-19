@@ -37,6 +37,7 @@ const Dashboard: React.FC<DashboardProps> = ({
       <div className="dashboard">
          <Nav
             user={user}
+            home={false}
             signedIn={signedIn}
             handleSignOut={handleSignOut}
             isModalOpen={isModalOpen}

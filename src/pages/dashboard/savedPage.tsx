@@ -90,6 +90,7 @@ const SavedPage: React.FC<SavedPageProps> = ({
    return (
       <div className="recent-products-page">
          <Nav
+            home={false}
             signedIn={signedIn}
             user={user}
             handleSignOut={handleSignOut}

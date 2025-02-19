@@ -92,6 +92,7 @@ const RecentProductsPage: React.FC<RecentProductsPageProps> = ({
    return (
       <div className="recent-products-page">
          <Nav
+            home={false}
             signedIn={signedIn}
             user={user}
             handleSignOut={handleSignOut}
