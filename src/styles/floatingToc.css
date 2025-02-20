@@ -9,7 +9,7 @@
    border-radius: 40px;
    display: flex;
    justify-content: center;
-   transition: all 0.3s ease-in-out;
+   transition: all 0.4s ease-in-out;
    z-index: 9999;
    overflow-x: hidden;
    padding: 20px 0;
@@ -17,7 +17,7 @@
 }
 
 .floating-toc-nav:hover {
-   width: 220px;
+   width: 300px;
 }
 
 .toc-list {
@@ -55,13 +55,13 @@
 .toc-label {
    display: none;
    margin-left: 10px;
-   padding: 0 10px;
+   padding: 0 8px;
    white-space: nowrap;
    overflow: hidden;
    text-overflow: ellipsis;
    font-size: 0.9rem;
    color: var(--text-secondary-color);
-   width: 150px;
+   width: 230px;
 }
 
 .floating-toc-nav:hover .toc-label {
@@ -87,13 +87,16 @@
 
 @media (max-width: 600px) {
    .floating-toc-nav:hover {
-      width: 220px;
+      width: 250px;
    }
    .floating-toc-nav {
       width: 25px;
    }
    .toc-bar {
       width: 20px;
+   }
+   .toc-label {
+      width: 186px;
    }
    .toc-item {
       padding: 8px 10px;
