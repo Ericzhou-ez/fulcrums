@@ -1,10 +1,10 @@
 import React from "react";
-import { Typography } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 import ProductCard from "../../components/dashboard/minProductCard";
 import "../../styles/RecentProductPage.css";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
-
+import SideNav from "../../components/dashboard/dashboardNav";
 // Light/Dark icons for the top bar (optional)
 import ClockLight from "../../assets/icons/description-light.svg";
 import ClockDark from "../../assets/icons/description-dark.svg";
@@ -17,7 +17,18 @@ export interface RecentProductsPageProps {
    theme: any;
    handleToggleTheme: () => void;
    toggleModal: () => void;
+   navOpen: boolean;
+   setNavOpen: any;
 }
+
+const mainContentStyles = (navOpen: boolean) => ({
+   marginLeft: {
+      xs: 0,
+      md: navOpen ? "240px" : "0px",
+   },
+   transition: "margin-left 0.3s ease",
+   padding: 2,
+});
 
 const RecentProductsPage: React.FC<RecentProductsPageProps> = ({
    signedIn,
@@ -27,6 +38,8 @@ const RecentProductsPage: React.FC<RecentProductsPageProps> = ({
    theme,
    handleToggleTheme,
    toggleModal,
+   navOpen,
+   setNavOpen,
 }) => {
    const isDarkMode = theme === "dark";
 
@@ -90,9 +103,13 @@ const RecentProductsPage: React.FC<RecentProductsPageProps> = ({
    const clockIcon = isDarkMode ? ClockDark : ClockLight;
 
    return (
-      <div className="recent-products-page">
+      <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
+         <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
+
          <Nav
             home={false}
+            navOpen={navOpen}
+            setNavOpen={setNavOpen}
             signedIn={signedIn}
             user={user}
             handleSignOut={handleSignOut}
@@ -134,7 +151,7 @@ const RecentProductsPage: React.FC<RecentProductsPageProps> = ({
          </div>
 
          <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
-      </div>
+      </Box>
    );
 };
 

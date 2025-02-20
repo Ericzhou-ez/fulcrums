@@ -20,7 +20,8 @@ import {
    Link,
    IconButton,
    useTheme,
-   useMediaQuery
+   useMediaQuery,
+   Tooltip
 } from "@mui/material";
 import ThemeSwitch from "../core/themeSwitch";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
@@ -115,16 +116,25 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
 
                <div className="icon-container">
                   <RouterLink to="/dashboard">
-                     <img src={isDark ? HomeDark : HomeLight} alt="Home" />
+                     <Tooltip title="总览">
+                        <img src={isDark ? HomeDark : HomeLight} alt="Home" />
+                     </Tooltip>
                   </RouterLink>
                   <RouterLink to="/recent">
-                     <img
-                        src={isDark ? RecentDark : RecentLight}
-                        alt="Recent"
-                     />
+                     <Tooltip title="最近">
+                        <img
+                           src={isDark ? RecentDark : RecentLight}
+                           alt="Recent"
+                        />
+                     </Tooltip>
                   </RouterLink>
                   <RouterLink to="/saved">
-                     <img src={isDark ? HeartDark : HeartLight} alt="Saved" />
+                     <Tooltip title="已保存">
+                        <img
+                           src={isDark ? HeartDark : HeartLight}
+                           alt="Saved"
+                        />
+                     </Tooltip>
                   </RouterLink>
                </div>
             </div>

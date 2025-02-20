@@ -64,6 +64,8 @@ const Home: React.FC<HomeProps> = ({
                handleSignOut={() => {}}
                isModalOpen={false}
                toggleModal={() => {}}
+               navOpen={false}
+               setNavOpen={null}
             />
 
             <Hero activeIndex={activeIndex} />

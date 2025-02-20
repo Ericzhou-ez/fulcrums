@@ -1,11 +1,12 @@
 import React from "react";
-import { Typography } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 import ProductCard from "../../components/dashboard/minProductCard";
 import "../../styles/RecentProductPage.css";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import ClockLight from "../../assets/icons/recent-light.svg";
 import ClockDark from "../../assets/icons/recent-dark.svg";
+import SideNav from "../../components/dashboard/dashboardNav";
 
 export interface SavedPageProps {
    signedIn: boolean;
@@ -15,7 +16,18 @@ export interface SavedPageProps {
    theme: any;
    handleToggleTheme: () => void;
    toggleModal: () => void;
+   navOpen: boolean;
+   setNavOpen: any;
 }
+
+const mainContentStyles = (navOpen: boolean) => ({
+   marginLeft: {
+      xs: 0,
+      md: navOpen ? "240px" : "0px",
+   },
+   transition: "margin-left 0.3s ease",
+   padding: 2,
+});
 
 const SavedPage: React.FC<SavedPageProps> = ({
    signedIn,
@@ -25,6 +37,8 @@ const SavedPage: React.FC<SavedPageProps> = ({
    theme,
    handleToggleTheme,
    toggleModal,
+   navOpen,
+   setNavOpen,
 }) => {
    const isDarkMode = theme === "dark";
 
@@ -88,7 +102,9 @@ const SavedPage: React.FC<SavedPageProps> = ({
    const clockIcon = isDarkMode ? ClockDark : ClockLight;
 
    return (
-      <div className="recent-products-page">
+      <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
+         <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
+
          <Nav
             home={false}
             signedIn={signedIn}
@@ -96,6 +112,8 @@ const SavedPage: React.FC<SavedPageProps> = ({
             handleSignOut={handleSignOut}
             isModalOpen={isModalOpen}
             toggleModal={toggleModal}
+            navOpen={navOpen}
+            setNavOpen={setNavOpen}
          />
 
          <div className="title-recent">
@@ -132,7 +150,7 @@ const SavedPage: React.FC<SavedPageProps> = ({
          </div>
 
          <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
-      </div>
+      </Box>
    );
 };
 

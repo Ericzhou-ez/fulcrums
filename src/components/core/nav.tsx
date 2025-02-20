@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import "../../styles/nav.css";
 import Logo from "../../assets/images/logo.svg";
 import DefaultProfile from "/src/assets/icons/profile.svg";
-import { Button } from "@mui/material";
+import { Button, IconButton, useTheme, Box, useMediaQuery } from "@mui/material";
 import { Links } from "react-router-dom";
-import { MagnifyingGlass } from "phosphor-react";
+import { MagnifyingGlass, List } from "phosphor-react";
 
 interface NavProps {
    signedIn: boolean;
@@ -16,6 +16,8 @@ interface NavProps {
    isModalOpen: boolean;
    toggleModal: () => void;
    home: boolean;
+   navOpen: boolean;
+   setNavOpen: any;
 }
 
 const Nav: React.FC<NavProps> = ({
@@ -25,9 +27,33 @@ const Nav: React.FC<NavProps> = ({
    isModalOpen,
    toggleModal,
    home,
+   navOpen,
+   setNavOpen,
 }) => {
+   const theme = useTheme();
+   const isDark = theme.palette.mode === "dark";
+   const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
+
    return (
-      <div className={`${home ? "nav" : "nav-dash"}`}>
+      <Box
+         className={
+            isMdUp
+               ? `${home ? "nav" : "nav-dash"} ${navOpen ? "nav-open" : ""}`
+               : `${home ? "nav" : "nav-dash"}`
+         }
+      >
+         <div
+            className="menu"
+            style={{ display: home ? "none" : "flex", placeContent: "center" }}
+         >
+            <IconButton
+               onClick={() => setNavOpen(!navOpen)}
+               style={navOpen ? { display: "none" } : {}}
+            >
+               <List size={26} color={isDark ? "#fff" : "#000"} />
+            </IconButton>
+         </div>
+
          <a
             href={signedIn ? "/dashboard" : "/"}
             style={{
@@ -40,13 +66,13 @@ const Nav: React.FC<NavProps> = ({
                home ? "nav-logo-container" : "nav-logo-container-hidden"
             }
          >
-            <div className="nav-logo">
+            <div className="nav-logo" style={home ? {} : { display: "none" }}>
                <img src={Logo} alt="Logo" />
                <p>Fulcrums</p>
             </div>
          </a>
 
-         {!home && <SearchBar />}
+         {!home && <SearchBar isDark={isDark} />}
 
          {signedIn ? (
             <div className="profile-container" style={{ position: "relative" }}>
@@ -113,13 +139,17 @@ const Nav: React.FC<NavProps> = ({
                </a>
             </div>
          )}
-      </div>
+      </Box>
    );
 };
 
 export default Nav;
 
-function SearchBar() {
+interface SearchBarProps {
+   isDark: boolean;
+}
+
+function SearchBar({ isDark }: SearchBarProps) {
    return (
       <div className="search-bar-container">
          <input
@@ -128,7 +158,7 @@ function SearchBar() {
             className="search-input"
          />
          <button className="search-btn">
-            <MagnifyingGlass size={18} />
+            <MagnifyingGlass size={18} color={isDark ? "#fff" : "#000"} />
          </button>
       </div>
    );

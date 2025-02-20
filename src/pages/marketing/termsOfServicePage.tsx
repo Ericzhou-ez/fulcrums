@@ -50,6 +50,8 @@ function TermsOfServicePage({
             handleSignOut={handleSignOut}
             isModalOpen={isModalOpen}
             home={true}
+            navOpen={false}
+            setNavOpen={null}
          />
 
          <FloatingTocNav sections={TOS_SECTIONS} />
@@ -660,7 +662,13 @@ function TermsOfServicePage({
                      <strong>Fulcrums</strong>
                      <br />
                      Email:{" "}
-                     <a style={{ textDecoration: "underline", cursor: "pointer"}} href="mailto:zhoueric882@gmail.com">
+                     <a
+                        style={{
+                           textDecoration: "underline",
+                           cursor: "pointer",
+                        }}
+                        href="mailto:zhoueric882@gmail.com"
+                     >
                         zhoueric882@gmail.com
                      </a>
                      <br />

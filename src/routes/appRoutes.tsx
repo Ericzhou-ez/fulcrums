@@ -11,6 +11,7 @@ import SavedPage from "../pages/dashboard/savedPage";
 import ScrollToTop from "../components/core/scrollToTop";
 import TermsOfServicePage from "../pages/marketing/termsOfServicePage";
 import PrivacyPolicyPage from "../pages/marketing/privacyPage";
+import { useState } from "react";
 
 export interface AppRoutesProps {
    signedIn: boolean;
@@ -31,6 +32,8 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
    handleToggleTheme,
    toggleModal,
 }) => {
+   const [navOpen, setNavOpen] = useState(true);
+
    return (
       <Routes>
          {/* Route for sign-in */}
@@ -66,6 +69,8 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                      isModalOpen={isModalOpen}
                      theme={theme}
                      handleToggleTheme={handleToggleTheme}
+                     navOpen={navOpen}
+                     setNavOpen={setNavOpen}
                   />
                </PrivateRoute>
             }
@@ -132,6 +137,8 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                      isModalOpen={isModalOpen}
                      theme={theme}
                      handleToggleTheme={handleToggleTheme}
+                     navOpen={navOpen}
+                     setNavOpen={setNavOpen}
                   />
                </PrivateRoute>
             }
@@ -150,6 +157,8 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                      isModalOpen={isModalOpen}
                      theme={theme}
                      handleToggleTheme={handleToggleTheme}
+                     navOpen={navOpen}
+                     setNavOpen={setNavOpen}
                   />
                </PrivateRoute>
             }

@@ -78,6 +78,8 @@ const SignInPage: React.FC<SignInPageProps> = ({
             isModalOpen={isModalOpen}
             toggleModal={toggleModal}
             home={true}
+            navOpen={false}
+            setNavOpen={null}
          />
 
          <div className="auth">
@@ -91,8 +93,8 @@ const SignInPage: React.FC<SignInPageProps> = ({
                      md: "3.5rem",
                      lg: "4rem",
                   },
-                 textAlign: "center",
-                 marginBottom: "50px",
+                  textAlign: "center",
+                  marginBottom: "50px",
                }}
             >
                {isUserSigningUp ? "创建账户" : "欢迎回来"}

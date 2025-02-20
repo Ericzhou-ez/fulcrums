@@ -8,20 +8,24 @@ import RecentDark from "../../assets/icons/recent-dark.svg";
 import AddLightBtn from "../../assets/icons/add-light.svg";
 import CardSlider from "./cardSlider";
 import Footer from "../core/footer";
+import SideNav from "./dashboardNav";
 
 interface DashboardOverviewProps {
    theme: any;
    handleToggleTheme: () => void;
+   navOpen: boolean;
+   setNavOpen: any;
 }
 
-export default function DashboardOverview({ theme, handleToggleTheme }: DashboardOverviewProps) {
+export default function DashboardOverview({ theme, handleToggleTheme, navOpen, setNavOpen }: DashboardOverviewProps) {
    const isDarkMode = theme.palette.mode === "dark";
 
    return (
       <div className="dashboard-overview">
+         <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
+         
          <Box px={2}>
             <Stack spacing={4}>
-               {/* Header section */}
                <Stack direction="row" spacing={3} sx={{ alignItems: "center" }}>
                   <Box style={{ flex: "1 1 auto" }}>
                      <Typography
