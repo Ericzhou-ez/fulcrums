@@ -305,12 +305,12 @@ function NavItem({ href, external, title }: NavItemProps) {
             {...(href
                ? external
                   ? {
-                       component: "a",
+                       component: "a" as "a",
                        href,
                        target: "_blank",
                        rel: "noopener noreferrer",
                     }
-                  : { component: RouterLink, to: href }
+                  : { component: RouterLink as typeof RouterLink, to: href }
                : {})}
             color="text.secondary"
             sx={{
