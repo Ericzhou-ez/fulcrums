@@ -124,7 +124,7 @@ export default function BottomCTA({ theme }: BottomCTAProps) {
                            },
                         }}
                      >
-                        无论是海量产品采购, 还是生成 Excel/PDF 报价, Fulcrum
+                        无论是海量产品采购, 还是生成 Excel/PDF 报价, Fulcrums
                         都能为您简化流程, 节省时间.
                      </Typography>
                   </Stack>

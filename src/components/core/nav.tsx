@@ -40,7 +40,7 @@ const Nav: React.FC<NavProps> = ({
                <div className="nav-logo">
                   <img src={Logo} alt="Logo" />
                </div>
-               <p>Fulcrum</p>
+               <p>Fulcrums</p>
             </div>
          </a>
 

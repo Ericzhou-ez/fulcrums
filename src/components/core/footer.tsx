@@ -42,7 +42,6 @@ const groups = [
    {
       key: "menu",
       title: "Menu",
-      icon: <List size={16} />,
       items: [
          { key: "home", title: "Home", href: "/" },
          { key: "signin", title: "Login", href: "/signin" },
@@ -53,7 +52,6 @@ const groups = [
    {
       key: "legal",
       title: "Legal",
-      icon: <ShieldCheck size={16} />,
       items: [
          { key: "terms", title: "Terms", href: "/terms" },
          { key: "privacy", title: "Privacy", href: "/privacy" },
@@ -68,7 +66,6 @@ const groups = [
    {
       key: "social",
       title: "Socials",
-      icon: <PhoneIncoming size={16} />,
       items: [
          {
             key: "instagram",
@@ -111,7 +108,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
 
             <div className="footer-bottom">
                <div className="footer-logo">
-                  <h6>Fulcrum</h6>
+                  <h6>Fulcrums</h6>
                </div>
 
                <div className="icon-container">
@@ -182,8 +179,9 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                               alignItems: "center",
                               cursor: "pointer",
                               borderBottom:
-                                 "1px solid var(--mui-palette-divider)",
+                                 "2px solid var(--background-secondary-color)",
                               marginBottom: "8px",
+                              paddingBottom: "3px",
                            }}
                         >
                            <Typography
@@ -195,7 +193,6 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                                  gap: "4px",
                               }}
                            >
-                              {section.icon}
                               {section.title}
                            </Typography>
                            <IconButton
@@ -223,7 +220,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                               },
                            }}
                            style={{
-                              paddingLeft: "22px",
+                              paddingLeft: "0px",
                            }}
                         >
                            <Typography

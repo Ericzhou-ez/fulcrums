@@ -3,8 +3,8 @@ import React, { useEffect, useState, useRef } from "react";
 
 const demoVideo = [
    "https://github.githubassets.com/assets/code-1_desktop-7ab52aea3358.mp4",
-   "https://github.githubassets.com/assets/secure-1_desktop-5a462aa7c6a6.webp",
    "https://github.githubassets.com/assets/plan-1_desktop-849e8cffdf0b.webp",
+   "https://github.githubassets.com/assets/secure-1_desktop-5a462aa7c6a6.webp",
 ];
 
 interface HeroProps { 
