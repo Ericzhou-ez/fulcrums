@@ -17,6 +17,8 @@ import {
    Stack,
    Link,
    IconButton,
+   SxProps,
+   Theme,
 } from "@mui/material";
 import ThemeSwitch from "../core/themeSwitch";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
@@ -33,6 +35,15 @@ interface FooterProps {
    theme: string;
    handleToggleTheme: () => void;
 }
+
+const toggleBoxStyles: SxProps<Theme> = {
+   display: { xs: "flex", sm: "none" },
+   justifyContent: "space-between",
+   alignItems: "center",
+   cursor: "pointer",
+   borderBottom: "1px solid var(--mui-palette-divider)",
+   mb: 1,
+};
 
 const groups = [
    {
@@ -91,9 +102,7 @@ const groups = [
 const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
    const isDark = theme === "dark";
    const year = new Date().getFullYear();
-   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>(
-      {}
-   );
+   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
    const toggleSection = (key: string) => {
       setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -170,15 +179,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                         sx={{ textAlign: "left" }}
                      >
                         <Box
-                           sx={{
-                              display: { xs: "flex", sm: "none" },
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                              cursor: "pointer",
-                              borderBottom:
-                                 "1px solid var(--mui-palette-divider)",
-                              mb: 1,
-                           }}
+                           sx={toggleBoxStyles}
                            onClick={() => toggleSection(section.key)}
                         >
                            <Typography
@@ -204,7 +205,6 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                               )}
                            </IconButton>
                         </Box>
-
                         <Stack
                            component="ul"
                            spacing={0.8}
@@ -301,35 +301,46 @@ function NavItem({ href, external, title }: NavItemProps) {
             gap: 1,
          }}
       >
-         <Link
-            {...(href
-               ? external
-                  ? {
-                       component: "a" as "a",
-                       href,
-                       target: "_blank",
-                       rel: "noopener noreferrer",
-                    }
-                  : { component: RouterLink as typeof RouterLink, to: href }
-               : {})}
-            color="text.secondary"
-            sx={{
-               fontSize: { xs: "0.8rem !important", sm: "0.9rem !important" },
-               textDecoration: "none",
-               display: "inline-block",
-               "&:hover": { textDecoration: "underline !important" },
-               cursor: "pointer !important",
-            }}
-            onClick={(e) => {
-               if (!external && href) {
-                  e.preventDefault();
-                  navigate(href);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-               }
-            }}
-         >
-            {title}
-         </Link>
+         {external ? (
+            <Link
+               component="a"
+               href={href}
+               target="_blank"
+               rel="noopener noreferrer"
+               color="text.secondary"
+               sx={{
+                  fontSize: { xs: "0.8rem !important", sm: "0.9rem !important" },
+                  textDecoration: "none",
+                  display: "inline-block",
+                  "&:hover": { textDecoration: "underline !important" },
+                  cursor: "pointer !important",
+               }}
+            >
+               {title}
+            </Link>
+         ) : (
+            <Link
+               component={RouterLink}
+               to={href || ""}
+               color="text.secondary"
+               sx={{
+                  fontSize: { xs: "0.8rem !important", sm: "0.9rem !important" },
+                  textDecoration: "none",
+                  display: "inline-block",
+                  "&:hover": { textDecoration: "underline !important" },
+                  cursor: "pointer !important",
+               }}
+               onClick={(e) => {
+                  if (href) {
+                     e.preventDefault();
+                     navigate(href);
+                     window.scrollTo({ top: 0, behavior: "smooth" });
+                  }
+               }}
+            >
+               {title}
+            </Link>
+         )}
       </Stack>
    );
 }
