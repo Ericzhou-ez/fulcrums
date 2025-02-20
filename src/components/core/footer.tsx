@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import "@theme-toggles/react/css/Classic.css";
 import "../../styles/footer.css";
 import HomeLight from "../../assets/icons/home-light.svg";
@@ -16,10 +16,18 @@ import {
    Grid,
    Stack,
    Link,
+   IconButton,
 } from "@mui/material";
 import ThemeSwitch from "../core/themeSwitch";
-import { Link as RouterLink } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import {
+   CaretDown,
+   CaretUp,
+   List,
+   ShieldCheck,
+   PhoneIncoming,
+} from "phosphor-react";
+import { blueGrey } from "@mui/material/colors";
 
 interface FooterProps {
    theme: string;
@@ -30,44 +38,21 @@ const groups = [
    {
       key: "menu",
       title: "Menu",
+      icon: <List size={16} />,
       items: [
-         {
-            key: "Home",
-            title: "Home",
-            href: "/",
-         },
-         {
-            key: "dashboard",
-            title: "Dashboard",
-            href: "/dashboard",
-         },
-         {
-            key: "signin",
-            title: "Login",
-            href: "/signin",
-         },
-         {
-            key: "recent",
-            title: "Recent",
-            href: "/recent",
-         },
-         {
-            key: "saved",
-            title: "Saved",
-            href: "/saved",
-         },
+         { key: "home", title: "Home", href: "/" },
+         { key: "signin", title: "Login", href: "/signin" },
+         { key: "recent", title: "Recent", href: "/recent" },
+         { key: "saved", title: "Saved", href: "/saved" },
       ],
    },
    {
       key: "legal",
       title: "Legal",
+      icon: <ShieldCheck size={16} />,
       items: [
-         {
-            key: "terms-and-conditions",
-            title: "Terms & Conditions",
-            href: "/terms",
-         },
-         { key: "privacy-policy", title: "Privacy Policy", href: "/privacy" },
+         { key: "terms", title: "Terms", href: "/terms" },
+         { key: "privacy", title: "Privacy", href: "/privacy" },
          {
             key: "contact",
             title: "Contact",
@@ -79,6 +64,7 @@ const groups = [
    {
       key: "social",
       title: "Socials",
+      icon: <PhoneIncoming size={16} />,
       items: [
          {
             key: "instagram",
@@ -105,6 +91,13 @@ const groups = [
 const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
    const isDark = theme === "dark";
    const year = new Date().getFullYear();
+   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>(
+      {}
+   );
+
+   const toggleSection = (key: string) => {
+      setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
+   };
 
    return (
       <footer>
@@ -113,7 +106,6 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
 
             <div className="footer-bottom">
                <div className="footer-logo">
-                  <img src={Logo} alt="logo" />
                   <h6>Fulcrum</h6>
                </div>
 
@@ -121,47 +113,36 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                   <RouterLink to="/dashboard">
                      <img src={isDark ? HomeDark : HomeLight} alt="Home" />
                   </RouterLink>
-
                   <RouterLink to="/recent">
                      <img
                         src={isDark ? RecentDark : RecentLight}
                         alt="Recent"
                      />
                   </RouterLink>
-
                   <RouterLink to="/saved">
                      <img src={isDark ? HeartDark : HeartLight} alt="Saved" />
                   </RouterLink>
                </div>
             </div>
          </div>
+
          <Box
             component="footer"
             sx={{
                borderTop: "1px solid var(--mui-palette-divider)",
                pb: 4,
-               pt: { md: 10, xs: 4 },
+               pt: { sm: 0, xs: 2 },
             }}
          >
-            <Container
-               maxWidth="lg"
-               sx={{
-                  justifyContent: { xs: "center", md: "left" },
-               }}
-            >
-               <Grid
-                  container
-                  spacing={3}
-                  justifyContent={{ xs: "left", md: "flex-start" }}
-               >
+            <Container maxWidth={false}>
+               <Grid container spacing={{ sx: 2, sm: 3 }}>
                   <Grid
                      item
-                     md={3}
-                     sm={4}
                      xs={12}
+                     sm={3}
                      sx={{
-                        order: { xs: 4, md: 1 },
                         textAlign: "left",
+                        display: { xs: "none", sm: "flex" },
                      }}
                   >
                      <Stack
@@ -169,53 +150,117 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                         alignItems={{ xs: "center", sm: "flex-start" }}
                      >
                         <img
-                           style={{ height: "100px", width: "100px" }}
+                           style={{ height: "60px", width: "60px" }}
                            src={Logo}
                            alt="logo"
                         />
                         <Typography color="text.secondary" variant="caption">
-                           Powered by BATI-MAT DISTRIBUTION LIMITED.<br /> ©{" "}
-                           {year} Eric Zhou.
+                           Powered by BATI-MAT DISTRIBUTION LIMITED.
+                           <br />© {year} Fulcrums, Eric Zhou.
                         </Typography>
                      </Stack>
                   </Grid>
 
-                  {groups.map((section, index) => (
+                  {groups.map((section) => (
                      <Grid
                         item
                         key={section.key}
-                        md={3}
-                        sm={4}
-                        xs={6}
-                        sx={{
-                           order: { md: index + 2, xs: index + 1 },
-                           textAlign: "left",
-                        }}
+                        xs={12}
+                        sm={3}
+                        sx={{ textAlign: "left" }}
                      >
-                        <Typography
-                           color="text.secondary"
-                           variant="overline"
-                           fontWeight="600"
-                           sx={{ fontSize: { sx: "0.75rem", md: "0.875rem" } }}
+                        <Box
+                           sx={{
+                              display: { xs: "flex", sm: "none" },
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              cursor: "pointer",
+                              borderBottom:
+                                 "1px solid var(--mui-palette-divider)",
+                              mb: 1,
+                           }}
+                           onClick={() => toggleSection(section.key)}
                         >
-                           {section.title}
-                        </Typography>
+                           <Typography
+                              color="text.secondary"
+                              fontWeight="700"
+                              style={{
+                                 display: "flex",
+                                 alignItems: "center",
+                                 gap: "4px",
+                              }}
+                           >
+                              {section.icon}
+                              {section.title}
+                           </Typography>
+                           <IconButton
+                              size="small"
+                              style={{ transition: "all 0.3s ease-in-out" }}
+                           >
+                              {openSections[section.key] ? (
+                                 <CaretUp size={16} />
+                              ) : (
+                                 <CaretDown size={16} />
+                              )}
+                           </IconButton>
+                        </Box>
+
                         <Stack
                            component="ul"
-                           spacing={1}
+                           spacing={0.8}
                            sx={{
                               listStyle: "none",
-                              m: 0,
-                              p: 0,
-                              alignItems: "flex-start",
+                              display: {
+                                 xs: openSections[section.key]
+                                    ? "block"
+                                    : "none",
+                                 sm: "flex",
+                              },
+                           }}
+                           style={{
+                              paddingLeft: "22px",
                            }}
                         >
+                           <Typography
+                              fontWeight="600"
+                              sx={{
+                                 display: { xs: "none", sm: "inline-block" },
+                              }}
+                           >
+                              {section.title}
+                           </Typography>
                            {section.items.map((item) => (
                               <NavItem {...item} key={item.key} />
                            ))}
                         </Stack>
                      </Grid>
                   ))}
+
+                  <Grid
+                     item
+                     justifyContent="center"
+                     xs={12}
+                     sm={3}
+                     sx={{
+                        textAlign: "center",
+                        display: { xs: "flex", sm: "none" },
+                     }}
+                  >
+                     <Stack
+                        spacing={1}
+                        alignItems={{ xs: "center", sm: "flex-start" }}
+                     >
+                        <img
+                           style={{ height: "60px", width: "60px" }}
+                           src={Logo}
+                           alt="logo"
+                        />
+                        <Typography color="text.secondary" variant="caption">
+                           Powered by BATI-MAT DISTRIBUTION LIMITED.
+                           <br />© {year} Eric Zhou.
+                        </Typography>
+                     </Stack>
+                  </Grid>
                </Grid>
 
                <Divider sx={{ my: 3 }} />
@@ -250,15 +295,12 @@ function NavItem({ href, external, title }: NavItemProps) {
    return (
       <Stack
          direction="row"
-         sx={{ alignItems: "center", justifyContent: "flex-start", gap: 1 }}
+         sx={{
+            alignItems: "center",
+            justifyContent: "flex-start",
+            gap: 1,
+         }}
       >
-         <Box
-            sx={{
-               bgcolor: "var(--secondary-color)",
-               height: "5px",
-               width: "15px",
-            }}
-         />
          <Link
             {...(href
                ? external
@@ -270,21 +312,19 @@ function NavItem({ href, external, title }: NavItemProps) {
                     }
                   : { component: RouterLink, to: href }
                : {})}
-            color="text.primary"
+            color="text.secondary"
             sx={{
-               fontSize: { xs: "0.68rem !important", md: "0.78rem !important" },
+               fontSize: { xs: "0.8rem !important", sm: "0.9rem !important" },
                textDecoration: "none",
                display: "inline-block",
-               "&:hover": {
-                  textDecoration: "underline !important",
-               },
+               "&:hover": { textDecoration: "underline !important" },
                cursor: "pointer !important",
             }}
             onClick={(e) => {
                if (!external && href) {
-                  e.preventDefault(); 
-                  navigate(href); 
-                  window.scrollTo({ top: 0, behavior: "smooth" }); 
+                  e.preventDefault();
+                  navigate(href);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
                }
             }}
          >

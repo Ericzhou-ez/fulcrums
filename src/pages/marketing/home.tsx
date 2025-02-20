@@ -7,6 +7,7 @@ import BottomCTA from "../../components/marketing/bottomCta";
 import { Faqs } from "../../components/marketing/faqs";
 import { useEffect, useState } from "react";
 import FeatureSelector from "../../components/marketing/featureSelector";
+import { Canvas } from "react-three-fiber";
 
 interface HomeProps {
    theme: string;
@@ -15,7 +16,12 @@ interface HomeProps {
    user: any;
 }
 
-const Home: React.FC<HomeProps> = ({ theme, handleToggleTheme, signedIn, user }) => {
+const Home: React.FC<HomeProps> = ({
+   theme,
+   handleToggleTheme,
+   signedIn,
+   user,
+}) => {
    useEffect(() => {
       const starContainer = document.querySelector(".star-container");
       if (!starContainer) return;
@@ -45,7 +51,7 @@ const Home: React.FC<HomeProps> = ({ theme, handleToggleTheme, signedIn, user })
       };
    }, []);
 
-    const [activeIndex, setActiveIndex] = useState(1);
+   const [activeIndex, setActiveIndex] = useState(1);
 
    return (
       <React.Fragment>
@@ -72,7 +78,6 @@ const Home: React.FC<HomeProps> = ({ theme, handleToggleTheme, signedIn, user })
          <Faqs />
 
          <BottomCTA theme={theme} />
-
          <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
       </React.Fragment>
    );

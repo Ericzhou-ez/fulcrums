@@ -2,6 +2,7 @@
    position: fixed;
    top: 50%;
    right: 0;
+   max-height: 800px;
    transform: translateY(-50%);
    width: 80px;
    background-color: var(--background-primary-color);
@@ -13,7 +14,7 @@
    z-index: 9999;
    overflow-x: hidden;
    padding: 20px 0;
-   overflow-y: auto;
+   overflow-y: scroll;
 }
 
 .floating-toc-nav:hover {
@@ -62,6 +63,7 @@
    font-size: 0.9rem;
    color: var(--text-secondary-color);
    width: 230px;
+   transition: all 0.25s ease-in-out;
 }
 
 .floating-toc-nav:hover .toc-label {
