@@ -1,3 +1,5 @@
+// @ts-ignore
+
 import React, { useState } from "react";
 import "@theme-toggles/react/css/Classic.css";
 import "../../styles/footer.css";
@@ -17,8 +19,8 @@ import {
    Stack,
    Link,
    IconButton,
-   SxProps,
-   Theme,
+   useTheme,
+   useMediaQuery
 } from "@mui/material";
 import ThemeSwitch from "../core/themeSwitch";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
@@ -35,15 +37,6 @@ interface FooterProps {
    theme: string;
    handleToggleTheme: () => void;
 }
-
-const toggleBoxStyles: SxProps<Theme> = {
-   display: { xs: "flex", sm: "none" },
-   justifyContent: "space-between",
-   alignItems: "center",
-   cursor: "pointer",
-   borderBottom: "1px solid var(--mui-palette-divider)",
-   mb: 1,
-};
 
 const groups = [
    {
@@ -102,7 +95,10 @@ const groups = [
 const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
    const isDark = theme === "dark";
    const year = new Date().getFullYear();
-   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({});
+   const muiTheme = useTheme();
+   const isMobile = useMediaQuery(muiTheme.breakpoints.down("sm"));
+
 
    const toggleSection = (key: string) => {
       setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -178,9 +174,17 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                         sm={3}
                         sx={{ textAlign: "left" }}
                      >
-                        <Box
-                           sx={toggleBoxStyles}
+                        <div
                            onClick={() => toggleSection(section.key)}
+                           style={{
+                              display: isMobile ? "flex" : "none", 
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              cursor: "pointer",
+                              borderBottom:
+                                 "1px solid var(--mui-palette-divider)",
+                              marginBottom: "8px",
+                           }}
                         >
                            <Typography
                               color="text.secondary"
@@ -204,7 +208,8 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                                  <CaretDown size={16} />
                               )}
                            </IconButton>
-                        </Box>
+                        </div>
+
                         <Stack
                            component="ul"
                            spacing={0.8}

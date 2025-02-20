@@ -7,7 +7,6 @@ import BottomCTA from "../../components/marketing/bottomCta";
 import { Faqs } from "../../components/marketing/faqs";
 import { useEffect, useState } from "react";
 import FeatureSelector from "../../components/marketing/featureSelector";
-import { Canvas } from "react-three-fiber";
 
 interface HomeProps {
    theme: string;

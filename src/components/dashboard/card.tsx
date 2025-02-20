@@ -63,8 +63,8 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
                {item.title}
             </Typography>
 
-            <Box
-               sx={{
+            <div
+               style={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
@@ -102,7 +102,7 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
                      )}
                   </IconButton>
                </Stack>
-            </Box>
+            </div>
          </CardContent>
       </Card>
    );

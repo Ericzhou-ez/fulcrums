@@ -1,37 +1,32 @@
 {
-  "name": "bm-assist",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@emotion/react": "^11.10.0",
-    "@emotion/styled": "^11.10.0",
-    "@mui/material": "^5.11.0",
-    "@react-three/drei": "^9.121.5",
-    "@react-three/fiber": "^8.17.14",
-    "@react-three/postprocessing": "^2.19.1",
-    "@theme-toggles/react": "^4.1.0",
-    "@vercel/analytics": "^1.5.0",
-    "firebase": "^11.3.0",
-    "phosphor-icons": "^1.4.2",
-    "phosphor-react": "^1.4.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router": "^7.1.5",
-    "react-router-dom": "^7.1.5",
-    "three": "^0.173.0"
-  },
-  "devDependencies": {
-    "@types/react": "^18.0.26",
-    "@types/react-dom": "^18.0.9",
-    "@vitejs/plugin-react-swc": "^3.0.0",
-    "typescript": "^4.9.3",
-    "vite": "^4.0.0",
-    "vite-plugin-svgr": "^4.3.0"
-  }
+   "name": "fulcrums",
+   "private": true,
+   "version": "0.0.0",
+   "type": "module",
+   "scripts": {
+      "dev": "vite",
+      "build": "tsc && vite build",
+      "preview": "vite preview"
+   },
+   "dependencies": {
+      "@emotion/react": "^11.10.0",
+      "@emotion/styled": "11.10.0",
+      "@mui/material": "^5.11.0",
+      "@theme-toggles/react": "^4.1.0",
+      "@vercel/analytics": "^1.5.0",
+      "firebase": "^11.3.0",
+      "phosphor-react": "^1.4.1",
+      "react": "^18.2.0",
+      "react-dom": "^18.2.0",
+      "react-router": "^7.1.5",
+      "react-router-dom": "^7.1.5"
+   },
+   "devDependencies": {
+      "@types/react": "^18.0.26",
+      "@types/react-dom": "^18.0.9",
+      "@vitejs/plugin-react-swc": "^3.0.0",
+      "typescript": "4.9.3",
+      "vite": "^4.0.0",
+      "vite-plugin-svgr": "^4.3.0"
+   }
 }
