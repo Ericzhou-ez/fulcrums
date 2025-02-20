@@ -44,9 +44,12 @@ const Dashboard: React.FC<DashboardProps> = ({
             toggleModal={toggleModal}
          />
 
-         <DashboardOverview theme={theme} />
+         <DashboardOverview
+            theme={theme}
+            handleToggleTheme={handleToggleTheme}
+         />
 
-         <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
+         
       </div>
    );
 };

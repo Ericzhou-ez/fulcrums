@@ -7,17 +7,19 @@ import RecentLight from "../../assets/icons/recent-light.svg";
 import RecentDark from "../../assets/icons/recent-dark.svg";
 import AddLightBtn from "../../assets/icons/add-light.svg";
 import CardSlider from "./cardSlider";
+import Footer from "../core/footer";
 
 interface DashboardOverviewProps {
-   theme: Theme;
+   theme: any;
+   handleToggleTheme: () => void;
 }
 
-export default function DashboardOverview({ theme }: DashboardOverviewProps) {
+export default function DashboardOverview({ theme, handleToggleTheme }: DashboardOverviewProps) {
    const isDarkMode = theme.palette.mode === "dark";
 
    return (
       <div className="dashboard-overview">
-         <Box px={3}>
+         <Box px={2}>
             <Stack spacing={4}>
                {/* Header section */}
                <Stack direction="row" spacing={3} sx={{ alignItems: "center" }}>
@@ -121,6 +123,8 @@ export default function DashboardOverview({ theme }: DashboardOverviewProps) {
                <img src={AddLightBtn} alt="+" />
             </button>
          </Box>
+
+         <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
       </div>
    );
 }
