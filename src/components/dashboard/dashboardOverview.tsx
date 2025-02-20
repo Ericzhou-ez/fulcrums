@@ -39,14 +39,14 @@ export default function DashboardOverview({ theme, handleToggleTheme }: Dashboar
                         概括
                      </Typography>
                   </Box>
-                  <Stack spacing={2} direction="column">
+                  {/* <Stack spacing={2} direction="column">
                      <Button variant="contained" className="excel-button">
                         导出为Excel
                      </Button>
                      <Button variant="contained" className="pdf-button">
                         导出为PDF
                      </Button>
-                  </Stack>
+                  </Stack> */}
                </Stack>
 
                <div className="gradient-divider"></div>

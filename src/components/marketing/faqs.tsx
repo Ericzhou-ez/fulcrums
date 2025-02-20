@@ -32,14 +32,12 @@ const faqs = [
    },
 ];
 
-
-
 export function Faqs() {
    return (
       <Box sx={{ bgcolor: "var(--mui-palette-background-level1)", py: "80px" }}>
          <Container maxWidth="md">
-            <Stack spacing={4}>
-               <Stack maxWidth="700px" sx={{ mx: "auto" }}>
+            <Stack spacing={4} alignItems="center">
+               <Stack maxWidth="700px">
                   <Stack spacing={2}>
                      <Box sx={{ display: "flex", justifyContent: "center" }}>
                         <Chip
@@ -130,10 +128,8 @@ function Faq({ answer, question }: FaqProps) {
                   sx={{
                      fontWeight: "500",
                      fontSize: {
-                        xs: "1rem",
-                        sm: "1.1rem",
-                        md: "1.2rem",
-                        lg: "1.3rem",
+                        xs: "0.9rem",
+                        md: "1.1rem",
                      },
                   }}
                >
@@ -148,11 +144,10 @@ function Faq({ answer, question }: FaqProps) {
                      pt: 3,
                      fontSize: {
                         xs: "0.8rem",
-                        sm: "0.9rem",
                         md: "1rem",
-                        lg: "1.1rem",
                      },
                      fontWeight: "400",
+                     lineHeight: "1.4rem"
                   }}
                   variant="body2"
                   dangerouslySetInnerHTML={{ __html: answer }}
@@ -162,4 +157,3 @@ function Faq({ answer, question }: FaqProps) {
       </Card>
    );
 }
-

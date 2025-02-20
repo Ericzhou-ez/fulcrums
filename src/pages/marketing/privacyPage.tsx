@@ -46,7 +46,7 @@ function PrivacyPolicyPage({
             user={user}
             handleSignOut={handleSignOut}
             isModalOpen={isModalOpen}
-            home={false}
+            home={true}
          />
 
          <FloatingTocNav sections={PRIVACY_SECTIONS} />

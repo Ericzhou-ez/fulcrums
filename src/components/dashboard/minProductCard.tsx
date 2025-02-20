@@ -63,9 +63,6 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
             >
                <div style={{ display: "flex", marginBottom: "4px" }}>
                   <IconButton size="small">
-                     <img src={editIcon} alt="\" width="18" height="18" />
-                  </IconButton>
-                  <IconButton size="small">
                      <img src={heartIcon} alt="o" width="18" height="18" />
                   </IconButton>
 

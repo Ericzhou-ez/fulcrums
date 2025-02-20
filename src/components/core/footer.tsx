@@ -108,7 +108,9 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
 
             <div className="footer-bottom">
                <div className="footer-logo">
-                  <h6>Fulcrums</h6>
+                  <a href="/">
+                     <h6>Fulcrums</h6>
+                  </a>
                </div>
 
                <div className="icon-container">
@@ -174,7 +176,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                         <div
                            onClick={() => toggleSection(section.key)}
                            style={{
-                              display: isMobile ? "flex" : "none", 
+                              display: isMobile ? "flex" : "none",
                               justifyContent: "space-between",
                               alignItems: "center",
                               cursor: "pointer",

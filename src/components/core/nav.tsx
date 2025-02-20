@@ -4,6 +4,7 @@ import Logo from "../../assets/images/logo.svg";
 import DefaultProfile from "/src/assets/icons/profile.svg";
 import { Button } from "@mui/material";
 import { Links } from "react-router-dom";
+import { MagnifyingGlass } from "phosphor-react";
 
 interface NavProps {
    signedIn: boolean;
@@ -26,7 +27,7 @@ const Nav: React.FC<NavProps> = ({
    home,
 }) => {
    return (
-      <div className="nav">
+      <div className={`${home ? "nav" : "nav-dash"}`}>
          <a
             href={signedIn ? "/dashboard" : "/"}
             style={{
@@ -35,14 +36,17 @@ const Nav: React.FC<NavProps> = ({
                display: "flex",
                placeContent: "center",
             }}
+            className={
+               home ? "nav-logo-container" : "nav-logo-container-hidden"
+            }
          >
-            <div className="nav-logo-container">
-               <div className="nav-logo">
-                  <img src={Logo} alt="Logo" />
-               </div>
+            <div className="nav-logo">
+               <img src={Logo} alt="Logo" />
                <p>Fulcrums</p>
             </div>
          </a>
+
+         {!home && <SearchBar />}
 
          {signedIn ? (
             <div className="profile-container" style={{ position: "relative" }}>
@@ -53,11 +57,8 @@ const Nav: React.FC<NavProps> = ({
                         alt={user.name || "p"}
                         className="user-photo"
                         style={{
-                           borderRadius: "50%",
                            objectFit: "cover",
                            cursor: "pointer",
-                           width: "35px",
-                           height: "35px",
                         }}
                         onClick={toggleModal}
                      />
@@ -117,3 +118,18 @@ const Nav: React.FC<NavProps> = ({
 };
 
 export default Nav;
+
+function SearchBar() {
+   return (
+      <div className="search-bar-container">
+         <input
+            type="text"
+            placeholder="筛选产品名称或ID"
+            className="search-input"
+         />
+         <button className="search-btn">
+            <MagnifyingGlass size={18} />
+         </button>
+      </div>
+   );
+}

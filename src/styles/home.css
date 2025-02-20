@@ -71,7 +71,7 @@
 
 .cta-login {
    background-color: var(--background-secondary-color) !important;
-   padding: 11px 25px !important;
+   padding: 8px 25px !important;
    color: var(--text-secondary-color) !important;
    font-weight: 500;
    font-size: 1rem;
@@ -241,7 +241,7 @@
 
    .cta-login {
       font-size: 0.8rem;
-      padding: 8px 20px !important;
+      padding: 6.5px 20px !important;
    }
    .cta-bottom-btn {
       font-size: 0.7rem !important;

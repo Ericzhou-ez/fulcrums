@@ -77,7 +77,7 @@ const SignInPage: React.FC<SignInPageProps> = ({
             handleSignOut={handleSignOut}
             isModalOpen={isModalOpen}
             toggleModal={toggleModal}
-            home={false}
+            home={true}
          />
 
          <div className="auth">

@@ -36,6 +36,13 @@
    cursor: pointer;
 }
 
+@media (width <= 500px) {
+   .nav-logo-container-hidden {
+      display: none !important;
+      opacity: 0 !important;
+   }
+}
+
 .nav-logo img {
    height: 40px;
    width: 40px;
@@ -47,7 +54,6 @@
 .profile-container {
    display: flex;
    place-content: center;
-   align-items: center;
 }
 
 .profile-container a {
@@ -60,27 +66,28 @@
    height: fit-content !important;
 }
 
-
 .profile-container img {
-   height: 30px;
-   width: 30px;
+   height: 35px;
+   width: 35px;
    border-radius: 50%;
    -webkit-user-drag: none;
    animation: fadeIn 0.3s ease-in forwards;
 }
 
-.nav-logo-container {
+.nav-logo-container,
+.nav-logo-container-hidden {
    display: flex;
    align-items: center;
    gap: 2px;
    cursor: pointer;
-    
-   p {
-      margin: 0;
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--text-secondary-color);
-   }
+}
+
+.nav-logo-container p,
+.nav-logo-container-hidden p {
+   margin: 0;
+   font-size: 1.2rem;
+   font-weight: 700;
+   color: var(--text-secondary-color);
 }
 
 .cta-btn-join {
@@ -104,4 +111,57 @@ button:active {
 
 .nav-links a {
    all: unset !important;
+}
+
+.search-bar-container {
+   flex: 1;
+   display: flex;
+   align-items: center;
+   background: rgba(236, 236, 236, 0.2);
+   box-shadow: 0 3px 10px rgba(46, 24, 1, 0.08);
+   border-radius: 30px;
+   padding: 5px 12px;
+   gap: 10px;
+   transition: all 0.2s ease-in-out;
+}
+
+.search-input {
+   width: 100%;
+   border: none;
+   background: transparent;
+   color: var(--text-secondary-color);
+   font-size: 16px;
+   outline: none;
+}
+
+.search-btn {
+   background: transparent;
+   border: none;
+   cursor: pointer;
+   transition: transform 0.2s ease;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   padding: 5px;
+   border-radius: 50%;
+}
+
+.search-btn:hover {
+   transform: scale(1.05);
+}
+
+.nav-dash {
+   position: fixed;
+   top: 0;
+   left: 0;
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 20px;
+   width: 100%;
+   padding: 12px 16px;
+   background: var(--background-secondary-color);
+   z-index: 1000;
+   transition: all 0.2s all;
+   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
 }

@@ -77,17 +77,6 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
                <Stack direction="row">
                   <IconButton size="small">
                      {isDarkMode ? (
-                        <img src={EditDark} alt="o" className="product-icons" />
-                     ) : (
-                        <img
-                           src={EditLight}
-                           alt="|"
-                           className="product-icons"
-                        />
-                     )}
-                  </IconButton>
-                  <IconButton size="small">
-                     {isDarkMode ? (
                         <img
                            src={HeartDark}
                            alt="o"
