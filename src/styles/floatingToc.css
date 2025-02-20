@@ -1,0 +1,93 @@
+.floating-toc-nav {
+   position: fixed;
+   top: 50%;
+   right: 0;
+   transform: translateY(-50%);
+   width: 80px;
+   background-color: var(--background-primary-color);
+   backdrop-filter: blur(20px);
+   border-radius: 40px;
+   display: flex;
+   justify-content: center;
+   padding: 50px 20px;
+   transition: all 0.3s ease-in-out;
+   z-index: 9999;
+   overflow-x: hidden;
+   overflow-y: auto;
+}
+
+.floating-toc-nav:hover {
+   width: 220px;
+}
+
+.toc-list {
+   margin: 0;
+   padding: 0;
+   list-style: none;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+}
+
+.toc-item {
+   display: flex;
+   align-items: center;
+   width: 100%;
+   padding: 0.5rem 1rem;
+   cursor: pointer;
+   box-sizing: border-box;
+}
+
+.toc-bar {
+   width: 30px;
+   height: 3px;
+   background: #ffb189;
+   border-radius: 2px;
+   transition: background 0.2s;
+}
+
+.toc-label {
+   display: none;
+   margin-left: 10px;
+   padding: 0 10px;
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   font-size: 0.9rem;
+   color: var(--text-secondary-color);
+   width: 150px;
+}
+
+.floating-toc-nav:hover .toc-label {
+   display: inline-block;
+}
+
+.toc-item:hover .toc-bar {
+   background: #ff9900;
+}
+
+.toc-item.active .toc-bar {
+   background: #ff5e00;
+}
+
+.toc-item.active:hover .toc-bar {
+   background: #ff9900;
+}
+
+.toc-item.active .toc-label {
+   color: #ff9900;
+   font-weight: bold;
+}
+
+@media (max-width: 600px) {
+   .floating-toc-nav {
+      width: 0;
+   }
+   .floating-toc-nav:hover {
+      width: 220px;
+   }
+   .floating-toc-nav {
+      width: 40px;
+      padding: 30px 20px;
+   }
+}

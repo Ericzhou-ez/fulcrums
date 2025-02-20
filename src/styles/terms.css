@@ -1,0 +1,48 @@
+.tos-container {
+  max-width: 1500px;
+  width: 80%;
+  padding-left: 5%;
+  padding-top: 120px;
+  line-height: 1.9rem;
+}
+
+.tos-nav ul li  {
+   cursor: pointer;
+   text-decoration: underline;
+   transition: all 0.2s ease-in-out;
+}
+
+.tos-nav ul li:hover  {
+   color: var(--secondary-color);
+}
+
+.tos-nav h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tos-nav ul {
+  list-style: none;
+}
+
+.tos-nav ul li {
+  margin: 0.5rem 0;
+}
+
+.tos-content section {
+  margin-top: 4rem;
+}
+
+@media (width <= 600px) {
+  .tos-container {
+    padding-top: 100px;
+    width: 86%;
+    margin: 0 auto;
+    padding-left: 0;
+  }
+
+  .tos-nav h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+}

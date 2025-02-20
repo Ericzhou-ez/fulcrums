@@ -1,0 +1,48 @@
+.privacy-container {
+  max-width: 1500px;
+  width: 80%;
+  padding-left: 5%;
+  padding-top: 120px;
+  line-height: 1.9rem;
+}
+
+.privacy-nav ul li  {
+   cursor: pointer;
+   text-decoration: underline;
+   transition: all 0.2s ease-in-out;
+}
+
+.privacy-nav ul li:hover  {
+   color: var(--secondary-color);
+}
+
+.privacy-nav h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.privacy-nav ul {
+  list-style: none;
+}
+
+.privacy-nav ul li {
+  margin: 0.5rem 0;
+}
+
+.privacy-content section {
+  margin-top: 4rem;
+}
+
+@media (max-width: 600px) {
+  .privacy-container {
+    padding-top: 100px;
+    width: 86%;
+    margin: 0 auto;
+    padding-left: 0;
+  }
+
+  .privacy-nav h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+}

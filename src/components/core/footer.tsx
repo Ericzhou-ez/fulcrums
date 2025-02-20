@@ -65,9 +65,9 @@ const groups = [
          {
             key: "terms-and-conditions",
             title: "Terms & Conditions",
-            href: "/err",
+            href: "/terms",
          },
-         { key: "privacy-policy", title: "Privacy Policy", href: "/err" },
+         { key: "privacy-policy", title: "Privacy Policy", href: "/privacy" },
          {
             key: "contact",
             title: "Contact",
@@ -218,7 +218,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                   ))}
                </Grid>
 
-               <Divider sx={{ my: 6 }} />
+               <Divider sx={{ my: 3 }} />
 
                <Stack
                   direction="row"

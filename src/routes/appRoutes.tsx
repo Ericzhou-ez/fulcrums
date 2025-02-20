@@ -9,6 +9,8 @@ import RecentProductsPage from "../pages/dashboard/recentPage";
 import PrivateRoute from "./privateRoute";
 import SavedPage from "../pages/dashboard/savedPage";
 import ScrollToTop from "../components/core/scrollToTop";
+import TermsOfServicePage from "../pages/marketing/termsOfServicePage";
+import PrivacyPolicyPage from "../pages/marketing/privacyPage";
 
 export interface AppRoutesProps {
    signedIn: boolean;
@@ -81,6 +83,38 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                   handleToggleTheme={handleToggleTheme}
                   signedIn={signedIn}
                   user={user}
+               />
+            }
+         />
+
+         {/* tos page */}
+         <Route
+            path="/terms"
+            element={
+               <TermsOfServicePage
+                  signedIn={signedIn}
+                  toggleModal={toggleModal}
+                  user={user}
+                  handleSignOut={handleSignOut}
+                  isModalOpen={isModalOpen}
+                  theme={theme}
+                  handleToggleTheme={handleToggleTheme}
+               />
+            }
+         />
+
+         {/* pp page */}
+         <Route
+            path="/privacy"
+            element={
+               <PrivacyPolicyPage
+                  signedIn={signedIn}
+                  toggleModal={toggleModal}
+                  user={user}
+                  handleSignOut={handleSignOut}
+                  isModalOpen={isModalOpen}
+                  theme={theme}
+                  handleToggleTheme={handleToggleTheme}
                />
             }
          />
