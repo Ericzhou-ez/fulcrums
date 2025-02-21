@@ -6,7 +6,6 @@ import {
    Link as MuiLink,
    useTheme,
    IconButton,
-   Tooltip,
    Link,
    useMediaQuery,
 } from "@mui/material";
@@ -222,11 +221,9 @@ export default function SideNav({ navOpen, setNavOpen }: SideNavProps) {
                      </Typography>
                   </Box>
                </Link>
-               <Tooltip title="关闭边栏">
                   <IconButton onClick={() => setNavOpen(!navOpen)}>
                      <CaretDoubleLeft size={20} />
                   </IconButton>
-               </Tooltip>
             </Box>
 
             <Box component="nav" sx={{ flex: 1 }}>

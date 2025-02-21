@@ -79,7 +79,9 @@ const Home: React.FC<HomeProps> = ({
          <Faqs />
 
          <BottomCTA theme={theme} />
-         <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
+         <div style={{ padding: "0 16px"}}>
+            <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
+         </div>
       </React.Fragment>
    );
 };

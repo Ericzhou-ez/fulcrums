@@ -2,7 +2,14 @@ import React, { useState } from "react";
 import "../../styles/nav.css";
 import Logo from "../../assets/images/logo.svg";
 import DefaultProfile from "/src/assets/icons/profile.svg";
-import { Button, IconButton, useTheme, Box, useMediaQuery } from "@mui/material";
+import {
+   Button,
+   IconButton,
+   useTheme,
+   Box,
+   useMediaQuery,
+   Tooltip,
+} from "@mui/material";
 import { Links } from "react-router-dom";
 import { MagnifyingGlass, List } from "phosphor-react";
 
@@ -94,17 +101,19 @@ const Nav: React.FC<NavProps> = ({
                      />
                   </a>
                ) : (
-                  <img
-                     src={user.photo ? user.photo : DefaultProfile}
-                     alt={user.name || "p"}
-                     className="user-photo"
-                     style={{
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        cursor: "pointer",
-                     }}
-                     onClick={toggleModal}
-                  />
+                  <Tooltip title="账号">
+                     <img
+                        src={user.photo ? user.photo : DefaultProfile}
+                        alt={user.name || "p"}
+                        className="user-photo"
+                        style={{
+                           borderRadius: "50%",
+                           objectFit: "cover",
+                           cursor: "pointer",
+                        }}
+                        onClick={toggleModal}
+                     />
+                  </Tooltip>
                )}
 
                {isModalOpen && (
@@ -161,9 +170,11 @@ function SearchBar({ isDark }: SearchBarProps) {
             placeholder="筛选产品名称或ID"
             className="search-input"
          />
-         <button className="search-btn">
-            <MagnifyingGlass size={18} color={isDark ? "#fff" : "#000"} />
-         </button>
+         <Tooltip title="搜索">
+            <button className="search-btn">
+               <MagnifyingGlass size={18} color={isDark ? "#fff" : "#000"} />
+            </button>
+         </Tooltip>
       </div>
    );
 }

@@ -3,6 +3,7 @@ import "../../styles/terms.css";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import FloatingTocNav from "../../components/core/FloatingTocNav";
+import { Tooltip } from "@mui/material";
 
 const TOS_SECTIONS = [
    { id: "acceptance-of-terms", label: "1. Acceptance of Terms" },
@@ -662,15 +663,11 @@ function TermsOfServicePage({
                      <strong>Fulcrums</strong>
                      <br />
                      Email:{" "}
-                     <a
-                        style={{
-                           textDecoration: "underline",
-                           cursor: "pointer",
-                        }}
-                        href="mailto:zhoueric882@gmail.com"
-                     >
-                        zhoueric882@gmail.com
-                     </a>
+                     <Tooltip title="email me">
+                        <a href="mailto:zhoueric882@gmail.com">
+                           zhoueric882@gmail.com
+                        </a>
+                     </Tooltip>
                      <br />
                      Website:{" "}
                      <a

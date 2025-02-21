@@ -3,6 +3,7 @@ import "../../styles/privacy.css";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import FloatingTocNav from "../../components/core/FloatingTocNav";
+import { Tooltip } from "@mui/material";
 
 const PRIVACY_SECTIONS = [
    { id: "introduction", label: "1. Introduction" },
@@ -544,9 +545,11 @@ function PrivacyPolicyPage({
                      <strong>Fulcrums</strong>
                      <br />
                      Email:{" "}
-                     <a href="mailto:support@fulcrums.ca">
-                        support@fulcrums.ca
-                     </a>
+                     <Tooltip title="email me">
+                        <a href="mailto:zhoueric882@gmail.com">
+                           zhoueric882@gmail.com
+                        </a>
+                     </Tooltip>
                      <br />
                      Website:{" "}
                      <a

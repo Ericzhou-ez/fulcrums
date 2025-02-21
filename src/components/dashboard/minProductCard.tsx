@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardContent, Typography, IconButton } from "@mui/material";
+import { Card, CardContent, Typography, IconButton, Tooltip } from "@mui/material";
 
 // Light/Dark icons
 import EditLight from "../../assets/icons/edit-light.svg";
@@ -62,13 +62,17 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
                }}
             >
                <div style={{ display: "flex", marginBottom: "4px" }}>
-                  <IconButton size="small">
-                     <img src={heartIcon} alt="o" width="18" height="18" />
-                  </IconButton>
+                  <Tooltip title="收藏">
+                     <IconButton size="small">
+                        <img src={heartIcon} alt="o" width="18" height="18" />
+                     </IconButton>
+                  </Tooltip>
 
-                  <IconButton size="small">
-                     <img src={deleteIcon} alt="x" width="18" height="18" />
-                  </IconButton>
+                  <Tooltip title="删除">
+                     <IconButton size="small">
+                        <img src={deleteIcon} alt="x" width="18" height="18" />
+                     </IconButton>
+                  </Tooltip>
                </div>
                <Typography variant="caption" color="textSecondary">
                   {item.postedTime}

@@ -7,6 +7,7 @@ import {
    Typography,
    Stack,
    IconButton,
+   Tooltip,
 } from "@mui/material";
 import EditLight from "../../assets/icons/edit-light.svg";
 import EditDark from "../../assets/icons/edit-dark.svg";
@@ -75,21 +76,23 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
                </Typography>
 
                <Stack direction="row">
-                  <IconButton size="small">
-                     {isDarkMode ? (
-                        <img
-                           src={HeartDark}
-                           alt="o"
-                           className="product-icons"
-                        />
-                     ) : (
-                        <img
-                           src={HeartLight}
-                           alt="|"
-                           className="product-icons"
-                        />
-                     )}
-                  </IconButton>
+                  <Tooltip title="收藏">
+                     <IconButton size="small">
+                        {isDarkMode ? (
+                           <img
+                              src={HeartDark}
+                              alt="o"
+                              className="product-icons"
+                           />
+                        ) : (
+                           <img
+                              src={HeartLight}
+                              alt="|"
+                              className="product-icons"
+                           />
+                        )}
+                     </IconButton>
+                  </Tooltip>
                </Stack>
             </div>
          </CardContent>

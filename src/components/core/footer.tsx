@@ -21,7 +21,7 @@ import {
    IconButton,
    useTheme,
    useMediaQuery,
-   Tooltip
+   Tooltip,
 } from "@mui/material";
 import ThemeSwitch from "../core/themeSwitch";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
@@ -93,10 +93,11 @@ const groups = [
 const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
    const isDark = theme === "dark";
    const year = new Date().getFullYear();
-   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({});
+   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>(
+      {}
+   );
    const muiTheme = useTheme();
    const isMobile = useMediaQuery(muiTheme.breakpoints.down("sm"));
-
 
    const toggleSection = (key: string) => {
       setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -110,7 +111,9 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
             <div className="footer-bottom">
                <div className="footer-logo">
                   <a href="/">
-                     <h6>Fulcrums</h6>
+                     <Tooltip title="home">
+                        <h6>Fulcrums</h6>
+                     </Tooltip>
                   </a>
                </div>
 
@@ -323,7 +326,10 @@ function NavItem({ href, external, title }: NavItemProps) {
                rel="noopener noreferrer"
                color="text.secondary"
                sx={{
-                  fontSize: { xs: "0.8rem !important", sm: "0.9rem !important" },
+                  fontSize: {
+                     xs: "0.8rem !important",
+                     sm: "0.9rem !important",
+                  },
                   textDecoration: "none",
                   display: "inline-block",
                   "&:hover": { textDecoration: "underline !important" },
@@ -338,7 +344,10 @@ function NavItem({ href, external, title }: NavItemProps) {
                to={href || ""}
                color="text.secondary"
                sx={{
-                  fontSize: { xs: "0.8rem !important", sm: "0.9rem !important" },
+                  fontSize: {
+                     xs: "0.8rem !important",
+                     sm: "0.9rem !important",
+                  },
                   textDecoration: "none",
                   display: "inline-block",
                   "&:hover": { textDecoration: "underline !important" },
