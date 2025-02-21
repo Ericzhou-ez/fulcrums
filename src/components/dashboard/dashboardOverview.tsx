@@ -9,6 +9,7 @@ import AddLightBtn from "../../assets/icons/add-light.svg";
 import CardSlider from "./cardSlider";
 import Footer from "../core/footer";
 import SideNav from "./dashboardNav";
+import { QuickStats10, QuickStats2, Chart1 } from "../../pages/dashboard/performance";
 
 interface DashboardOverviewProps {
    theme: any;
@@ -17,13 +18,28 @@ interface DashboardOverviewProps {
    setNavOpen: any;
 }
 
+const sampleData = [
+   { name: "Jan", v1: 34, v2: 3000 },
+   { name: "Feb", v1: 48, v2: 4200 },
+   { name: "Mar", v1: 72, v2: 9500 },
+   { name: "Apr", v1: 58, v2: 7800 },
+   { name: "May", v1: 91, v2: 11000 },
+   { name: "Jun", v1: 15, v2: 2200 },
+   { name: "Jul", v1: 42, v2: 4100 },
+   { name: "Aug", v1: 63, v2: 6400 },
+   { name: "Sep", v1: 89, v2: 11200 },
+   { name: "Oct", v1: 27, v2: 4800 },
+   { name: "Nov", v1: 74, v2: 9000 },
+   { name: "Dec", v1: 58, v2: 7700 },
+];
+
 export default function DashboardOverview({ theme, handleToggleTheme, navOpen, setNavOpen }: DashboardOverviewProps) {
    const isDarkMode = theme.palette.mode === "dark";
 
    return (
       <div className="dashboard-overview">
          <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
-         
+
          <Box px={2}>
             <Stack spacing={4}>
                <Stack direction="row" spacing={3} sx={{ alignItems: "center" }}>
@@ -54,6 +70,10 @@ export default function DashboardOverview({ theme, handleToggleTheme, navOpen, s
                </Stack>
 
                <div className="gradient-divider"></div>
+
+               <QuickStats10 />
+               <Chart1 />
+               <QuickStats2 />
 
                <Box sx={{ my: 2 }}>
                   <Link href="/recent">

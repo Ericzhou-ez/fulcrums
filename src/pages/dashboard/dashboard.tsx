@@ -7,6 +7,7 @@ import {
    Typography,
    Stack,
    Box,
+   useMediaQuery
 } from "@mui/material";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
@@ -47,6 +48,13 @@ const Dashboard: React.FC<DashboardProps> = ({
    navOpen,
    setNavOpen,
 }) => {
+   const isMdUp = useMediaQuery(theme.breakpoints.down("md"));
+
+   React.useEffect(() => {
+      if (isMdUp) {
+         setNavOpen(false);
+      }
+   }, [isMdUp]);
 
    return (
       <Box className="dashboard" sx={mainContentStyles(navOpen)}>

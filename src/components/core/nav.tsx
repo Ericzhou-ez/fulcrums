@@ -48,9 +48,13 @@ const Nav: React.FC<NavProps> = ({
          >
             <IconButton
                onClick={() => setNavOpen(!navOpen)}
-               style={navOpen ? { display: "none" } : {}}
+               style={
+                  navOpen
+                     ? { display: "none", padding: "2px" }
+                     : { padding: "2px" }
+               }
             >
-               <List size={26} color={isDark ? "#fff" : "#000"} />
+               <List size={25} color={isDark ? "#fff" : "#000"} />
             </IconButton>
          </div>
 

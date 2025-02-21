@@ -8,6 +8,7 @@ import {
    IconButton,
    Tooltip,
    Link,
+   useMediaQuery,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import {
@@ -54,6 +55,7 @@ interface NavGroupType {
    title: string;
    icon?: string;
    items: NavSubItem[];
+   href?: string;
 }
 
 const navItems: NavGroupType[] = [
@@ -61,7 +63,8 @@ const navItems: NavGroupType[] = [
       key: "group-overview",
       title: "总览",
       icon: "House",
-      items: [{ key: "overview-main", title: "查看概览", href: "/dashboard" }],
+      items: [],
+      href: "/dashboard",
    },
    {
       key: "group-sourcing",
@@ -72,12 +75,7 @@ const navItems: NavGroupType[] = [
          { key: "sourcing-saved", title: "已保存", href: "/saved" },
          { key: "sourcing-recent", title: "最近", href: "/recent" },
       ],
-   },
-   {
-      key: "group-clients",
-      title: "客户",
-      icon: "Users",
-      items: [{ key: "clients-list", title: "客户列表", href: "/clients" }],
+      href: "",
    },
    {
       key: "group-quotation",
@@ -95,6 +93,7 @@ const navItems: NavGroupType[] = [
             href: "/quotation/client",
          },
       ],
+      href: "",
    },
    {
       key: "group-customs",
@@ -113,6 +112,25 @@ const navItems: NavGroupType[] = [
             href: "/customs/declaration",
          },
       ],
+      href: "",
+   },
+   {
+      key: "group-clients",
+      title: "客户",
+      icon: "Users",
+      items: [
+         {
+            key: "clients-list",
+            title: "客户1",
+            href: "/clients/fd037e8f-2ae2-4a82-a0a3-c65224b8e072",
+         },
+         {
+            key: "clients-list",
+            title: "客户2",
+            href: "/clients/ffc7eb27-5f0a-4c26-a931-5a85fc14216b",
+         },
+      ],
+      href: "",
    },
 ];
 
@@ -229,37 +247,43 @@ export default function SideNav({ navOpen, setNavOpen }: SideNavProps) {
 
 function NavGroup({ group }: { group: NavGroupType }) {
    const [open, setOpen] = React.useState(false);
-   const { title, icon, items } = group;
+   const { title, icon, items, href } = group;
    const IconComp = icon && iconMap[icon] ? iconMap[icon] : null;
+   const isDirectLink = href && items.length === 0;
 
    const handleToggle = () => {
-      setOpen(!open);
+      if (!isDirectLink) setOpen(!open);
    };
 
    return (
       <Box component="li">
-         <Box
-            onClick={handleToggle}
-            sx={{
-               p: "6px 16px",
-               borderRadius: 2,
-               display: "flex",
-               alignItems: "center",
-               gap: 1,
-               cursor: "pointer",
-               "&:hover": (theme: any) => ({
-                  backgroundColor: theme.palette.action.hover,
-               }),
-            }}
-         >
-            {IconComp && <IconComp size={20} weight="regular" />}
-            <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-               {title}
-            </Typography>
-            <Box sx={{ marginLeft: "auto" }}>
-               {open ? <CaretDown size={16} /> : <CaretRight size={16} />}
+         <Link {...(isDirectLink ? { href } : {})}>
+            <Box
+               onClick={handleToggle}
+               sx={{
+                  p: "6px 16px",
+                  borderRadius: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  cursor: "pointer",
+                  "&:hover": (theme: any) => ({
+                     backgroundColor: theme.palette.action.hover,
+                  }),
+               }}
+            >
+               {IconComp && <IconComp size={20} weight="regular" />}
+               <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                  {title}
+               </Typography>
+               <Box
+                  sx={{ marginLeft: "auto" }}
+                  style={isDirectLink ? { display: "none" } : {}}
+               >
+                  {open ? <CaretDown size={16} /> : <CaretRight size={16} />}
+               </Box>
             </Box>
-         </Box>
+         </Link>
          {open && (
             <Box
                sx={{

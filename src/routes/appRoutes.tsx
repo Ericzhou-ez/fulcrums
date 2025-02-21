@@ -12,6 +12,7 @@ import ScrollToTop from "../components/core/scrollToTop";
 import TermsOfServicePage from "../pages/marketing/termsOfServicePage";
 import PrivacyPolicyPage from "../pages/marketing/privacyPage";
 import { useState } from "react";
+import { useMediaQuery } from "@mui/material";
 
 export interface AppRoutesProps {
    signedIn: boolean;
