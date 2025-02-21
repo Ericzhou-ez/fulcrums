@@ -13,6 +13,8 @@ import TermsOfServicePage from "../pages/marketing/termsOfServicePage";
 import PrivacyPolicyPage from "../pages/marketing/privacyPage";
 import { useState } from "react";
 import { useMediaQuery } from "@mui/material";
+import InternalQuoationPage from "../pages/dashboard/internalQuotation";
+import ExternalQuotationPage from "../pages/dashboard/externalQuotation";
 
 export interface AppRoutesProps {
    signedIn: boolean;
@@ -63,6 +65,43 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
             element={
                <PrivateRoute signedIn={signedIn}>
                   <Dashboard
+                     signedIn={signedIn}
+                     toggleModal={toggleModal}
+                     user={user}
+                     handleSignOut={handleSignOut}
+                     isModalOpen={isModalOpen}
+                     theme={theme}
+                     handleToggleTheme={handleToggleTheme}
+                     navOpen={navOpen}
+                     setNavOpen={setNavOpen}
+                  />
+               </PrivateRoute>
+            }
+         />
+
+         <Route
+            path="/quotation/internal"
+            element={
+               <PrivateRoute signedIn={signedIn}>
+                  <InternalQuoationPage
+                     signedIn={signedIn}
+                     toggleModal={toggleModal}
+                     user={user}
+                     handleSignOut={handleSignOut}
+                     isModalOpen={isModalOpen}
+                     theme={theme}
+                     handleToggleTheme={handleToggleTheme}
+                     navOpen={navOpen}
+                     setNavOpen={setNavOpen}
+                  />
+               </PrivateRoute>
+            }
+         />
+         <Route
+            path="/quotation/external"
+            element={
+               <PrivateRoute signedIn={signedIn}>
+                  <ExternalQuotationPage
                      signedIn={signedIn}
                      toggleModal={toggleModal}
                      user={user}

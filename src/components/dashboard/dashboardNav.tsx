@@ -90,7 +90,7 @@ const navItems: NavGroupType[] = [
          {
             key: "quotation-external",
             title: "客户报价",
-            href: "/quotation/client",
+            href: "/quotation/external",
          },
       ],
       href: "",

@@ -35,7 +35,10 @@ export function QuickStats10() {
    const theme = useTheme();
 
    return (
-      <Box sx={{ bgcolor: theme.palette.background.default, borderRadius: 5 }}>
+      <Box
+         sx={{ bgcolor: theme.palette.background.default, borderRadius: 5 }}
+         className="dashboard-card-display"
+      >
          <Card
             sx={{
                borderRadius: 4,
@@ -191,7 +194,10 @@ export function Chart1() {
    const areas = getAreas(theme);
 
    return (
-      <Box sx={{ bgcolor: theme.palette.background.default }}>
+      <Box
+         sx={{ bgcolor: theme.palette.background.default }}
+         className="dashboard-card-display"
+      >
          <Card
             sx={{
                borderRadius: 4,

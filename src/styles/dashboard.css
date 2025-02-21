@@ -204,3 +204,11 @@ img {
   white-space: nowrap; 
   width: fit-content; 
 }
+
+.dashboard-card-display {
+   transition: all 0.2s ease-in-out;
+}
+
+.dashboard-card-display:hover {
+   transform: scale(1.01);
+}

@@ -43,9 +43,7 @@ export default function DashboardOverview({ theme, handleToggleTheme, navOpen, s
 
    return (
       <div className="dashboard-overview">
-         <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
-
-         <Box px={2}>
+         <Box>
             <Stack spacing={4}>
                <Stack direction="row" spacing={3} sx={{ alignItems: "center" }}>
                   <Box style={{ flex: "1 1 auto" }}>
@@ -61,7 +59,7 @@ export default function DashboardOverview({ theme, handleToggleTheme, navOpen, s
                            },
                         }}
                      >
-                        概括
+                        总览
                      </Typography>
                   </Box>
                   {/* <Stack spacing={2} direction="column">
