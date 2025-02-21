@@ -9,7 +9,12 @@ import AddLightBtn from "../../assets/icons/add-light.svg";
 import CardSlider from "./cardSlider";
 import Footer from "../core/footer";
 import SideNav from "./dashboardNav";
-import { QuickStats10, QuickStats2, Chart1 } from "../../pages/dashboard/performance";
+import { QuickStats10, Chart1 } from "../../pages/dashboard/performance";
+import {Documentation, Help} from "./help";
+import {
+   FileText as FileTextIcon,
+   ChatTeardropText as ChatTeardropTextIcon,
+} from "phosphor-react";
 
 interface DashboardOverviewProps {
    theme: any;
@@ -73,7 +78,6 @@ export default function DashboardOverview({ theme, handleToggleTheme, navOpen, s
 
                <QuickStats10 />
                <Chart1 />
-               <QuickStats2 />
 
                <Box sx={{ my: 2 }}>
                   <Link href="/recent">
@@ -142,6 +146,11 @@ export default function DashboardOverview({ theme, handleToggleTheme, navOpen, s
                   <CardSlider isDarkMode={isDarkMode} isRecent={false} />
                </Box>
             </Stack>
+
+            <div className="help-container">
+               <Help />
+               <Documentation />
+            </div>
 
             <button className="add-product">
                <img src={AddLightBtn} alt="+" />
