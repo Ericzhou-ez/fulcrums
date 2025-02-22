@@ -13,6 +13,12 @@ const firebaseConfig = {
    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
+export const actionCodeSettings = {
+   url: "https://fulcrums.ca/dashboard",
+   handleCodeInApp: true,
+   linkDomain: "https://fulcrums.ca",
+};
+
 export const app = initializeApp(firebaseConfig);
 export const analytics = getAnalytics(app);
 export const auth = getAuth(app);
