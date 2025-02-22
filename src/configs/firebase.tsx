@@ -24,3 +24,10 @@ export const analytics = getAnalytics(app);
 export const auth = getAuth(app);
 export const googleAuth = new GoogleAuthProvider();
 export const db = getFirestore(app);
+
+console.log("🔥 Firebase Environment Variables:");
+console.log(
+   "VITE_FIREBASE_PROJECT_ID:",
+   import.meta.env.VITE_FIREBASE_PROJECT_ID
+);
+console.log("VITE_FIREBASE_API_KEY:", import.meta.env.VITE_FIREBASE_API_KEY);
