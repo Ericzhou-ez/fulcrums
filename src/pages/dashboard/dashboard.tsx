@@ -26,6 +26,9 @@ interface DashboardProps {
    toggleModal: () => void;
    navOpen: boolean;
    setNavOpen: any;
+   overlay: any;
+   setOverlay: any;
+   closeOverlay: () => void;
 }
 
 const mainContentStyles = (navOpen: boolean) => ({
@@ -47,6 +50,9 @@ const Dashboard: React.FC<DashboardProps> = ({
    toggleModal,
    navOpen,
    setNavOpen,
+   overlay,
+   setOverlay,
+   closeOverlay,
 }) => {
    const isMdUp = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -69,6 +75,8 @@ const Dashboard: React.FC<DashboardProps> = ({
             isModalOpen={isModalOpen}
             toggleModal={toggleModal}
             setNavOpen={setNavOpen}
+            overlay={overlay}
+            setOverlay={setOverlay}
          />
 
          <DashboardOverview
@@ -77,6 +85,22 @@ const Dashboard: React.FC<DashboardProps> = ({
             navOpen={navOpen}
             setNavOpen={setNavOpen}
          />
+
+         {overlay && (
+            <div
+               style={{
+                  position: "fixed",
+                  width: "100vw",
+                  height: "100vh",
+                  zIndex: 500,
+                  top: 0,
+                  left: 0,
+                  backgroundColor: "rgba(0, 0, 0, 0.06)",
+                  backdropFilter: "blur(2px)",
+               }}
+               onClick={closeOverlay}
+            ></div>
+         )}
       </Box>
    );
 };

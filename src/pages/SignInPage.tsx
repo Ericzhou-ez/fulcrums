@@ -131,6 +131,8 @@ const SignInPage: React.FC<SignInPageProps> = ({
             home={true}
             navOpen={false}
             setNavOpen={null}
+            overlay={false}
+            setOverlay={() => {}}
          />
 
          <div className="auth">

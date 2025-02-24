@@ -66,6 +66,8 @@ const Home: React.FC<HomeProps> = ({
                toggleModal={() => {}}
                navOpen={false}
                setNavOpen={null}
+               overlay={false}
+               setOverlay={() => {}}
             />
 
             <Hero activeIndex={activeIndex} />

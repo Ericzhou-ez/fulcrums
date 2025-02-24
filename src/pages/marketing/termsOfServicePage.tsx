@@ -53,6 +53,8 @@ function TermsOfServicePage({
             home={true}
             navOpen={false}
             setNavOpen={null}
+            overlay={false}
+            setOverlay={() => {}}
          />
 
          <FloatingTocNav sections={TOS_SECTIONS} />

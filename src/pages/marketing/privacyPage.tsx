@@ -50,6 +50,8 @@ function PrivacyPolicyPage({
             home={true}
             navOpen={false}
             setNavOpen={null}
+            overlay={false}
+            setOverlay={() => {}}
          />
 
          <FloatingTocNav sections={PRIVACY_SECTIONS} />

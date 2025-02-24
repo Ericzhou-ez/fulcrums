@@ -25,6 +25,8 @@ interface NavProps {
    home: boolean;
    navOpen: boolean;
    setNavOpen: any;
+   overlay: any;
+   setOverlay: any;
 }
 
 const Nav: React.FC<NavProps> = ({
@@ -36,10 +38,25 @@ const Nav: React.FC<NavProps> = ({
    home,
    navOpen,
    setNavOpen,
+   overlay,
+   setOverlay,
 }) => {
    const theme = useTheme();
    const isDark = theme.palette.mode === "dark";
    const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
+
+   if (typeof setNavOpen === "function") {
+      setNavOpen((prevNavOpen: boolean) => {
+         const newNavOpen = !prevNavOpen;
+
+         if (!isMdUp) {
+            setOverlay(newNavOpen);
+         }
+
+         return newNavOpen;
+      });
+   }
+
 
    return (
       <Box

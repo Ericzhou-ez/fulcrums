@@ -9,7 +9,7 @@ import AddLightBtn from "../../assets/icons/add-light.svg";
 import CardSlider from "./cardSlider";
 import Footer from "../core/footer";
 import SideNav from "./dashboardNav";
-import { QuickStats10, Chart1 } from "../../pages/dashboard/performance";
+import { QuickStats10, Chart1 } from "../../components/dashboard/performance";
 import {Documentation, Help} from "./help";
 import {
    FileText as FileTextIcon,

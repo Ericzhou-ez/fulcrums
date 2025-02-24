@@ -36,6 +36,13 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
    toggleModal,
 }) => {
    const [navOpen, setNavOpen] = useState(true);
+   const isMdUp = useMediaQuery(theme.breakpoints.down("md"));
+   const [overlay, setOverlay] = useState(false);
+
+   const closeOverlay = () => {
+      setOverlay(false);
+      setNavOpen(false);
+   };
 
    return (
       <Routes>
@@ -74,6 +81,9 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                      handleToggleTheme={handleToggleTheme}
                      navOpen={navOpen}
                      setNavOpen={setNavOpen}
+                     overlay={overlay}
+                     setOverlay={setOverlay}
+                     closeOverlay={closeOverlay}
                   />
                </PrivateRoute>
             }
@@ -93,6 +103,9 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                      handleToggleTheme={handleToggleTheme}
                      navOpen={navOpen}
                      setNavOpen={setNavOpen}
+                     overlay={overlay}
+                     setOverlay={setOverlay}
+                     closeOverlay={closeOverlay}
                   />
                </PrivateRoute>
             }
@@ -111,6 +124,9 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                      handleToggleTheme={handleToggleTheme}
                      navOpen={navOpen}
                      setNavOpen={setNavOpen}
+                     overlay={overlay}
+                     setOverlay={setOverlay}
+                     closeOverlay={closeOverlay}
                   />
                </PrivateRoute>
             }
@@ -179,6 +195,9 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                      handleToggleTheme={handleToggleTheme}
                      navOpen={navOpen}
                      setNavOpen={setNavOpen}
+                     overlay={overlay}
+                     setOverlay={setOverlay}
+                     closeOverlay={closeOverlay}
                   />
                </PrivateRoute>
             }
@@ -199,6 +218,9 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                      handleToggleTheme={handleToggleTheme}
                      navOpen={navOpen}
                      setNavOpen={setNavOpen}
+                     overlay={overlay}
+                     setOverlay={setOverlay}
+                     closeOverlay={closeOverlay}
                   />
                </PrivateRoute>
             }

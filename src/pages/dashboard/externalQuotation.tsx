@@ -15,6 +15,9 @@ export interface ExternalQuotationProps {
    toggleModal: () => void;
    navOpen: boolean;
    setNavOpen: any;
+   overlay: boolean;
+   setOverlay: any;
+   closeOverlay: () => void;
 }
 
 const mainContentStyles = (navOpen: boolean) => ({
@@ -36,6 +39,9 @@ const ExternalQuotationPage: React.FC<ExternalQuotationProps> = ({
    toggleModal,
    navOpen,
    setNavOpen,
+   overlay,
+   setOverlay,
+   closeOverlay,
 }) => {
    const isDarkMode = theme === "dark";
    return (
@@ -51,6 +57,8 @@ const ExternalQuotationPage: React.FC<ExternalQuotationProps> = ({
             handleSignOut={handleSignOut}
             isModalOpen={isModalOpen}
             toggleModal={toggleModal}
+            overlay={overlay}
+            setOverlay={setOverlay}
          />
 
          <div className="title-recent">
@@ -73,6 +81,21 @@ const ExternalQuotationPage: React.FC<ExternalQuotationProps> = ({
 
          <div className="gradient-divider"></div>
 
+         {overlay && (
+            <div
+               style={{
+                  position: "fixed",
+                  width: "100vw",
+                  height: "100vh",
+                  zIndex: 500,
+                  top: 0,
+                  left: 0,
+                  backgroundColor: "rgba(0, 0, 0, 0.06)",
+                  backdropFilter: "blur(2px)",
+               }}
+               onClick={closeOverlay}
+            ></div>
+         )}
 
          <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
       </Box>
