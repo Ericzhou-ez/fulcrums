@@ -37,7 +37,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
 }) => {
    const [navOpen, setNavOpen] = useState(true);
    const isMdUp = useMediaQuery(theme.breakpoints.down("md"));
-   const [overlay, setOverlay] = useState(false);
+   const [overlay, setOverlay] = useState(isMdUp);
 
    const closeOverlay = () => {
       setOverlay(false);
