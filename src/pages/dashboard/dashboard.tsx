@@ -89,6 +89,7 @@ const Dashboard: React.FC<DashboardProps> = ({
          {overlay && (
             <div
                style={{
+                  transition: "all 0.2s ease-in-out",
                   position: "fixed",
                   width: "100vw",
                   height: "100vh",

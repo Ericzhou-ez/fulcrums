@@ -46,21 +46,8 @@ const Nav: React.FC<NavProps> = ({
    const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
 
    if (!isMdUp) {
-      setOverlay(navOpen);
+      setOverlay(navOpen); 
    }
-
-   // if (typeof setNavOpen === "function") {
-   //    setNavOpen((prevNavOpen: boolean) => {
-   //       const newNavOpen = !prevNavOpen;
-
-   //       if (!isMdUp) {
-   //          setOverlay(newNavOpen);
-   //       }
-
-   //       return newNavOpen;
-   //    });
-   // }
-
 
    return (
       <Box

@@ -183,7 +183,11 @@ export default function SideNav({ navOpen, setNavOpen }: SideNavProps) {
 
    return (
       <div
-         style={navOpen ? {} : { display: "none" }}
+         style={
+            navOpen
+               ? { transition: "all 0.2s ease-in-out" }
+               : { display: "none", }
+         }
          className="dashboard-side-nav"
       >
          <Box
@@ -221,9 +225,9 @@ export default function SideNav({ navOpen, setNavOpen }: SideNavProps) {
                      </Typography>
                   </Box>
                </Link>
-                  <IconButton onClick={() => setNavOpen(!navOpen)}>
-                     <CaretDoubleLeft size={20} />
-                  </IconButton>
+               <IconButton onClick={() => setNavOpen(!navOpen)}>
+                  <CaretDoubleLeft size={20} />
+               </IconButton>
             </Box>
 
             <Box component="nav" sx={{ flex: 1 }}>

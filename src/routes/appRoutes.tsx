@@ -11,7 +11,7 @@ import SavedPage from "../pages/dashboard/savedPage";
 import ScrollToTop from "../components/core/scrollToTop";
 import TermsOfServicePage from "../pages/marketing/termsOfServicePage";
 import PrivacyPolicyPage from "../pages/marketing/privacyPage";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMediaQuery } from "@mui/material";
 import InternalQuoationPage from "../pages/dashboard/internalQuotation";
 import ExternalQuotationPage from "../pages/dashboard/externalQuotation";
@@ -35,10 +35,9 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
    handleToggleTheme,
    toggleModal,
 }) => {
-   const [navOpen, setNavOpen] = useState(true);
-   const isMdUp = useMediaQuery(theme.breakpoints.down("md"));
-   const [overlay, setOverlay] = useState(isMdUp);
-
+   const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
+   const [navOpen, setNavOpen] = useState(() => isMdUp);
+   const [overlay, setOverlay] = useState(() => !isMdUp);
    const closeOverlay = () => {
       setOverlay(false);
       setNavOpen(false);
