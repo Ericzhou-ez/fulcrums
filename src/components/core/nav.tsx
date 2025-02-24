@@ -45,17 +45,21 @@ const Nav: React.FC<NavProps> = ({
    const isDark = theme.palette.mode === "dark";
    const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
 
-   if (typeof setNavOpen === "function") {
-      setNavOpen((prevNavOpen: boolean) => {
-         const newNavOpen = !prevNavOpen;
-
-         if (!isMdUp) {
-            setOverlay(newNavOpen);
-         }
-
-         return newNavOpen;
-      });
+   if (!isMdUp) {
+      setOverlay(navOpen);
    }
+
+   // if (typeof setNavOpen === "function") {
+   //    setNavOpen((prevNavOpen: boolean) => {
+   //       const newNavOpen = !prevNavOpen;
+
+   //       if (!isMdUp) {
+   //          setOverlay(newNavOpen);
+   //       }
+
+   //       return newNavOpen;
+   //    });
+   // }
 
 
    return (
