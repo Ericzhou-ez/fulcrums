@@ -68,6 +68,7 @@ const Home: React.FC<HomeProps> = ({
                setNavOpen={null}
                overlay={false}
                setOverlay={() => {}}
+               searchBar={false}
             />
 
             <Hero activeIndex={activeIndex} />
@@ -81,7 +82,7 @@ const Home: React.FC<HomeProps> = ({
          <Faqs />
 
          <BottomCTA theme={theme} />
-         <div style={{ padding: "0 16px"}}>
+         <div style={{ padding: "0 16px" }}>
             <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
          </div>
       </React.Fragment>

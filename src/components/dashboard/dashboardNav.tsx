@@ -25,6 +25,7 @@ import {
    Cube,
    FileArrowUp,
    CaretDoubleLeft,
+   MagnifyingGlass
 } from "phosphor-react";
 import Logo from "../../assets/images/logo.svg";
 
@@ -40,6 +41,7 @@ const iconMap: Record<string, React.ComponentType<any>> = {
    Cube,
    FileArrowUp,
    CaretDoubleLeft,
+   MagnifyingGlass,
 };
 
 interface NavSubItem {
@@ -64,6 +66,13 @@ const navItems: NavGroupType[] = [
       icon: "House",
       items: [],
       href: "/dashboard",
+   },
+   {
+      key: "search-database",
+      title: "搜索",
+      icon: "MagnifyingGlass",
+      items: [],
+      href: "/search",
    },
    {
       key: "group-sourcing",
@@ -186,7 +195,7 @@ export default function SideNav({ navOpen, setNavOpen }: SideNavProps) {
          style={
             navOpen
                ? { transition: "all 0.2s ease-in-out" }
-               : { display: "none", }
+               : { display: "none" }
          }
          className="dashboard-side-nav"
       >

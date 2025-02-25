@@ -55,6 +55,7 @@ function TermsOfServicePage({
             setNavOpen={null}
             overlay={false}
             setOverlay={() => {}}
+            searchBar={false}
          />
 
          <FloatingTocNav sections={TOS_SECTIONS} />

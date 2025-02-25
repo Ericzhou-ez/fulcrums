@@ -123,6 +123,7 @@ const RecentProductsPage: React.FC<RecentProductsPageProps> = ({
             toggleModal={toggleModal}
             overlay={overlay}
             setOverlay={setOverlay}
+            searchBar={false}
          />
 
          <div className="title-recent">

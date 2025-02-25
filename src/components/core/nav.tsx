@@ -27,6 +27,7 @@ interface NavProps {
    setNavOpen: any;
    overlay: any;
    setOverlay: any;
+   searchBar: boolean;
 }
 
 const Nav: React.FC<NavProps> = ({
@@ -40,6 +41,7 @@ const Nav: React.FC<NavProps> = ({
    setNavOpen,
    overlay,
    setOverlay,
+   searchBar,
 }) => {
    const theme = useTheme();
    const isDark = theme.palette.mode === "dark";
@@ -91,7 +93,7 @@ const Nav: React.FC<NavProps> = ({
             </div>
          </a>
 
-         {!home && <SearchBar isDark={isDark} />}
+         {!home && <SearchBar isDark={isDark} searchBar={searchBar} />}
 
          {signedIn ? (
             <div className="profile-container" style={{ position: "relative" }}>
@@ -168,11 +170,12 @@ export default Nav;
 
 interface SearchBarProps {
    isDark: boolean;
+   searchBar: boolean;
 }
 
-function SearchBar({ isDark }: SearchBarProps) {
+function SearchBar({ isDark, searchBar }: SearchBarProps) {
    return (
-      <div className="search-bar-container">
+      <div className="search-bar-container" style={searchBar ? {} : {display: "none"}}>
          <input
             type="text"
             placeholder="筛选产品名称或ID"

@@ -90,10 +90,10 @@ function App() {
             palette: {
                mode,
                primary: {
-                  main: "#f5bf46",
+                  main: "#f97777",
                },
                secondary: {
-                  main: "#ff6161",
+                  main: "#f5bf46",
                },
                background: {
                   default: mode === "light" ? "#ffffff" : "#121212",

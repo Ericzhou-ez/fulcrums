@@ -15,6 +15,7 @@ import { useState, useEffect } from "react";
 import { useMediaQuery } from "@mui/material";
 import InternalQuoationPage from "../pages/dashboard/internalQuotation";
 import ExternalQuotationPage from "../pages/dashboard/externalQuotation";
+import SearchPage from "../pages/dashboard/searchPage";
 
 export interface AppRoutesProps {
    signedIn: boolean;
@@ -114,6 +115,27 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
             element={
                <PrivateRoute signedIn={signedIn}>
                   <ExternalQuotationPage
+                     signedIn={signedIn}
+                     toggleModal={toggleModal}
+                     user={user}
+                     handleSignOut={handleSignOut}
+                     isModalOpen={isModalOpen}
+                     theme={theme}
+                     handleToggleTheme={handleToggleTheme}
+                     navOpen={navOpen}
+                     setNavOpen={setNavOpen}
+                     overlay={overlay}
+                     setOverlay={setOverlay}
+                     closeOverlay={closeOverlay}
+                  />
+               </PrivateRoute>
+            }
+         />
+          <Route
+            path="/search"
+            element={
+               <PrivateRoute signedIn={signedIn}>
+                  <SearchPage
                      signedIn={signedIn}
                      toggleModal={toggleModal}
                      user={user}
