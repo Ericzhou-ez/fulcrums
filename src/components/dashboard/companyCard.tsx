@@ -4,10 +4,11 @@ import CardContent from "@mui/material/CardContent";
 import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { Users as UsersIcon, Star as StarIcon } from "phosphor-react";
+import { Users as UsersIcon, Star as StarIcon, ArrowUpRight } from "phosphor-react";
 import { SimpleCard } from "./simpleCard";
-import { Tooltip, useTheme } from "@mui/material";
+import { IconButton, Tooltip, useTheme } from "@mui/material";
 import { X as XIcon } from "phosphor-react";
+import { ArrowUpRight as ArrowUpRightIcon } from "phosphor-react";
 
 interface Company {
    id: string;
@@ -49,13 +50,28 @@ export function CompanyCard({ company }: CompanyCardProps) {
                <Stack spacing={2}>
                   <Stack direction="row" spacing={2}>
                      <Stack spacing={1}>
-                        <Typography
-                           color="text.primary"
-                           variant="h3"
-                           sx={{ fontSize: { xs: "1.5rem", md: "2.5rem" } }}
+                        <div
+                           style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                           }}
                         >
-                           {company.name}
-                        </Typography>
+                           <Typography
+                              color="text.primary"
+                              variant="h3"
+                              sx={{ fontSize: { xs: "1.7rem", md: "2.5rem" } }}
+                           >
+                              {company.name}
+                           </Typography>
+                           <IconButton
+                              sx={{ marginLeft: "10px" }}
+                              onClick={() => toggleDetails()}
+                           >
+                              <ArrowUpRightIcon size={20} />
+                           </IconButton>
+                        </div>
+
                         <Typography
                            variant="body2"
                            color="text.seondary"
@@ -69,19 +85,24 @@ export function CompanyCard({ company }: CompanyCardProps) {
                      <SimpleCard products={company.products} isDark={isDark} />
                   )}
                </Stack>
-               <button className="more-btn" onClick={() => toggleDetails()}>
-                  更多
-               </button>
             </CardContent>
          </Card>
 
          {detailsOpen && (
-            <div className="store-details">
-               <XIcon className="x-icon" size={20} onClick={() => toggleDetails()} />
-            </div>
-         )}
-         {detailsOpen && (
-            <div className="overlay" onClick={() => toggleDetails()}></div>
+            <>
+               <div className="overlay" onClick={() => toggleDetails()}></div>
+
+               <div className="store-details">
+                  <h2>{company.name}</h2>
+                  <p>{company.address}</p>
+
+                  <XIcon
+                     className="x-icon"
+                     size={20}
+                     onClick={() => toggleDetails()}
+                  />
+               </div>
+            </>
          )}
       </div>
    );

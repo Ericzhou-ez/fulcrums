@@ -131,8 +131,16 @@
    top: 20px;
    right: 20px;
    cursor: pointer;
+   z-index: 1910;
 }
 
 .x-icon:hover {
    opacity: 0.8;
+}
+
+@media (width <= 600px) {
+   .store-details {
+      top: 10vh;
+      height: 80vh;
+   }
 }
