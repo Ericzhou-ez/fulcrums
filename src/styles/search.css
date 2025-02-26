@@ -96,10 +96,43 @@
    clip-path: ellipse(50% 48% at 50% 50%);
 }
 
-.search-dash-container {
+.more-btn {
+   border: none;
+   margin-top: 20px;
+   padding: 8px 20px;
+   border-radius: 30px;
+}
+
+.store-details {
    position: fixed;
-   z-index: 1000;
-   top: 90px;
-   left: 50%;
-   transform: translateX(-50%);
+   background-color: var(--background-secondary-color);
+   top: 5vh;
+   left: 3vw;
+   width: 94vw;
+   height: 90vh;
+   z-index: 2000;
+   border-radius: 20px;
+   padding: 0 20px;
+}
+
+.overlay {
+   position: fixed;
+   top: 0;
+   left: 0;
+   width: 100vw;
+   height: 100vh;
+   background-color: rgba(136, 136, 136, 0.15);
+   backdrop-filter: blur(2px);
+   z-index: 1900;
+}
+
+.x-icon {
+   position: absolute;
+   top: 20px;
+   right: 20px;
+   cursor: pointer;
+}
+
+.x-icon:hover {
+   opacity: 0.8;
 }

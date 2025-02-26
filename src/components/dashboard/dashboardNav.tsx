@@ -215,7 +215,7 @@ export default function SideNav({ navOpen, setNavOpen }: SideNavProps) {
                display: "flex",
                flexDirection: "column",
                p: 2,
-               zIndex: 2000,
+               zIndex: 1400,
             }}
          >
             <Box

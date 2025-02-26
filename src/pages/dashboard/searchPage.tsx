@@ -3,17 +3,13 @@ import {
    Typography,
    Box,
    Stack,
-   IconButton,
-   TextField,
    Pagination,
+   Select,
+   MenuItem,
 } from "@mui/material";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import SideNav from "../../components/dashboard/dashboardNav";
-import {
-   CaretLeft as CaretLeftIcon,
-   CaretRight as CaretRightIcon,
-} from "phosphor-react";
 import { CompanyCard } from "../../components/dashboard/companyCard";
 import { ProductFilters } from "../../components/dashboard/productFilter";
 import data from "../../data/lookup_temp.json";
@@ -38,8 +34,6 @@ interface SearchPageProps {
    closeOverlay: () => void;
 }
 
-const itemsPerPage = 5;
-
 const SearchPage: React.FC<SearchPageProps> = ({
    signedIn,
    user,
@@ -56,6 +50,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
 }) => {
    const [searchQuery, setSearchQuery] = useState("");
    const [page, setPage] = useState(1);
+   const [itemsPerPage, setItemsPerPage] = useState(5);
    const [searchMode, setSearchMode] = useState("");
 
    const companies = Object.entries(data.search_by_company).map(
@@ -71,11 +66,16 @@ const SearchPage: React.FC<SearchPageProps> = ({
    );
 
    const filteredCompanies =
-      searchQuery.length >= 3
+      searchQuery.length >= 2
          ? companies.filter((company) =>
               company.name.toLowerCase().includes(searchQuery.toLowerCase())
            )
          : companies;
+
+   const totalPages = Math.max(
+      1,
+      Math.ceil(filteredCompanies.length / itemsPerPage)
+   );
 
    const paginatedCompanies = filteredCompanies.slice(
       (page - 1) * itemsPerPage,
@@ -109,10 +109,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
                   backgroundColor: "#FFA500",
                   padding: "0 25px",
                   paddingBottom: "50px",
-                  height: "220px",
-                  [theme.breakpoints.up('sm')]: {
-                     height: "200px",
-                  },
+                  paddingTop: "110px",
                }}
             >
                <ProductFilters
@@ -131,9 +128,28 @@ const SearchPage: React.FC<SearchPageProps> = ({
                ))}
             </div>
 
-            <Stack direction="row" justifyContent="center" sx={{ mt: 2 }}>
+            <Stack
+               direction={{sx: "column", sm: "row"}}
+               gap={2}
+               justifyContent="space-between"
+               alignItems="center"
+               sx={{ mt: 2, padding: "0 16px" }}
+            >
+               <Select
+                  value={itemsPerPage}
+                  onChange={(e) => {
+                     setItemsPerPage(e.target.value as number);
+                     setPage(1);
+                  }}
+                  sx={{ minWidth: "100px", height: "40px", borderRadius: "20px" }}
+               >
+                  <MenuItem value={5}>每页 5 个</MenuItem>
+                  <MenuItem value={10}>每页 10 个</MenuItem>
+                  <MenuItem value={20}>每页 20 个</MenuItem>
+               </Select>
+
                <Pagination
-                  count={Math.ceil(filteredCompanies.length / itemsPerPage)}
+                  count={totalPages}
                   page={page}
                   onChange={handleChangePage}
                   color="primary"

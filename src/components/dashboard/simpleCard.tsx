@@ -7,11 +7,18 @@ import Button from "@mui/material/Button";
 
 interface SimpleCardProps {
    products: string[];
+   isDark: boolean;
 }
 
-export function SimpleCard({ products = [] }: SimpleCardProps) {
+export function SimpleCard({ products = [], isDark }: SimpleCardProps) {
    return (
-      <Card variant="outlined">
+      <Card
+         variant="outlined"
+         sx={{
+            borderRadius: "12px",
+            backgroundColor: isDark ? "#595655" : "#e8e4e1",
+         }}
+      >
          <Stack divider={<Divider />}>
             {products.map((product, idx) => (
                <Stack
@@ -25,7 +32,6 @@ export function SimpleCard({ products = [] }: SimpleCardProps) {
                   }}
                >
                   <Typography variant="subtitle1">{product}</Typography>
-                  <Button size="small">View Details</Button>
                </Stack>
             ))}
          </Stack>
