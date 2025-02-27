@@ -197,6 +197,23 @@ const SearchPage: React.FC<SearchPageProps> = ({
             </Stack>
          </Stack>
 
+         {overlay && (
+            <div
+               style={{
+                  transition: "all 0.2s ease-in-out",
+                  position: "fixed",
+                  width: "100vw",
+                  height: "100vh",
+                  zIndex: 500,
+                  top: 0,
+                  left: 0,
+                  backgroundColor: "rgba(0, 0, 0, 0.06)",
+                  backdropFilter: "blur(2px)",
+               }}
+               onClick={closeOverlay}
+            ></div>
+         )}
+
          <div style={{ padding: "0 16px" }}>
             <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
          </div>

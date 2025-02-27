@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../styles/nav.css";
 import Logo from "../../assets/images/logo.svg";
 import DefaultProfile from "/src/assets/icons/profile.svg";
@@ -10,23 +10,23 @@ import {
    useMediaQuery,
    Tooltip,
 } from "@mui/material";
-import { Links } from "react-router-dom";
 import { MagnifyingGlass, List } from "phosphor-react";
+import { ProfileModal } from "./floatingSettings";
 
 interface NavProps {
    signedIn: boolean;
    user: {
-      name: string;
-      photo: string;
+      name?: string;
+      photo?: string;
    };
    handleSignOut: () => void;
    isModalOpen: boolean;
    toggleModal: () => void;
    home: boolean;
    navOpen: boolean;
-   setNavOpen: any;
-   overlay: any;
-   setOverlay: any;
+   setNavOpen: (value: boolean) => void;
+   overlay: boolean;
+   setOverlay: (value: boolean) => void;
    searchBar: boolean;
 }
 
@@ -46,10 +46,17 @@ const Nav: React.FC<NavProps> = ({
    const theme = useTheme();
    const isDark = theme.palette.mode === "dark";
    const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
+   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-   if (!isMdUp) {
-      setOverlay(navOpen); 
-   }
+   useEffect(() => {
+      if (!isMdUp) {
+         setOverlay(navOpen);
+      }
+   }, [navOpen, isMdUp, setOverlay]);
+
+   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
+      setAnchorEl(event.currentTarget);
+   };
 
    return (
       <Box
@@ -59,12 +66,13 @@ const Nav: React.FC<NavProps> = ({
                : `${home ? "nav" : "nav-dash"}`
          }
       >
+         {/* Menu Icon */}
          <div
             className="menu"
             style={{ display: home ? "none" : "flex", placeContent: "center" }}
          >
             <IconButton
-               onClick={() => setNavOpen(!navOpen)}
+               onClick={(e) => setNavOpen(!navOpen)}
                style={
                   navOpen
                      ? { display: "none", padding: "2px" }
@@ -75,17 +83,18 @@ const Nav: React.FC<NavProps> = ({
             </IconButton>
          </div>
 
+         {/* Logo */}
          <a
             href={signedIn ? "/dashboard" : "/"}
+            className={
+               home ? "nav-logo-container" : "nav-logo-container-hidden"
+            }
             style={{
                all: "unset",
                cursor: "pointer",
                display: "flex",
                placeContent: "center",
             }}
-            className={
-               home ? "nav-logo-container" : "nav-logo-container-hidden"
-            }
          >
             <div className="nav-logo" style={home ? {} : { display: "none" }}>
                <img src={Logo} alt="Logo" />
@@ -97,63 +106,25 @@ const Nav: React.FC<NavProps> = ({
 
          {signedIn ? (
             <div className="profile-container" style={{ position: "relative" }}>
-               {home ? (
-                  <a href="/dashboard">
-                     <img
-                        src={user.photo ? user.photo : DefaultProfile}
-                        alt={user.name || "p"}
-                        className="user-photo"
-                        style={{
-                           objectFit: "cover",
-                           cursor: "pointer",
-                        }}
-                        onClick={toggleModal}
-                     />
-                  </a>
-               ) : (
-                  <Tooltip title="账号">
-                     <img
-                        src={user.photo ? user.photo : DefaultProfile}
-                        alt={user.name || "p"}
-                        className="user-photo"
-                        style={{
-                           borderRadius: "50%",
-                           objectFit: "cover",
-                           cursor: "pointer",
-                        }}
-                        onClick={toggleModal}
-                     />
-                  </Tooltip>
-               )}
-
-               {isModalOpen && (
-                  <div
-                     className="profile-modal"
+               <Tooltip title="账号">
+                  <img
+                     src={user.photo || DefaultProfile}
+                     alt={user.name || "p"}
+                     className="user-photo"
                      style={{
-                        position: "absolute",
-                        top: "40px",
-                        right: "0",
-                        background: "var(--background-secondary-color)",
-                        borderRadius: "5px",
-                        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.2)",
-                        zIndex: 100,
-                        padding: "10px",
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                        cursor: "pointer",
                      }}
-                  >
-                     <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={() => {
-                           toggleModal();
-                           handleSignOut();
+                     onClick={handleProfileClick}
+                  />
+               </Tooltip>
 
-                           return;
-                        }}
-                     >
-                        退出
-                     </Button>
-                  </div>
-               )}
+               <ProfileModal
+                  isOpen={Boolean(anchorEl)}
+                  anchorEl={anchorEl}
+                  onClose={() => setAnchorEl(null)}
+               />
             </div>
          ) : (
             <div className="nav-links">
@@ -175,7 +146,10 @@ interface SearchBarProps {
 
 function SearchBar({ isDark, searchBar }: SearchBarProps) {
    return (
-      <div className="search-bar-container" style={searchBar ? {} : {display: "none"}}>
+      <div
+         className="search-bar-container"
+         style={searchBar ? {} : { display: "none" }}
+      >
          <input
             type="text"
             placeholder="筛选产品名称或ID"
