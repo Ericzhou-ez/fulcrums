@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-   Box,
-   Stack,
-   Pagination,
-   Select,
-   MenuItem,
-} from "@mui/material";
+import { Box, Stack, Pagination, Select, MenuItem } from "@mui/material";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import SideNav from "../../components/dashboard/dashboardNav";
@@ -13,6 +7,7 @@ import { CompanyCard } from "../../components/dashboard/companyCard";
 import { ProductFilters } from "../../components/dashboard/productFilter";
 import { ProductCard } from "../../components/dashboard/productSearchCard";
 import data from "../../data/lookup_temp.json";
+import InfoIcon from "../../assets/icons/iconly-glass-info.svg";
 
 const mainContentStyles = (navOpen: boolean) => ({
    marginLeft: { xs: 0, md: navOpen ? "240px" : "0px" },
@@ -81,8 +76,12 @@ const SearchPage: React.FC<SearchPageProps> = ({
       );
 
       if (productType) {
-         companies = companies.filter((company) => company.category === productType);
-         products = products.filter((product) => product.category === productType);
+         companies = companies.filter(
+            (company) => company.category === productType
+         );
+         products = products.filter(
+            (product) => product.category === productType
+         );
       }
 
       let results =
@@ -91,14 +90,19 @@ const SearchPage: React.FC<SearchPageProps> = ({
                  company.name.toLowerCase().includes(searchQuery.toLowerCase())
               )
             : products.filter((product) =>
-                 product.productName.toLowerCase().includes(searchQuery.toLowerCase())
+                 product.productName
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase())
               );
 
       setFilteredResults(results);
-      setPage(1); 
+      setPage(1);
    }, [searchQuery, searchMode, productType]);
 
-   const totalPages = Math.max(1, Math.ceil(filteredResults.length / itemsPerPage));
+   const totalPages = Math.max(
+      1,
+      Math.ceil(filteredResults.length / itemsPerPage)
+   );
 
    const paginatedResults = filteredResults.slice(
       (page - 1) * itemsPerPage,
@@ -129,7 +133,6 @@ const SearchPage: React.FC<SearchPageProps> = ({
          <Stack spacing={4}>
             <div
                style={{
-                  backgroundColor: "#ff8400",
                   padding: "0 25px",
                   paddingBottom: "50px",
                   paddingTop: "110px",
@@ -145,17 +148,27 @@ const SearchPage: React.FC<SearchPageProps> = ({
                   setProductType={setProductType}
                />
             </div>
-            <div className="hero-clip-curve"></div>
 
-            <div style={{ padding: "0 16px", marginTop: 0 }}>
-               {searchMode === "company"
-                  ? paginatedResults.map((company: any) => (
-                       <CompanyCard key={company.id} company={company} />
-                    ))
-                  : paginatedResults.map((product: any) => (
-                       <ProductCard key={product.id} product={product} />
-                    ))}
-            </div>
+            {paginatedResults.length === 0 ? (
+               <div className="no-results-container">
+                  <img
+                     src={InfoIcon}
+                     alt="No Results"
+                     className="no-results-icon"
+                  />
+                  <p className="no-results-text">没有结果 :(</p>
+               </div>
+            ) : (
+               <div style={{ padding: "0 16px", marginTop: 0 }}>
+                  {searchMode === "company"
+                     ? paginatedResults.map((company: any) => (
+                          <CompanyCard key={company.id} company={company} />
+                       ))
+                     : paginatedResults.map((product: any) => (
+                          <ProductCard key={product.id} product={product} />
+                       ))}
+               </div>
+            )}
 
             <Stack
                direction={{ sx: "column", sm: "row" }}

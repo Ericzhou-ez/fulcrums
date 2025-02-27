@@ -4,6 +4,7 @@ import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import FloatingTocNav from "../../components/core/FloatingTocNav";
 import { Tooltip } from "@mui/material";
+import BottomCTA from "../../components/marketing/bottomCta";
 
 const PRIVACY_SECTIONS = [
    { id: "introduction", label: "1. Introduction" },
@@ -586,6 +587,8 @@ function PrivacyPolicyPage({
                </section>
             </main>
          </div>
+
+         <BottomCTA theme={theme} />
 
          <div style={{ padding: "0 16px" }}>
             <Footer theme={theme} handleToggleTheme={handleToggleTheme} />

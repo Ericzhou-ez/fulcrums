@@ -1,5 +1,11 @@
 import React from "react";
-import { Card, CardContent, Typography, IconButton, Tooltip } from "@mui/material";
+import {
+   Card,
+   CardContent,
+   Typography,
+   IconButton,
+   Tooltip,
+} from "@mui/material";
 
 // Light/Dark icons
 import EditLight from "../../assets/icons/edit-light.svg";
@@ -46,37 +52,26 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
             className="card-flex"
          >
             <div style={{ display: "flex", flexDirection: "column" }}>
-               <Typography variant="subtitle1" gutterBottom>
+               <Typography variant="subtitle1" gutterBottom sx={{ fontSize: {xs: "1rem", sm: "1.2rem"}}}>
                   {item.title}
                </Typography>
                <Typography variant="caption" color="textSecondary">
-                  {item.productId}
+                  {item.postedTime}
                </Typography>
             </div>
 
-            <div
-               style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-end",
-               }}
-            >
-               <div style={{ display: "flex", marginBottom: "4px" }}>
-                  <Tooltip title="收藏">
-                     <IconButton size="small">
-                        <img src={heartIcon} alt="o" width="18" height="18" />
-                     </IconButton>
-                  </Tooltip>
+            <div style={{ display: "flex", marginBottom: "4px" }}>
+               <Tooltip title="收藏">
+                  <IconButton size="small">
+                     <img src={heartIcon} alt="o" width="18" height="18" />
+                  </IconButton>
+               </Tooltip>
 
-                  <Tooltip title="删除">
-                     <IconButton size="small">
-                        <img src={deleteIcon} alt="x" width="18" height="18" />
-                     </IconButton>
-                  </Tooltip>
-               </div>
-               <Typography variant="caption" color="textSecondary">
-                  {item.postedTime}
-               </Typography>
+               <Tooltip title="删除">
+                  <IconButton size="small">
+                     <img src={deleteIcon} alt="x" width="18" height="18" />
+                  </IconButton>
+               </Tooltip>
             </div>
          </CardContent>
       </Card>

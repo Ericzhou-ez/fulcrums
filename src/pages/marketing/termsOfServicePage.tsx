@@ -3,7 +3,8 @@ import "../../styles/terms.css";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import FloatingTocNav from "../../components/core/FloatingTocNav";
-import { Tooltip } from "@mui/material";
+import { Tooltip, useTheme } from "@mui/material";
+import BottomCTA from "../../components/marketing/bottomCta";
 
 const TOS_SECTIONS = [
    { id: "acceptance-of-terms", label: "1. Acceptance of Terms" },
@@ -42,6 +43,7 @@ function TermsOfServicePage({
    theme,
    handleToggleTheme,
 }: TermsOfServicePageProps) {
+
    return (
       <React.Fragment>
          <Nav
@@ -705,6 +707,8 @@ function TermsOfServicePage({
                </section>
             </main>
          </div>
+
+         <BottomCTA theme={theme} />
 
          <div style={{ padding: "0 16px" }}>
             <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
