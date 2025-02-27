@@ -24,7 +24,7 @@ interface NavProps {
    toggleModal: () => void;
    home: boolean;
    navOpen: boolean;
-   setNavOpen: (value: boolean) => void;
+   setNavOpen: any;
    overlay: boolean;
    setOverlay: (value: boolean) => void;
    searchBar: boolean;
