@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-   Typography,
    Box,
    Stack,
    Pagination,
@@ -12,6 +11,7 @@ import Footer from "../../components/core/footer";
 import SideNav from "../../components/dashboard/dashboardNav";
 import { CompanyCard } from "../../components/dashboard/companyCard";
 import { ProductFilters } from "../../components/dashboard/productFilter";
+import { ProductCard } from "../../components/dashboard/productSearchCard";
 import data from "../../data/lookup_temp.json";
 
 const mainContentStyles = (navOpen: boolean) => ({
@@ -51,33 +51,56 @@ const SearchPage: React.FC<SearchPageProps> = ({
    const [searchQuery, setSearchQuery] = useState("");
    const [page, setPage] = useState(1);
    const [itemsPerPage, setItemsPerPage] = useState(5);
-   const [searchMode, setSearchMode] = useState("");
+   const [searchMode, setSearchMode] = useState("product");
+   const [productType, setProductType] = useState("");
+   const [filteredResults, setFilteredResults] = useState<any[]>([]);
 
-   const companies = Object.entries(data.search_by_company).map(
-      ([name, info], idx) => ({
-         id: `company-${idx}`,
-         name,
-         ownerName: info["Owner Name"],
-         phoneNumber: info["Phone Number"],
-         address: info.Address,
-         category: info.Category,
-         products: info.Products,
-      })
-   );
+   useEffect(() => {
+      let companies = Object.entries(data.search_by_company).map(
+         ([name, info], idx) => ({
+            id: `company-${idx}`,
+            name,
+            ownerName: info["Owner Name"],
+            phoneNumber: info["Phone Number"],
+            address: info.Address,
+            category: info.Category,
+            products: info.Products || [],
+         })
+      );
 
-   const filteredCompanies =
-      searchQuery.length >= 2
-         ? companies.filter((company) =>
-              company.name.toLowerCase().includes(searchQuery.toLowerCase())
-           )
-         : companies;
+      let products = Object.entries(data.search_by_product).map(
+         ([name, info], idx) => ({
+            id: `product-${idx}`,
+            productName: name,
+            ownerName: info["Owner Name"],
+            phoneNumber: info["Phone Number"],
+            address: info.Address,
+            category: info.Category,
+            storeName: info["Factory Name"],
+         })
+      );
 
-   const totalPages = Math.max(
-      1,
-      Math.ceil(filteredCompanies.length / itemsPerPage)
-   );
+      if (productType) {
+         companies = companies.filter((company) => company.category === productType);
+         products = products.filter((product) => product.category === productType);
+      }
 
-   const paginatedCompanies = filteredCompanies.slice(
+      let results =
+         searchMode === "company"
+            ? companies.filter((company) =>
+                 company.name.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+            : products.filter((product) =>
+                 product.productName.toLowerCase().includes(searchQuery.toLowerCase())
+              );
+
+      setFilteredResults(results);
+      setPage(1); 
+   }, [searchQuery, searchMode, productType]);
+
+   const totalPages = Math.max(1, Math.ceil(filteredResults.length / itemsPerPage));
+
+   const paginatedResults = filteredResults.slice(
       (page - 1) * itemsPerPage,
       page * itemsPerPage
    );
@@ -118,18 +141,23 @@ const SearchPage: React.FC<SearchPageProps> = ({
                   setPage={setPage}
                   searchMode={searchMode}
                   setSearchMode={setSearchMode}
+                  setProductType={setProductType}
                />
             </div>
             <div className="hero-clip-curve"></div>
 
             <div style={{ padding: "0 16px", marginTop: 0 }}>
-               {paginatedCompanies.map((company) => (
-                  <CompanyCard key={company.id} company={company} />
-               ))}
+               {searchMode === "company"
+                  ? paginatedResults.map((company: any) => (
+                       <CompanyCard key={company.id} company={company} />
+                    ))
+                  : paginatedResults.map((product: any) => (
+                       <ProductCard key={product.id} product={product} />
+                    ))}
             </div>
 
             <Stack
-               direction={{sx: "column", sm: "row"}}
+               direction={{ sx: "column", sm: "row" }}
                gap={2}
                justifyContent="space-between"
                alignItems="center"
@@ -141,7 +169,11 @@ const SearchPage: React.FC<SearchPageProps> = ({
                      setItemsPerPage(e.target.value as number);
                      setPage(1);
                   }}
-                  sx={{ minWidth: "100px", height: "40px", borderRadius: "20px" }}
+                  sx={{
+                     minWidth: "100px",
+                     height: "40px",
+                     borderRadius: "30px",
+                  }}
                >
                   <MenuItem value={5}>每页 5 个</MenuItem>
                   <MenuItem value={10}>每页 10 个</MenuItem>
@@ -153,6 +185,13 @@ const SearchPage: React.FC<SearchPageProps> = ({
                   page={page}
                   onChange={handleChangePage}
                   color="primary"
+                  sx={{
+                     "& .MuiPaginationItem-root": {
+                        fontSize: { xs: "0.7rem", sm: "0.8rem", md: "1rem" }, 
+                        padding: { xs: "2px", sm: "3px", md: "8px" }, 
+                        minWidth: { xs: "24px", sm: "28px", md: "32px" }, 
+                     },
+                  }}
                />
             </Stack>
          </Stack>
@@ -160,22 +199,6 @@ const SearchPage: React.FC<SearchPageProps> = ({
          <div style={{ padding: "0 16px" }}>
             <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
          </div>
-
-         {overlay && (
-            <Box
-               sx={{
-                  position: "fixed",
-                  width: "100vw",
-                  height: "100vh",
-                  zIndex: 500,
-                  top: 0,
-                  left: 0,
-                  backgroundColor: "rgba(0, 0, 0, 0.06)",
-                  backdropFilter: "blur(2px)",
-               }}
-               onClick={closeOverlay}
-            />
-         )}
       </Box>
    );
 };

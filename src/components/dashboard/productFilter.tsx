@@ -4,7 +4,7 @@ import { MultiSelect } from "./multiSelect";
 import "../../styles/search.css";
 
 const typeOptions = [
-   { label: "饰品", value: "accessories" },
+   { label: "饰品", value: "Jewelry" },
    { label: "玩具", value: "toys" },
    { label: "百货", value: "general_merchandise" },
    { label: "家电数码", value: "home_appliances_electronics" },
@@ -31,6 +31,7 @@ interface ProductFiltersProps {
    setPage: (value: number) => void;
    searchMode: string;
    setSearchMode: (value: string) => void;
+   setProductType: any;
 }
 
 export function ProductFilters({
@@ -39,6 +40,7 @@ export function ProductFilters({
    setPage,
    searchMode,
    setSearchMode,
+   setProductType,
 }: ProductFiltersProps) {
    const theme = useTheme();
    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -56,7 +58,7 @@ export function ProductFilters({
             }}
             className="search-dash-container"
          >
-          <Stack spacing={2}>
+            <Stack spacing={2}>
                {isMobile && (
                   <SearchBox
                      searchQuery={searchQuery}
@@ -75,16 +77,19 @@ export function ProductFilters({
                      <MultiSelect
                         label="搜索方式"
                         options={[
+                           { label: "按店铺搜索", value: "company" },
                            { label: "按产品搜索", value: "product" },
-                           { label: "按店铺搜索", value: "store" },
                         ]}
-                        value={[searchMode]}
-                        onChange={(values) => setSearchMode(values[0])}
+                        value={searchMode}
+                        onChange={(value: string) =>
+                           setSearchMode(value)
+                        }
                      />
                      <MultiSelect
                         label="类别"
                         options={typeOptions}
-                        value={[searchQuery]}
+                        value={searchQuery}
+                        onChange={setProductType}
                      />
                   </Stack>
                ) : (
@@ -109,7 +114,8 @@ export function ProductFilters({
                      <MultiSelect
                         label="类别"
                         options={typeOptions}
-                        value={[searchQuery]}
+                        value={searchQuery}
+                        onChange={setProductType}
                      />
                   </Stack>
                )}
@@ -146,11 +152,11 @@ const ToggleSwitch: React.FC<{
             className="toggle-button"
             style={{
                color:
-                  searchMode === "store"
+                  searchMode === "company"
                      ? theme.palette.text.primary
                      : theme.palette.text.secondary,
             }}
-            onClick={() => setSearchMode("store")}
+            onClick={() => setSearchMode("company")}
          >
             按店铺
          </button>

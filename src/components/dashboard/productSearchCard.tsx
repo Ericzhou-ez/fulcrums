@@ -7,22 +7,23 @@ import Stack from "@mui/material/Stack";
 import { X as XIcon, ArrowUpRight as ArrowUpRightIcon } from "phosphor-react";
 import { useTheme } from "@mui/material/styles";
 import { SimpleCard } from "./simpleCard";
+import data from "../../data/lookup_temp.json";
 
-interface Company {
+interface Product {
    id: string;
-   name: string;
-   ownerName: string;
-   phoneNumber: number;
-   address: string;
+   productName: string;
    category: string;
-   products: string[];
+   ownerName: string;
+   storeName: string;
+   price: number;
+   phoneNumber: number;
 }
 
-interface CompanyCardProps {
-   company: Company;
+interface ProductCardProps {
+   product: Product;
 }
 
-export function CompanyCard({ company }: CompanyCardProps) {
+export function ProductCard({ product }: ProductCardProps) {
    const theme = useTheme();
    const isDark = theme.palette.mode === "dark";
    const [detailsOpen, setDetailsOpen] = useState(false);
@@ -30,11 +31,18 @@ export function CompanyCard({ company }: CompanyCardProps) {
    function toggleDetails() {
       setDetailsOpen((prev) => !prev);
       if (!detailsOpen) {
-         document.body.style.overflow = "hidden";
+         document.body.style.overflow = "hidden"; // Prevent scrolling when overlay is open
       } else {
          document.body.style.overflow = "auto";
       }
    }
+
+     const company =
+        (data.search_by_company as Record<string, any>)[product.storeName] ??
+        null;
+
+     const moreProducts =
+        company?.Products?.filter((p: any) => p !== product.productName) || [];
 
    return (
       <div style={{ position: "relative" }}>
@@ -65,7 +73,7 @@ export function CompanyCard({ company }: CompanyCardProps) {
                                  lineHeight: { xs: "1.9rem", md: "2.5rem" },
                               }}
                            >
-                              {company.name}
+                              {product.productName}
                            </Typography>
                            <IconButton
                               sx={{ marginLeft: "10px" }}
@@ -80,7 +88,7 @@ export function CompanyCard({ company }: CompanyCardProps) {
                            color="text.secondary"
                            sx={{ fontSize: { xs: "0.8rem", md: "1rem" } }}
                         >
-                           {company.category}
+                           {product.storeName}
                         </Typography>
                      </Stack>
                   </Stack>
@@ -92,7 +100,7 @@ export function CompanyCard({ company }: CompanyCardProps) {
             <>
                <div className="overlay" onClick={toggleDetails}></div>
 
-               <div className="store-details">
+               <div className="product-details">
                   <div
                      style={{
                         display: "flex",
@@ -111,7 +119,7 @@ export function CompanyCard({ company }: CompanyCardProps) {
                            pb: 2,
                         }}
                      >
-                        {company.name}
+                        {product.productName}
                      </Typography>
 
                      <IconButton onClick={toggleDetails} className="x-icon">
@@ -120,27 +128,21 @@ export function CompanyCard({ company }: CompanyCardProps) {
                   </div>
 
                   <Typography sx={{ pb: 1 }}>
-                     <strong>类别:</strong> {company.category}
+                     <strong>类别:</strong> {product.category}
                   </Typography>
                   <Typography sx={{ pb: 1 }}>
-                     <strong>地址:</strong> {company.address}
+                     <strong>卖家:</strong> {product.ownerName}
                   </Typography>
                   <Typography sx={{ pb: 1 }}>
-                     <strong>联系人:</strong> {company.ownerName}
-                  </Typography>
-                  <Typography sx={{ pb: 1 }}>
-                     <strong>联系电话:</strong> {company.phoneNumber}
+                     <strong>联系电话:</strong> {product.phoneNumber}
                   </Typography>
 
-                  {company.products.length > 0 && (
+                  {moreProducts.length > 0 && (
                      <div className="more-products">
                         <Typography variant="h6" sx={{ mt: 5, mb: 2 }}>
-                           {company.name}的产品
+                           更多来自{product.storeName}的产品
                         </Typography>
-                        <SimpleCard
-                           products={company.products}
-                           isDark={isDark}
-                        />
+                        <SimpleCard products={moreProducts} isDark={isDark} />
                      </div>
                   )}
                </div>

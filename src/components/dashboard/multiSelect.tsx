@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -11,16 +11,21 @@ interface Option {
 
 interface MultiSelectProps {
    label: string;
-   onChange?: (value: string[]) => void;
    options: Option[];
-   value?: string[];
+   value: string | null;
+   onChange: any;
 }
 
-export function MultiSelect({ label, onChange, options, value = [] }: MultiSelectProps) {
-   const [anchorEl, setAnchorEl] = useState(null);
+export function MultiSelect({
+   label,
+   options,
+   value,
+   onChange,
+}: MultiSelectProps) {
+   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
    const open = Boolean(anchorEl);
 
-   const handleOpen = (event: any) => {
+   const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
       setAnchorEl(event.currentTarget);
    };
 
@@ -28,20 +33,16 @@ export function MultiSelect({ label, onChange, options, value = [] }: MultiSelec
       setAnchorEl(null);
    };
 
-   const handleValueChange = (v: any, checked: any) => {
-      let updatedValue = [...value];
-
-      if (checked) {
-         updatedValue.push(v);
-      } else {
-         updatedValue = updatedValue.filter((item) => item !== v);
-      }
-
-      onChange?.(updatedValue);
+   const handleValueChange = (optionValue: string) => {
+      onChange(optionValue);
+      handleClose();
    };
 
+   const selectedOption = options.find((option) => option.value === value);
+   const displayText = selectedOption?.label || label;
+
    return (
-      <React.Fragment>
+      <>
          <Button
             color="secondary"
             endIcon={<CaretDownIcon />}
@@ -50,30 +51,33 @@ export function MultiSelect({ label, onChange, options, value = [] }: MultiSelec
                "& .MuiButton-endIcon svg": {
                   fontSize: "var(--icon-fontSize-sm)",
                },
+               textTransform: "none",
+               maxWidth: "200px",
+               overflow: "hidden",
+               textOverflow: "ellipsis",
+               whiteSpace: "nowrap",
+               color: selectedOption ? "inherit" : "gray",
+               borderRadius: 4,
             }}
          >
-            {label}
+            {displayText}
          </Button>
          <Menu
             anchorEl={anchorEl}
             onClose={handleClose}
             open={open}
-            PaperProps={{ sx: { width: "250px" } }}
+            PaperProps={{ sx: { width: { xs: "150px", md: "230px", maxHeight: "400px" }, borderRadius: 4 } }}
          >
-            {options.map((option) => {
-               const selected = value.includes(option.value);
-
-               return (
-                  <MenuItem
-                     key={option.label}
-                     onClick={() => handleValueChange(option.value, !selected)}
-                     selected={selected}
-                  >
-                     {option.label}
-                  </MenuItem>
-               );
-            })}
+            {options.map((option) => (
+               <MenuItem
+                  key={option.value}
+                  onClick={() => handleValueChange(option.value)}
+                  selected={value === option.value}
+               >
+                  {option.label}
+               </MenuItem>
+            ))}
          </Menu>
-      </React.Fragment>
+      </>
    );
 }

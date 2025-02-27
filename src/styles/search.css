@@ -43,7 +43,7 @@
    z-index: 1;
 }
 
-.toggle-container[data-selected="store"] .slider {
+.toggle-container[data-selected="company"] .slider {
    transform: translateX(calc(100% + 5px));
 }
 
@@ -103,16 +103,29 @@
    border-radius: 30px;
 }
 
-.store-details {
+.store-details,
+.product-details {
    position: fixed;
    background-color: var(--background-secondary-color);
-   top: 5vh;
-   left: 3vw;
-   width: 94vw;
-   height: 90vh;
+   top: 50%;
+   left: 5vw;
+   width: 90vw;
+   max-height: 90vh;
    z-index: 2000;
    border-radius: 20px;
-   padding: 0 20px;
+   padding: 30px 50px;
+   overflow-y: scroll;
+   transform: translateY(-50%);
+}
+
+@media (width <= 600px) {
+   .store-details,
+   .product-details {
+      max-height: 80vh;
+      padding: 30px 20px;
+      left: 8vw;
+      width: 86vw;
+   }
 }
 
 .overlay {
@@ -121,26 +134,17 @@
    left: 0;
    width: 100vw;
    height: 100vh;
-   background-color: rgba(136, 136, 136, 0.15);
-   backdrop-filter: blur(2px);
+   background-color: rgba(136, 136, 136, 0.1);
+   backdrop-filter: blur(5px);
    z-index: 1900;
 }
 
-.x-icon {
-   position: absolute;
-   top: 20px;
-   right: 20px;
-   cursor: pointer;
-   z-index: 1910;
+.header-search-cards {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
 }
 
 .x-icon:hover {
    opacity: 0.8;
-}
-
-@media (width <= 600px) {
-   .store-details {
-      top: 10vh;
-      height: 80vh;
-   }
 }
