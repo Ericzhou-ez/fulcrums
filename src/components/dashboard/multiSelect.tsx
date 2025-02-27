@@ -51,7 +51,7 @@ export function MultiSelect({
                display: "flex",
                justifyContent: "center",
                alignItems: "center",
-               padding: "6px 25px",
+               padding: "6px 20px",
                textTransform: "none",
                maxWidth: "250px",
                overflow: "hidden",

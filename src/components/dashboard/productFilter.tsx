@@ -72,7 +72,7 @@ export function ProductFilters({
                )}
 
                {isMobile ? (
-                  <Stack spacing={2} direction="row">
+                  <Stack spacing={2} direction="row" justifyContent="space-between">
                      <MultiSelect
                         label="搜索方式"
                         options={[
