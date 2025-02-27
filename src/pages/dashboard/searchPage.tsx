@@ -141,6 +141,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
                   setPage={setPage}
                   searchMode={searchMode}
                   setSearchMode={setSearchMode}
+                  productType={productType}
                   setProductType={setProductType}
                />
             </div>

@@ -32,6 +32,7 @@ interface ProductFiltersProps {
    searchMode: string;
    setSearchMode: (value: string) => void;
    setProductType: any;
+   productType: any;
 }
 
 export function ProductFilters({
@@ -41,6 +42,7 @@ export function ProductFilters({
    searchMode,
    setSearchMode,
    setProductType,
+   productType
 }: ProductFiltersProps) {
    const theme = useTheme();
    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -81,15 +83,13 @@ export function ProductFilters({
                            { label: "按产品搜索", value: "product" },
                         ]}
                         value={searchMode}
-                        onChange={(value: string) =>
-                           setSearchMode(value)
-                        }
+                        onChange={(value: string) => setSearchMode(value)}
                      />
                      <MultiSelect
                         label="类别"
                         options={typeOptions}
-                        value={searchQuery}
-                        onChange={setProductType}
+                        value={productType}
+                        onChange={(value: string) => setProductType(value)}
                      />
                   </Stack>
                ) : (
@@ -114,8 +114,8 @@ export function ProductFilters({
                      <MultiSelect
                         label="类别"
                         options={typeOptions}
-                        value={searchQuery}
-                        onChange={setProductType}
+                        value={productType}
+                        onChange={(value: string) => setProductType(value)}
                      />
                   </Stack>
                )}

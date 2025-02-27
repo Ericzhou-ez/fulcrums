@@ -37,12 +37,12 @@ export function ProductCard({ product }: ProductCardProps) {
       }
    }
 
-     const company =
-        (data.search_by_company as Record<string, any>)[product.storeName] ??
-        null;
+   const company =
+      (data.search_by_company as Record<string, any>)[product.storeName] ??
+      null;
 
-     const moreProducts =
-        company?.Products?.filter((p: any) => p !== product.productName) || [];
+   const moreProducts =
+      company?.Products?.filter((p: any) => p !== product.productName) || [];
 
    return (
       <div style={{ position: "relative" }}>
