@@ -45,7 +45,7 @@ export function ProductFilters({
    productType
 }: ProductFiltersProps) {
    const theme = useTheme();
-   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
    return (
       <React.Fragment>
@@ -54,9 +54,10 @@ export function ProductFilters({
                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
                p: { xs: 2.5, md: 3 },
                pt: 1,
-               borderRadius: { xs: 5, sm: 12 },
+               borderRadius: { xs: 5, md: 12 },
                width: { xs: "95%", sm: "80%" },
                justifySelf: "center",
+               background: "background.default",
             }}
             className="search-dash-container"
          >
@@ -71,11 +72,7 @@ export function ProductFilters({
                )}
 
                {isMobile ? (
-                  <Stack
-                     spacing={2}
-                     direction="row"
-                     sx={{ justifyContent: "space-between" }}
-                  >
+                  <Stack spacing={2} direction="row">
                      <MultiSelect
                         label="搜索方式"
                         options={[

@@ -129,7 +129,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
          <Stack spacing={4}>
             <div
                style={{
-                  backgroundColor: "#FFA500",
+                  backgroundColor: "#ff8400",
                   padding: "0 25px",
                   paddingBottom: "50px",
                   paddingTop: "110px",
@@ -188,9 +188,9 @@ const SearchPage: React.FC<SearchPageProps> = ({
                   color="primary"
                   sx={{
                      "& .MuiPaginationItem-root": {
-                        fontSize: { xs: "0.7rem", sm: "0.8rem", md: "1rem" }, 
-                        padding: { xs: "2px", sm: "3px", md: "8px" }, 
-                        minWidth: { xs: "24px", sm: "28px", md: "32px" }, 
+                        fontSize: { xs: "0.7rem", sm: "0.8rem", md: "1rem" },
+                        padding: { xs: "2px", sm: "3px", md: "8px" },
+                        minWidth: { xs: "24px", sm: "28px", md: "32px" },
                      },
                   }}
                />

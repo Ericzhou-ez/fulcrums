@@ -13,7 +13,7 @@ interface MultiSelectProps {
    label: string;
    options: Option[];
    value: string | null;
-   onChange: any;
+   onChange: (value: string) => void;
 }
 
 export function MultiSelect({
@@ -45,34 +45,66 @@ export function MultiSelect({
       <>
          <Button
             color="secondary"
-            endIcon={<CaretDownIcon />}
+            endIcon={<CaretDownIcon size={15} />}
             onClick={handleOpen}
             sx={{
-               "& .MuiButton-endIcon svg": {
-                  fontSize: "var(--icon-fontSize-sm)",
-               },
+               display: "flex",
+               justifyContent: "center",
+               alignItems: "center",
+               padding: "6px 25px",
                textTransform: "none",
-               maxWidth: "200px",
+               maxWidth: "250px",
                overflow: "hidden",
                textOverflow: "ellipsis",
                whiteSpace: "nowrap",
                color: selectedOption ? "inherit" : "gray",
-               borderRadius: 4,
+               borderRadius: 5,
+               border: "1px solid rgba(0,0,0,0.1)",
+               fontSize: { xs: "0.78rem", md: "0.9rem" },
+               fontWeight: "400",
+               "& .MuiButton-endIcon": {
+                  marginLeft: "0px",
+               },
             }}
          >
-            {displayText}
+            <span
+               style={{
+                  margin: "0 5px",
+               }}
+            >
+               {displayText}
+            </span>
          </Button>
+
          <Menu
             anchorEl={anchorEl}
             onClose={handleClose}
             open={open}
-            PaperProps={{ sx: { width: { xs: "150px", md: "230px", maxHeight: "400px" }, borderRadius: 4 } }}
+            PaperProps={{
+               sx: {
+                  width: { xs: "150px", md: "250px" },
+                  borderRadius: 4,
+                  maxHeight: "300px",
+               },
+            }}
          >
             {options.map((option) => (
                <MenuItem
                   key={option.value}
                   onClick={() => handleValueChange(option.value)}
                   selected={value === option.value}
+                  sx={{
+                     padding: "10px 15px",
+                     fontSize: { xs: "0.78rem", md: "0.9rem" },
+                     fontWeight: value === option.value ? "600" : "400",
+                     backgroundColor:
+                        value === option.value
+                           ? "rgba(0, 0, 0, 0.05)"
+                           : "transparent",
+                     "&:hover": {
+                        backgroundColor: "rgba(0, 0, 0, 0.1)",
+                     },
+                  }}
                >
                   {option.label}
                </MenuItem>

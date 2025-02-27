@@ -47,12 +47,41 @@
    transform: translateX(calc(100% + 5px));
 }
 
-/* Mobile: Hide toggle, show MultiSelect */
 @media (max-width: 600px) {
    .toggle-container {
       display: none;
    }
+
+   .search-dash-container {
+      padding: 10px !important;
+      width: 100% !important;
+   }
+
+   .custom-search-box {
+      width: 100%;
+      display: flex;
+   }
+
+   .custom-search-box input {
+      flex: 1; 
+      min-width: 0;
+      background-color: var(--background-color) !important;
+      border: none !important;
+      padding: 12px 10px !important;
+      word-wrap: break-word !important; 
+      white-space: normal !important; 
+   }
+
+   .custom-search-box input:hover {
+      border: none !important;
+   }
+
+   .custom-search-box input:focus {
+      border: none !important;
+      box-shadow: none !important;
+   }
 }
+
 
 .custom-search-box {
    width: 100%;
@@ -91,7 +120,7 @@
 .hero-clip-curve {
    transform: translateY(-80%);
    height: 100px;
-   background-color: #ffa500;
+   background-color: #ff8400;
    width: 100%;
    clip-path: ellipse(50% 48% at 50% 50%);
 }
