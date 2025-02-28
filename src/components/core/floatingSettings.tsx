@@ -15,6 +15,7 @@ import {
    BookOpen,
    Terminal,
    Keyhole,
+   Gauge,
 } from "phosphor-react";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 
@@ -22,16 +23,20 @@ interface ProfileModalProps {
    isOpen: boolean;
    anchorEl: HTMLElement | null;
    onClose: () => void;
+   isSettingsOpen: boolean;
+   setIsSettingsOpen: any;
 }
 
 export const ProfileModal: React.FC<ProfileModalProps> = ({
    isOpen,
    anchorEl,
    onClose,
+   isSettingsOpen,
+   setIsSettingsOpen,
 }) => {
    const theme = useTheme();
    const auth = getAuth();
-   const [user, setUser] = useState<any>(null);
+const [user, setUser] = useState<any>(null);
 
    useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -114,23 +119,37 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
 
          <Divider />
 
-         {/* Menu Options */}
-         <a href="/dashboard/account">
+         <MenuItem
+            sx={{
+               py: 1.2,
+               "&:hover": {
+                  bgcolor: theme.palette.action.hover,
+                  borderRadius: 3,
+                  transition: "background 0.2s ease",
+               },
+            }}
+            onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+         >
+            <Info size={18} style={{ marginRight: 8 }} />
+            账户
+         </MenuItem>
+
+         <a href="/dashboard">
             <MenuItem
                sx={{
                   py: 1.2,
                   "&:hover": {
                      bgcolor: theme.palette.action.hover,
-                     borderRadius: 3,
+                     borderRadius: 2,
                      transition: "background 0.2s ease",
                   },
                }}
             >
-               <Info size={18} style={{ marginRight: 8 }} />
-               账户
+               <Gauge size={18} style={{ marginRight: 8 }} />
+               仪表
             </MenuItem>
          </a>
-         <a href="/dashboard">
+         <a href="/documentation">
             <MenuItem
                sx={{
                   py: 1.2,
@@ -158,38 +177,6 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
             >
                <User size={18} style={{ marginRight: 8 }} />
                帮助
-            </MenuItem>
-         </a>
-         <a href="/terms">
-            <MenuItem
-               href="/terms"
-               sx={{
-                  py: 1.2,
-                  "&:hover": {
-                     bgcolor: theme.palette.action.hover,
-                     borderRadius: 2,
-                     transition: "background 0.2s ease",
-                  },
-               }}
-            >
-               <Terminal size={18} style={{ marginRight: 8 }} />
-               条款
-            </MenuItem>
-         </a>
-         <a href="/privacy">
-            <MenuItem
-               href="/privacy"
-               sx={{
-                  py: 1.2,
-                  "&:hover": {
-                     bgcolor: theme.palette.action.hover,
-                     borderRadius: 2,
-                     transition: "background 0.2s ease",
-                  },
-               }}
-            >
-               <Keyhole size={18} style={{ marginRight: 8 }} />
-               隐私
             </MenuItem>
          </a>
 

@@ -63,12 +63,20 @@ export function CompanyCard({ company }: CompanyCardProps) {
                               sx={{
                                  fontSize: { xs: "1.3rem", md: "1.8rem" },
                                  lineHeight: { xs: "1.9rem", md: "2.5rem" },
+                                 whiteSpace: "nowrap",
+                                 overflow: "hidden",
+                                 maxWidth: {
+                                    xs: "200px",
+                                    sm: "400px",
+                                    md: "600px",
+                                    lg: "900px",
+                                 },
+                                 textOverflow: "ellipsis",
                               }}
                            >
                               {company.name}
                            </Typography>
                            <IconButton
-                              sx={{ marginLeft: "10px" }}
                               onClick={toggleDetails}
                            >
                               <ArrowUpRightIcon size={20} />

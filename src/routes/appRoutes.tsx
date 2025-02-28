@@ -110,6 +110,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                </PrivateRoute>
             }
          />
+
          <Route
             path="/quotation/external"
             element={
@@ -131,7 +132,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                </PrivateRoute>
             }
          />
-          <Route
+         <Route
             path="/search"
             element={
                <PrivateRoute signedIn={signedIn}>

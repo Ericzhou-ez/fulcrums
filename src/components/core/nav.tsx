@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { MagnifyingGlass, List } from "phosphor-react";
 import { ProfileModal } from "./floatingSettings";
+import { SettingsPage } from "../../pages/dashboard/settingsPage";
 
 interface NavProps {
    signedIn: boolean;
@@ -47,6 +48,7 @@ const Nav: React.FC<NavProps> = ({
    const isDark = theme.palette.mode === "dark";
    const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
    useEffect(() => {
       if (!isMdUp) {
@@ -59,81 +61,108 @@ const Nav: React.FC<NavProps> = ({
    };
 
    return (
-      <Box
-         className={
-            isMdUp
-               ? `${home ? "nav" : "nav-dash"} ${navOpen ? "nav-open" : ""}`
-               : `${home ? "nav" : "nav-dash"}`
-         }
-      >
-         {/* Menu Icon */}
-         <div
-            className="menu"
-            style={{ display: home ? "none" : "flex", placeContent: "center" }}
-         >
-            <IconButton
-               onClick={(e) => setNavOpen(!navOpen)}
-               style={
-                  navOpen
-                     ? { display: "none", padding: "2px" }
-                     : { padding: "2px" }
-               }
-            >
-               <List size={25} color={isDark ? "#fff" : "#000"} />
-            </IconButton>
-         </div>
-
-         {/* Logo */}
-         <a
-            href={signedIn ? "/dashboard" : "/"}
+      <>
+         <Box
             className={
-               home ? "nav-logo-container" : "nav-logo-container-hidden"
+               isMdUp
+                  ? `${home ? "nav" : "nav-dash"} ${navOpen ? "nav-open" : ""}`
+                  : `${home ? "nav" : "nav-dash"}`
             }
-            style={{
-               all: "unset",
-               cursor: "pointer",
-               display: "flex",
-               placeContent: "center",
-            }}
          >
-            <div className="nav-logo" style={home ? {} : { display: "none" }}>
-               <img src={Logo} alt="Logo" />
-               <p>Fulcrums</p>
+            {/* Menu Icon */}
+            <div
+               className="menu"
+               style={{
+                  display: home ? "none" : "flex",
+                  placeContent: "center",
+               }}
+            >
+               <IconButton
+                  onClick={(e) => setNavOpen(!navOpen)}
+                  style={
+                     navOpen
+                        ? { display: "none", padding: "2px" }
+                        : { padding: "2px" }
+                  }
+               >
+                  <List size={25} color={isDark ? "#fff" : "#000"} />
+               </IconButton>
             </div>
-         </a>
 
-         {!home && <SearchBar isDark={isDark} searchBar={searchBar} />}
+            {/* Logo */}
+            <a
+               href={signedIn ? "/dashboard" : "/"}
+               className={
+                  home ? "nav-logo-container" : "nav-logo-container-hidden"
+               }
+               style={{
+                  all: "unset",
+                  cursor: "pointer",
+                  display: "flex",
+                  placeContent: "center",
+               }}
+            >
+               <div
+                  className="nav-logo"
+                  style={home ? {} : { display: "none" }}
+               >
+                  <img src={Logo} alt="Logo" />
+                  <p>Fulcrums</p>
+               </div>
+            </a>
 
-         {signedIn ? (
-            <div className="profile-container" style={{ position: "relative" }}>
-               <Tooltip title="账号">
-                  <img
-                     src={user.photo || DefaultProfile}
-                     alt={user.name || "p"}
-                     className="user-photo"
-                     style={{
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        cursor: "pointer",
-                     }}
-                     onClick={handleProfileClick}
+            {!home && <SearchBar isDark={isDark} searchBar={searchBar} />}
+
+            {signedIn ? (
+               <div
+                  className="profile-container"
+                  style={{ position: "relative" }}
+               >
+                  <Tooltip title="账号">
+                     <img
+                        src={user.photo || DefaultProfile}
+                        alt={user.name || "p"}
+                        className="user-photo"
+                        style={{
+                           borderRadius: "50%",
+                           objectFit: "cover",
+                           cursor: "pointer",
+                        }}
+                        onClick={handleProfileClick}
+                     />
+                  </Tooltip>
+
+                  <ProfileModal
+                     isOpen={Boolean(anchorEl)}
+                     anchorEl={anchorEl}
+                     onClose={() => setAnchorEl(null)}
+                     isSettingsOpen={isSettingsOpen}
+                     setIsSettingsOpen={setIsSettingsOpen}
                   />
-               </Tooltip>
+               </div>
+            ) : (
+               <div className="nav-links">
+                  <a href="/dashboard">
+                     <button className="cta-btn-join">登录</button>
+                  </a>
+               </div>
+            )}
+         </Box>
 
-               <ProfileModal
-                  isOpen={Boolean(anchorEl)}
-                  anchorEl={anchorEl}
-                  onClose={() => setAnchorEl(null)}
-               />
-            </div>
-         ) : (
-            <div className="nav-links">
-               <a href="/dashboard">
-                  <button className="cta-btn-join">登录</button>
-               </a>
-            </div>
+         {isSettingsOpen && (
+            <SettingsPage
+               setIsSettingsOpen={setIsSettingsOpen}
+               isSettingsOpen={isSettingsOpen}
+               isDark={isDark}
+            />
          )}
-      </Box>
+         {isSettingsOpen && (
+            <div
+               className="overlay-settings"
+               onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+            ></div>
+         )}
+      </>
    );
 };
 

@@ -36,11 +36,12 @@ export function QuickStats10() {
 
    return (
       <Box
-         sx={{ bgcolor: theme.palette.background.default, borderRadius: 5 }}
+         sx={{ bgcolor: theme.palette.background.default, borderRadius: 5, }}
          className="dashboard-card-display"
       >
          <Card
             sx={{
+               p: 1.5,
                borderRadius: 4,
                boxShadow:
                   theme.palette.mode === "dark"
@@ -201,6 +202,7 @@ export function Chart1() {
          <Card
             sx={{
                borderRadius: 4,
+               p: 1.5,
                boxShadow:
                   theme.palette.mode === "dark"
                      ? "0 2px 8px rgba(0, 0, 0, 0.5)"
