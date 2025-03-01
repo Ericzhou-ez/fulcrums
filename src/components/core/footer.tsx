@@ -299,7 +299,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
          <img
             src={FooterName}
             alt="Fulcrums"
-            style={{ width: "100%", transform: "translateY(10px)", zIndex: -1}}
+            style={{ width: "100%", zIndex: -1}}
          />
       </footer>
    );
