@@ -33,6 +33,7 @@ import {
    PhoneIncoming,
 } from "phosphor-react";
 import { blueGrey } from "@mui/material/colors";
+import FooterName from "../../assets/images/footerName.svg";
 
 interface FooterProps {
    theme: string;
@@ -103,7 +104,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
    };
 
    return (
-      <footer>
+      <footer style={{position: "relative"}}>
          <div className="footer">
             <div className="footer-divider"></div>
 
@@ -146,7 +147,6 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
             component="footer"
             sx={{
                borderTop: "1px solid var(--mui-palette-divider)",
-               pb: 4,
                pt: { sm: 0, xs: 2 },
             }}
          >
@@ -295,6 +295,12 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                </Stack>
             </Container>
          </Box>
+
+         <img
+            src={FooterName}
+            alt="Fulcrums"
+            style={{ width: "100%", transform: "translateY(10px)", zIndex: -1}}
+         />
       </footer>
    );
 };
