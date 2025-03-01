@@ -33,7 +33,7 @@ import {
    PhoneIncoming,
 } from "phosphor-react";
 import { blueGrey } from "@mui/material/colors";
-import FooterName from "../../assets/images/footerName.svg";
+
 
 interface FooterProps {
    theme: string;
@@ -295,12 +295,6 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                </Stack>
             </Container>
          </Box>
-
-         <img
-            src={FooterName}
-            alt="Fulcrums"
-            style={{ width: "100%", zIndex: -1}}
-         />
       </footer>
    );
 };

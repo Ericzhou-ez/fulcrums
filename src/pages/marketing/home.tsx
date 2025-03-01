@@ -5,8 +5,9 @@ import Nav from "../../components/core/nav";
 import "../../styles/home.css";
 import BottomCTA from "../../components/marketing/bottomCta";
 import { Faqs } from "../../components/marketing/faqs";
-import { useEffect, useState } from "react";
+import { useEffect, useState} from "react";
 import FeatureSelector from "../../components/marketing/featureSelector";
+import FooterName from "../../assets/images/footerName.svg";
 
 interface HomeProps {
    theme: string;
@@ -82,9 +83,12 @@ const Home: React.FC<HomeProps> = ({
          <Faqs />
 
          <BottomCTA theme={theme} />
+
          <div style={{ padding: "0 16px" }}>
             <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
          </div>
+
+         <img src={FooterName} alt="Fulcrums" style={{ width: "100%", opacity: 0.4 }} />
       </React.Fragment>
    );
 };
