@@ -139,12 +139,14 @@
    position: fixed;
    background-color: var(--background-secondary-color);
    top: 50%;
-   left: 5vw;
-   width: 90vw;
+   left: 12vw;
+   width: 76vw;
    max-height: 90vh;
    z-index: 2000;
    border-radius: 20px;
-   padding: 30px 50px;
+   padding: 20px 50px;
+   padding-top: 10px;
+   padding-right: 30px;
    overflow-y: scroll;
    transform: translateY(-50%);
    opacity: 0;

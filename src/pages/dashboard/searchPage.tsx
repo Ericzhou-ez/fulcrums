@@ -6,13 +6,34 @@ import SideNav from "../../components/dashboard/dashboardNav";
 import { CompanyCard } from "../../components/dashboard/companyCard";
 import { ProductFilters } from "../../components/dashboard/productFilter";
 import { ProductCard } from "../../components/dashboard/productSearchCard";
-import data from "../../data/lookup_temp.json";
+import data from "../../data/products_companies.json";
 import InfoIcon from "../../assets/icons/iconly-glass-info.svg";
 
 const mainContentStyles = (navOpen: boolean) => ({
    marginLeft: { xs: 0, md: navOpen ? "240px" : "0px" },
    transition: "margin-left 0.3s ease",
 });
+
+interface Company {
+   id: string;
+   name: string;
+   ownerName: string;
+   phoneNumber: number;
+   address: string;
+   category: string[]; 
+   products: { name: string; link: string; }[];
+}
+
+interface Product {
+   id: string;
+   productName: string;
+   ownerName: string;
+   phoneNumber: number;
+   address: string;
+   category: string[];
+   storeName: string;
+   link: string;
+}
 
 interface SearchPageProps {
    signedIn: boolean;
@@ -45,44 +66,52 @@ const SearchPage: React.FC<SearchPageProps> = ({
 }) => {
    const [searchQuery, setSearchQuery] = useState("");
    const [page, setPage] = useState(1);
-   const [itemsPerPage, setItemsPerPage] = useState(5);
+   const [itemsPerPage, setItemsPerPage] = useState(10);
    const [searchMode, setSearchMode] = useState("product");
    const [productType, setProductType] = useState("");
-   const [filteredResults, setFilteredResults] = useState<any[]>([]);
+   const [filteredResults, setFilteredResults] = useState<
+      (Company | Product)[]
+   >([]);
 
    useEffect(() => {
-      let companies = Object.entries(data.search_by_company).map(
-         ([name, info], idx) => ({
+      let companies: Company[] = Object.entries(data.search_by_store).map(
+         ([name, info]: [string, any], idx) => ({
             id: `company-${idx}`,
             name,
             ownerName: info["Owner Name"],
-            phoneNumber: info["Phone Number"],
+            phoneNumber: Number(info["Phone Number"]),
             address: info.Address,
-            category: info.Category,
-            products: info.Products || [],
+            category: Array.isArray(info.Category)
+               ? info.Category
+               : [info.Category], 
+            products: info.Products.map((product: string) => ({ name: product, link: "" })) || [],
          })
       );
 
-      let products = Object.entries(data.search_by_product).map(
-         ([name, info], idx) => ({
+      let products: Product[] = Object.entries(data.search_by_product).map(
+         ([name, info]: [string, any], idx) => ({
             id: `product-${idx}`,
             productName: name,
             ownerName: info["Owner Name"],
-            phoneNumber: info["Phone Number"],
+            phoneNumber: Number(info["Phone Number"]),
             address: info.Address,
-            category: info.Category,
+            category: Array.isArray(info.Category)
+               ? info.Category
+               : [info.Category],
             storeName: info["Factory Name"],
+            link: info.Link || "",
          })
       );
 
       if (productType) {
-         companies = companies.filter(
-            (company) => company.category === productType
+         companies = companies.filter((company) =>
+            company.category.includes(productType)
          );
          products = products.filter(
-            (product) => product.category === productType
+            (product) => product.category.includes(productType) 
          );
       }
+
 
       let results =
          searchMode === "company"
@@ -160,13 +189,23 @@ const SearchPage: React.FC<SearchPageProps> = ({
                </div>
             ) : (
                <div style={{ padding: "0 16px", marginTop: 0 }}>
-                  {searchMode === "company"
-                     ? paginatedResults.map((company: any) => (
-                          <CompanyCard key={company.id} company={company} />
-                       ))
-                     : paginatedResults.map((product: any) => (
-                          <ProductCard key={product.id} product={product} />
-                       ))}
+                  {paginatedResults.map((item) => {
+                     if ("products" in item) {
+                        return (
+                           <CompanyCard
+                              key={item.id}
+                              company={item as Company}
+                           />
+                        );
+                     } else {
+                        return (
+                           <ProductCard
+                              key={item.id}
+                              product={item as Product}
+                           />
+                        );
+                     }
+                  })}
                </div>
             )}
 
@@ -185,13 +224,13 @@ const SearchPage: React.FC<SearchPageProps> = ({
                   }}
                   sx={{
                      minWidth: "100px",
-                     height: "40px",
+                     height: { xs: "30px", md: "40px" },
                      borderRadius: "30px",
                   }}
                >
-                  <MenuItem value={5}>每页 5 个</MenuItem>
                   <MenuItem value={10}>每页 10 个</MenuItem>
                   <MenuItem value={20}>每页 20 个</MenuItem>
+                  <MenuItem value={50}>每页 50 个</MenuItem>
                </Select>
 
                <Pagination
@@ -200,10 +239,16 @@ const SearchPage: React.FC<SearchPageProps> = ({
                   onChange={handleChangePage}
                   color="primary"
                   sx={{
+                     display: "flex",
+                     justifyContent: "center",
+                     "& .MuiPagination-ul": {
+                        flexWrap: "wrap",
+                     },
                      "& .MuiPaginationItem-root": {
                         fontSize: { xs: "0.7rem", sm: "0.8rem", md: "1rem" },
-                        padding: { xs: "2px", sm: "3px", md: "8px" },
-                        minWidth: { xs: "24px", sm: "28px", md: "32px" },
+                        padding: { xs: "0px", sm: "6px", md: "8px" },
+                        minWidth: { xs: "25px", sm: "28px", md: "32px" },
+                        maxHeight: { xs: "25px", sm: "28px", md: "32px" },
                      },
                   }}
                />

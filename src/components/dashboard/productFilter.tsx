@@ -4,8 +4,8 @@ import { MultiSelect } from "./multiSelect";
 import "../../styles/search.css";
 
 const typeOptions = [
-   { label: "饰品", value: "Jewelry" },
-   { label: "玩具", value: "toys" },
+   { label: "饰品", value: "Jewels" },
+   { label: "玩具", value: "Toys" },
    { label: "百货", value: "general_merchandise" },
    { label: "家电数码", value: "home_appliances_electronics" },
    { label: "家纺家饰", value: "home_textile_decor" },

@@ -6,7 +6,20 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import { X as XIcon, ArrowUpRight as ArrowUpRightIcon } from "phosphor-react";
 import { useTheme } from "@mui/material/styles";
-import { SimpleCard } from "./simpleCard";
+import data from "../../data/products_companies.json"
+
+interface ProductData {
+   [key: string]: {
+      "Factory Name": string;
+      "Owner Name": string;
+      "Phone Number": number;
+      Address: string;
+      Category: string;
+      Link: string;
+   };
+}
+
+const productData: ProductData = data.search_by_product;
 
 interface Company {
    id: string;
@@ -14,8 +27,8 @@ interface Company {
    ownerName: string;
    phoneNumber: number;
    address: string;
-   category: string;
-   products: string[];
+   category: string[];
+   products: { name: string; link: string }[]; 
 }
 
 interface CompanyCardProps {
@@ -29,12 +42,13 @@ export function CompanyCard({ company }: CompanyCardProps) {
 
    function toggleDetails() {
       setDetailsOpen((prev) => !prev);
-      if (!detailsOpen) {
-         document.body.style.overflow = "hidden";
-      } else {
-         document.body.style.overflow = "auto";
-      }
+      document.body.style.overflow = detailsOpen ? "auto" : "hidden";
    }
+
+   const productsWithLinks = company.products.map((product) => ({
+      name: product.name,
+      link: productData[product.name]?.Link || "#",
+   }));
 
    return (
       <div style={{ position: "relative" }}>
@@ -44,7 +58,7 @@ export function CompanyCard({ company }: CompanyCardProps) {
                pt: 1,
                mt: 2,
                borderRadius: 4,
-               backgroundColor: isDark ? "#3c3a42" : "#faf6f2",
+               backgroundColor: isDark ? "#1e1d1b" : "#faf6f2",
             }}
          >
             <CardContent>
@@ -61,7 +75,7 @@ export function CompanyCard({ company }: CompanyCardProps) {
                            <Typography
                               variant="h3"
                               sx={{
-                                 fontSize: { xs: "1.3rem", md: "1.8rem" },
+                                 fontSize: { xs: "1.3rem", md: "1.6rem" },
                                  lineHeight: { xs: "1.9rem", md: "2.5rem" },
                                  whiteSpace: "nowrap",
                                  overflow: "hidden",
@@ -76,9 +90,7 @@ export function CompanyCard({ company }: CompanyCardProps) {
                            >
                               {company.name}
                            </Typography>
-                           <IconButton
-                              onClick={toggleDetails}
-                           >
+                           <IconButton onClick={toggleDetails}>
                               <ArrowUpRightIcon size={20} />
                            </IconButton>
                         </div>
@@ -86,9 +98,9 @@ export function CompanyCard({ company }: CompanyCardProps) {
                         <Typography
                            variant="body2"
                            color="text.secondary"
-                           sx={{ fontSize: { xs: "0.8rem", md: "1rem" } }}
+                           sx={{ fontSize: { xs: "0.6rem", md: "0.8rem" } }}
                         >
-                           {company.category}
+                           {company.category.join(", ")}
                         </Typography>
                      </Stack>
                   </Stack>
@@ -113,10 +125,11 @@ export function CompanyCard({ company }: CompanyCardProps) {
                         variant="h5"
                         sx={{
                            color: isDark ? "#FFA500" : "#D35400",
-                           fontSize: { xs: "1.5rem", md: "1.8rem" },
+                           fontSize: { xs: "1.8rem", md: "2rem" },
                            fontWeight: 600,
                            letterSpacing: "0.4px",
                            pb: 2,
+                           pt: 3,
                         }}
                      >
                         {company.name}
@@ -128,7 +141,7 @@ export function CompanyCard({ company }: CompanyCardProps) {
                   </div>
 
                   <Typography sx={{ pb: 1 }}>
-                     <strong>类别:</strong> {company.category}
+                     <strong>类别:</strong> {company.category.join(", ")}
                   </Typography>
                   <Typography sx={{ pb: 1 }}>
                      <strong>地址:</strong> {company.address}
@@ -140,15 +153,43 @@ export function CompanyCard({ company }: CompanyCardProps) {
                      <strong>联系电话:</strong> {company.phoneNumber}
                   </Typography>
 
-                  {company.products.length > 0 && (
+                  {productsWithLinks.length > 0 && (
                      <div className="more-products">
-                        <Typography variant="h6" sx={{ mt: 5, mb: 2 }}>
-                           {company.name}的产品
+                        <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>
+                           更多来自
+                           <span
+                              style={{ color: isDark ? "#FFA500" : "#D35400" }}
+                           >
+                              {company.name}
+                           </span>
+                           的产品
                         </Typography>
-                        <SimpleCard
-                           products={company.products}
-                           isDark={isDark}
-                        />
+                        <ul>
+                           {productsWithLinks.map((product) => (
+                              <li key={product.name}>
+                                 <a
+                                    href={product.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                 >
+                                    <Typography
+                                       sx={{
+                                          textDecoration: "underline",
+                                          cursor: "pointer",
+                                          paddingBottom: "5px",
+                                          "&:hover": {
+                                             color: isDark
+                                                ? "#FFA500"
+                                                : "#D35400",
+                                          },
+                                       }}
+                                    >
+                                       {product.name}
+                                    </Typography>
+                                 </a>
+                              </li>
+                           ))}
+                        </ul>
                      </div>
                   )}
                </div>
