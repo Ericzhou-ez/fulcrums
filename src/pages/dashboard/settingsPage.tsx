@@ -45,7 +45,8 @@ const SettingPage: React.FC<SettingPageProps> = ({
    setOverlay,
    closeOverlay,
 }) => {
-   const isDarkMode = theme === "dark";
+   const isDark = theme.palette.mode === "dark";
+
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
          <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
@@ -71,9 +72,9 @@ const SettingPage: React.FC<SettingPageProps> = ({
                className="title-text-recent"
                sx={{
                   fontSize: {
-                     xs: "2rem",
-                     sm: "2.2rem",
-                     md: "2.4rem",
+                     xs: "2.2rem",
+                     sm: "2.4rem",
+                     md: "2.6rem",
                      lg: "2.8rem",
                   },
                }}
@@ -85,8 +86,8 @@ const SettingPage: React.FC<SettingPageProps> = ({
          <div className="gradient-divider"></div>
 
          <Stack spacing={3}>
-            <PasswordForm />
-            <ThemeSwitch />
+            <PasswordForm isDark={isDark} />
+            <ThemeSwitch isDark={isDark} />
             <DeleteAccount />
          </Stack>
 

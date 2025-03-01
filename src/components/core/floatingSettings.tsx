@@ -131,7 +131,7 @@ const [user, setUser] = useState<any>(null);
                }}
             >
                <Info size={18} style={{ marginRight: 8 }} />
-               账户
+               设置
             </MenuItem>
          </a>
 

@@ -1,37 +1,50 @@
 import * as React from "react";
-import Avatar from "@mui/material/Avatar";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardHeader from "@mui/material/CardHeader";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-import { Gear as GearIcon } from "phosphor-react";
-import { Moon as MoonIcon } from "phosphor-react";
-import { Sun as SunIcon } from "phosphor-react";
+import {
+   Card,
+   CardContent,
+   CardHeader,
+   FormControlLabel,
+   Radio,
+   RadioGroup,
+   Stack,
+   Typography,
+} from "@mui/material";
+import { Moon as MoonIcon, Sun as SunIcon } from "phosphor-react";
 
-export function ThemeSwitch() {
+export function ThemeSwitch({isDark}: any) {
    return (
-      <Card>
+      <Card
+         sx={{
+            borderRadius: 4,
+            boxShadow: "0 2px 12px rgba(0, 0, 0, 0.1)",
+            p: 1.6,
+            bgcolor: isDark ? "#1d1c1f" : "#faf8f5",
+         }}
+      >
          <CardHeader
-            avatar={
-               <Avatar>
-                  <GearIcon fontSize="var(--Icon-fontSize)" />
-               </Avatar>
+            title={
+               <Typography
+                  variant="h6"
+                  sx={{
+                     fontSize: { xs: "1.6rem", sm: "2rem" },
+                     fontWeight: 600,
+                     paddingBottom: 0,
+                  }}
+               >
+                  主题选项
+               </Typography>
             }
-            title="Theme options"
          />
-         <CardContent>
-            <Card variant="outlined">
+         <CardContent sx={{ p: 2 }}>
+            <Card variant="outlined" sx={{ borderRadius: 4 }}>
                <RadioGroup
                   defaultValue="light"
                   sx={{
                      gap: 0,
+                     bgcolor: isDark ? "#1d1c1f" : "#f0eee6",
                      "& .MuiFormControlLabel-root": {
                         justifyContent: "space-between",
-                        p: "8px 12px",
+                        p: 3,
                         "&:not(:last-of-type)": {
                            borderBottom: "1px solid var(--mui-palette-divider)",
                         },
@@ -40,20 +53,20 @@ export function ThemeSwitch() {
                >
                   {[
                      {
-                        title: "Light mode",
-                        description: "Best for bright environments",
+                        title: "亮色模式",
+                        description: "适用于明亮环境",
                         value: "light",
                         icon: SunIcon,
                      },
                      {
-                        title: "Dark mode",
-                        description: "Recommended for dark rooms",
+                        title: "暗色模式",
+                        description: "推荐在暗环境下使用",
                         value: "dark",
                         icon: MoonIcon,
                      },
                      {
-                        title: "System",
-                        description: "Adapts to your device's theme",
+                        title: "系统默认",
+                        description: "自动适应设备主题",
                         value: "system",
                         icon: SunIcon,
                      },
@@ -67,9 +80,7 @@ export function ThemeSwitch() {
                               spacing={2}
                               sx={{ alignItems: "center" }}
                            >
-                              <Avatar>
-                                 <option.icon fontSize="var(--Icon-fontSize)" />
-                              </Avatar>
+                              <option.icon fontSize="var(--Icon-fontSize)" />
                               <div>
                                  <Typography variant="inherit">
                                     {option.title}

@@ -46,8 +46,7 @@ const groups = [
       items: [
          { key: "home", title: "Home", href: "/" },
          { key: "signin", title: "Login", href: "/signin" },
-         { key: "recent", title: "Recent", href: "/recent" },
-         { key: "saved", title: "Saved", href: "/saved" },
+         { key: "dashboard", title: "Dashboard", href: "/dashboard" },
       ],
    },
    {

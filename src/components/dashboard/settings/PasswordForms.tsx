@@ -1,45 +1,67 @@
 import * as React from "react";
-import Avatar from "@mui/material/Avatar";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardHeader from "@mui/material/CardHeader";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import Stack from "@mui/material/Stack";
-import { Password as PasswordIcon } from "phosphor-react";
+import {
+   Box,
+   Button,
+   Card,
+   CardContent,
+   CardHeader,
+   FormControl,
+   InputLabel,
+   OutlinedInput,
+   Stack,
+   TextField,
+   Typography,
+} from "@mui/material";
 
-export function PasswordForm() {
+export function PasswordForm({isDark}: any) {
    return (
-      <Card>
+      <Card
+         sx={{
+            borderRadius: 4,
+            p: 2,
+            boxShadow: "0 2px 12px rgba(0, 0, 0, 0.1)",
+            bgcolor: isDark ? "#1d1c1f" : "#faf8f5",
+         }}
+      >
          <CardHeader
-            avatar={
-               <Avatar>
-                  <PasswordIcon fontSize="var(--Icon-fontSize)" />
-               </Avatar>
+            title={
+               <Typography
+                  variant="h6"
+                  sx={{
+                     fontSize: { xs: "1.6rem", sm: "2rem" },
+                     fontWeight: 600,
+                  }}
+               >
+                  修改密码
+               </Typography>
             }
-            title="Change password"
          />
          <CardContent>
             <Stack spacing={3}>
-               <Stack spacing={3}>
-                  <FormControl>
-                     <InputLabel>Old password</InputLabel>
-                     <OutlinedInput name="oldPassword" type="password" />
-                  </FormControl>
-                  <FormControl>
-                     <InputLabel>New password</InputLabel>
-                     <OutlinedInput name="password" type="password" />
-                  </FormControl>
-                  <FormControl>
-                     <InputLabel>Re-type new password</InputLabel>
-                     <OutlinedInput name="confirmPassword" type="password" />
-                  </FormControl>
+               <Stack spacing={3.6}>
+                  <TextField
+                     id="standard-basic"
+                     label="旧密码"
+                     variant="standard"
+                     margin="dense"
+                  />
+                  <TextField
+                     id="outlined-basic"
+                     label="新密码"
+                     variant="outlined"
+                     margin="dense"
+                  />
+                  <TextField
+                     id="outlined-basic"
+                     label="确认新密码"
+                     variant="outlined"
+                     margin="dense"
+                  />
                </Stack>
                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Button variant="contained">Update</Button>
+                  <Button sx={{ borderRadius: 10 }} variant="contained">
+                     更新
+                  </Button>
                </Box>
             </Stack>
          </CardContent>
