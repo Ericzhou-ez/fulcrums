@@ -119,20 +119,21 @@ const [user, setUser] = useState<any>(null);
 
          <Divider />
 
-         <MenuItem
-            sx={{
-               py: 1.2,
-               "&:hover": {
-                  bgcolor: theme.palette.action.hover,
-                  borderRadius: 3,
-                  transition: "background 0.2s ease",
-               },
-            }}
-            onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-         >
-            <Info size={18} style={{ marginRight: 8 }} />
-            账户
-         </MenuItem>
+         <a href="/dashboard/settings">
+            <MenuItem
+               sx={{
+                  py: 1.2,
+                  "&:hover": {
+                     bgcolor: theme.palette.action.hover,
+                     borderRadius: 3,
+                     transition: "background 0.2s ease",
+                  },
+               }}
+            >
+               <Info size={18} style={{ marginRight: 8 }} />
+               账户
+            </MenuItem>
+         </a>
 
          <a href="/dashboard">
             <MenuItem

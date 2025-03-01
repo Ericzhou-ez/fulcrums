@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import { MagnifyingGlass, List } from "phosphor-react";
 import { ProfileModal } from "./floatingSettings";
-import { SettingsPage } from "../../pages/dashboard/settingsPage";
 
 interface NavProps {
    signedIn: boolean;
@@ -148,20 +147,6 @@ const Nav: React.FC<NavProps> = ({
                </div>
             )}
          </Box>
-
-         {isSettingsOpen && (
-            <SettingsPage
-               setIsSettingsOpen={setIsSettingsOpen}
-               isSettingsOpen={isSettingsOpen}
-               isDark={isDark}
-            />
-         )}
-         {isSettingsOpen && (
-            <div
-               className="overlay-settings"
-               onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-            ></div>
-         )}
       </>
    );
 };

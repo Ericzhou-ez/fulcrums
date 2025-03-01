@@ -32,7 +32,7 @@ export default function NotFound() {
                <button
                   style={{
                      border: "none",
-                     backgroundColor: "#adb0a0",
+                     backgroundColor: "#de9849",
                      padding: "10px 18px",
                      borderRadius: "20px",
                   }}
