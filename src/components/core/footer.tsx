@@ -104,7 +104,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
    };
 
    return (
-      <footer style={{position: "relative"}}>
+      <footer style={{position: "relative", paddingBottom: "25px"}}>
          <div className="footer">
             <div className="footer-divider"></div>
 
@@ -144,13 +144,13 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
          </div>
 
          <Box
-            component="footer"
             sx={{
                borderTop: "1px solid var(--mui-palette-divider)",
+               p: 0,
                pt: { sm: 0, xs: 2 },
             }}
          >
-            <Container maxWidth={false}>
+            <Container maxWidth={false} disableGutters>
                <Grid container spacing={{ sx: 2, sm: 3 }}>
                   <Grid
                      item

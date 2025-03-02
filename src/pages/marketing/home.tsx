@@ -1,11 +1,10 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Footer from "../../components/core/footer";
 import Hero from "../../components/marketing/hero";
 import Nav from "../../components/core/nav";
 import "../../styles/home.css";
 import BottomCTA from "../../components/marketing/bottomCta";
 import { Faqs } from "../../components/marketing/faqs";
-import { useEffect, useState} from "react";
 import FeatureSelector from "../../components/marketing/featureSelector";
 import FooterName from "../../assets/images/footerName.svg";
 
@@ -22,6 +21,10 @@ const Home: React.FC<HomeProps> = ({
    signedIn,
    user,
 }) => {
+   const [footerHeight, setFooterHeight] = useState(0);
+   const imgRef = useRef<HTMLImageElement | null>(null);
+   const [activeIndex, setActiveIndex] = useState(1); 
+
    useEffect(() => {
       const starContainer = document.querySelector(".star-container");
       if (!starContainer) return;
@@ -51,44 +54,82 @@ const Home: React.FC<HomeProps> = ({
       };
    }, []);
 
-   const [activeIndex, setActiveIndex] = useState(1);
+   useEffect(() => {
+      if (imgRef.current) {
+         setFooterHeight(imgRef.current.clientHeight);
+      }
+   }, []);
 
    return (
       <React.Fragment>
-         <div className="home">
-            <div className="star-container"></div>
+         <div
+            style={{
+               position: "relative",
+               zIndex: 10,
+               marginBottom: `${footerHeight}px`, 
+               backgroundColor: "var(--background-color)",
+            }}
+         >
+            <div className="home">
+               <div className="star-container"></div>
+               <Nav
+                  signedIn={signedIn}
+                  user={user}
+                  home={true}
+                  handleSignOut={() => {}}
+                  isModalOpen={false}
+                  toggleModal={() => {}}
+                  navOpen={false}
+                  setNavOpen={null}
+                  overlay={false}
+                  setOverlay={() => {}}
+                  searchBar={false}
+               />
+               <Hero activeIndex={activeIndex} />{" "}
+            </div>
 
-            <Nav
-               signedIn={signedIn}
-               user={user}
-               home={true}
-               handleSignOut={() => {}}
-               isModalOpen={false}
-               toggleModal={() => {}}
-               navOpen={false}
-               setNavOpen={null}
-               overlay={false}
-               setOverlay={() => {}}
-               searchBar={false}
+            <FeatureSelector
+               activeIndex={activeIndex}
+               setActiveIndex={setActiveIndex}
             />
 
-            <Hero activeIndex={activeIndex} />
+            <Faqs />
+
+            <BottomCTA theme={theme} />
+
+            <div style={{ padding: "0 16px" }}>
+               <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
+            </div>
          </div>
 
-         <FeatureSelector
-            activeIndex={activeIndex}
-            setActiveIndex={setActiveIndex}
-         />
-
-         <Faqs />
-
-         <BottomCTA theme={theme} />
-
-         <div style={{ padding: "0 16px" }}>
-            <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
+         <div
+            style={{
+               width: "100%",
+               height: `${footerHeight}px`, 
+               position: "fixed",
+               bottom: 0,
+               zIndex: 0,
+               overflow: "hidden",
+               display: "flex",
+               justifyContent: "center",
+               alignItems: "center",
+            }}
+         >
+            <img
+               ref={imgRef} 
+               src={FooterName}
+               alt="Fulcrums"
+               style={{
+                  width: "100%",
+                  objectFit: "cover",
+               }}
+               onLoad={() => {
+                  if (imgRef.current) {
+                     setFooterHeight(imgRef.current.clientHeight);
+                  }
+               }}
+            />
          </div>
-
-         <img src={FooterName} alt="Fulcrums" style={{ width: "100%", opacity: 0.4 }} />
       </React.Fragment>
    );
 };
