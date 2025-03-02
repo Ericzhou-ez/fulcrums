@@ -119,6 +119,7 @@ const Home: React.FC<HomeProps> = ({
                ref={imgRef} 
                src={FooterName}
                alt="Fulcrums"
+               className="footer-bold-name"
                style={{
                   width: "100%",
                   objectFit: "cover",

@@ -24,7 +24,7 @@ export interface AppRoutesProps {
    handleSignOut: () => Promise<void>;
    isModalOpen: boolean;
    theme: any;
-   handleToggleTheme: () => void;
+   handleToggleTheme: any
    toggleModal: () => void;
 }
 

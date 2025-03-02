@@ -94,3 +94,9 @@ h6 {
       padding-bottom: 0;
    }
 }
+
+@media (width <= 600px) {
+   .footer-bold-name {
+      display: none;
+   }
+}

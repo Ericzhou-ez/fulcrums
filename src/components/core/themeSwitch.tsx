@@ -1,78 +1,105 @@
 import React from "react";
-import { styled } from "@mui/material/styles";
-import Switch from "@mui/material/Switch";
-import { useTheme } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles";
+import { useMediaQuery } from "@mui/material";
+import { Sun, Moon, Desktop } from "phosphor-react";
 
-const ThemeSwitch = styled(Switch)(({ theme }) => ({
-   width: 50,
+interface ThemeToggleProps {
+   currentTheme: "light" | "dark";
+   handleToggleTheme: any;
+}
+
+const Container = styled("div")(({ theme }) => ({
+   borderRadius: 9999,
+   padding: 2,
+   border: "1px solid " + theme.palette.divider,
+}));
+
+const ButtonGroup = styled("div")({
+   display: "flex",
+});
+
+const CircleButton = styled("button")<{
+   isSelected?: boolean;
+   isDarkMode?: boolean;
+}>(({ theme, isSelected, isDarkMode }) => ({
+   borderRadius: "50%",
    height: 30,
-   padding: 8,
-   "& .MuiSwitch-switchBase": {
-      margin: 1,
-      padding: 0,
-      transform: "translateX(6px)",
-      transition: "transform 300ms ease",
-      "&.Mui-checked": {
-         transform: "translateX(22px)",
-         "& .MuiSwitch-thumb:before": {
-            content: "''",
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            left: 0,
-            top: 0,
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center",
-            backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 20 20"><path fill="${encodeURIComponent(
-               "#fff"
-            )}" d="M4.2 2.5l-.7 1.8-1.8.7 1.8.7.7 1.8.6-1.8L6.7 5l-1.9-.7-.6-1.8zm15 8.3a6.7 6.7 0 11-6.6-6.6 5.8 5.8 0 006.6 6.6z"/></svg>')`,
-         },
-         "& + .MuiSwitch-track": {
-            backgroundColor:
-               theme.palette.mode === "dark" ? "#8796A5" : "#aab4be",
-            opacity: 1,
-         },
-      },
-   },
-   "& .MuiSwitch-thumb": {
-      backgroundColor: theme.palette.mode === "dark" ? "#003892" : "#001e3c",
-      width: 25,
-      height: 25,
-      "&:before": {
-         content: "''",
-         position: "absolute",
-         width: "100%",
-         height: "100%",
-         left: 0,
-         top: 0,
-         backgroundRepeat: "no-repeat",
-         backgroundPosition: "center",
-         backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 20 20"><path fill="${encodeURIComponent(
-            "#fff"
-         )}" d="M9.305 1.667V3.75h1.389V1.667h-1.39zm-4.707 1.95l-.982.982L5.09 6.072l.982-.982-1.473-1.473zm10.802 0L13.927 5.09l.982.982 1.473-1.473-.982-.982zM10 5.139a4.872 4.872 0 00-4.862 4.86A4.872 4.872 0 0010 14.862 4.872 4.872 0 0014.86 10 4.872 4.872 0 0010 5.139zm0 1.389A3.462 3.462 0 0113.471 10a3.462 3.462 0 01-3.473 3.472A3.462 3.462 0 016.527 10 3.462 3.462 0 0110 6.528z"/></svg>')`,
-      },
-   },
-   "& .MuiSwitch-track": {
-      borderRadius: 20 / 2,
-      backgroundColor: theme.palette.mode === "dark" ? "#8796A5" : "#aab4be",
-      opacity: 1,
+   margin: 0,
+   border: "none",
+   display: "inline-flex",
+   alignItems: "center",
+   justifyContent: "center",
+   cursor: "pointer",
+   backgroundColor: isSelected
+      ? isDarkMode
+         ? "#555" 
+         : "#bbb"
+      : "transparent",
+
+   "&:hover": {
+      backgroundColor: isSelected
+         ? isDarkMode
+            ? "#6668" 
+            : "#9998" 
+         : isDarkMode
+         ? "#444" 
+         : "#ddd3", 
    },
 }));
 
-interface ThemeToggleProps {
-   handleToggleTheme: () => void; 
-}
+const ThemeToggle: React.FC<ThemeToggleProps> = ({
+   currentTheme,
+   handleToggleTheme,
+}) => {
+   const isSystemDark = useMediaQuery("(prefers-color-scheme: dark)");
 
-const ThemeToggle: React.FC<ThemeToggleProps> = ({ handleToggleTheme }) => {
-   const theme = useTheme(); 
+   const handleButtonClick = (selectedTheme: "light" | "dark" | "system") => {
+      const newTheme =
+         selectedTheme === "system"
+            ? isSystemDark
+               ? "dark"
+               : "light"
+            : selectedTheme;
+
+      if (newTheme === currentTheme) return;
+
+      handleToggleTheme(newTheme);
+   };
+   const isAppDarkMode = currentTheme === "dark";
+   const theme = useTheme();
+   const isDark = theme.palette.mode === "dark";
 
    return (
-      <div style={{ display: "flex", alignItems: "center" }}>
-         <ThemeSwitch
-            checked={theme.palette.mode === "dark"} 
-            onChange={handleToggleTheme}
-         />
-      </div>
+      <Container>
+         <ButtonGroup>
+            <CircleButton
+               isSelected={currentTheme === "light"}
+               isDarkMode={isAppDarkMode}
+               onClick={() => handleButtonClick("light")}
+               aria-label="light mode"
+            >
+               <Sun size={18} color={isDark ? "#ccc" : "#111"} />
+            </CircleButton>
+
+            <CircleButton
+               isSelected={false}
+               isDarkMode={isAppDarkMode}
+               onClick={() => handleButtonClick("system")}
+               aria-label="system mode"
+            >
+               <Desktop size={18} color={isDark ? "#ccc" : "#111"} />
+            </CircleButton>
+
+            <CircleButton
+               isSelected={currentTheme === "dark"}
+               isDarkMode={isAppDarkMode}
+               onClick={() => handleButtonClick("dark")}
+               aria-label="dark mode"
+            >
+               <Moon size={18} color={isDark ? "#ccc" : "#111"} />
+            </CircleButton>
+         </ButtonGroup>
+      </Container>
    );
 };
 

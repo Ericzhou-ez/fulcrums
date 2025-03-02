@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, SetStateAction } from "react";
 import {
    createTheme,
    ThemeProvider,
@@ -140,8 +140,8 @@ function App() {
       );
    }, [theme]);
 
-   const handleToggleTheme = () => {
-      setMode((prev) => (prev === "light" ? "dark" : "light"));
+   const handleToggleTheme = (newTheme: any) => {
+      setMode(newTheme);
    };
 
    const handleSignOut = async () => await signOut(auth);
