@@ -290,7 +290,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                      All Rights Reserved.
                   </Typography>
                   <div className="theme-btn-container">
-                     <ThemeSwitch handleToggleTheme={handleToggleTheme} />
+                     <ThemeSwitch currentTheme={theme} handleToggleTheme={handleToggleTheme} />
                   </div>
                </Stack>
             </Container>

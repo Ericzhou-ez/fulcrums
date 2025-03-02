@@ -4,13 +4,13 @@ import { useMediaQuery } from "@mui/material";
 import { Sun, Moon, Desktop } from "phosphor-react";
 
 interface ThemeToggleProps {
-   currentTheme: "light" | "dark";
+   currentTheme: string;
    handleToggleTheme: any;
 }
 
 const Container = styled("div")(({ theme }) => ({
    borderRadius: 9999,
-   padding: 2,
+   padding: 3,
    border: "1px solid " + theme.palette.divider,
 }));
 
@@ -23,7 +23,7 @@ const CircleButton = styled("button")<{
    isDarkMode?: boolean;
 }>(({ theme, isSelected, isDarkMode }) => ({
    borderRadius: "50%",
-   height: 30,
+   height: "30px",
    margin: 0,
    border: "none",
    display: "inline-flex",
@@ -44,6 +44,10 @@ const CircleButton = styled("button")<{
          : isDarkMode
          ? "#444" 
          : "#ddd3", 
+   },
+
+   [theme.breakpoints.down("md")]: {
+      height: "24px",
    },
 }));
 
