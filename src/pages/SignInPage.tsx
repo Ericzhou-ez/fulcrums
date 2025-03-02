@@ -15,7 +15,7 @@ import { Typography } from "@mui/material";
 import FooterName from "../assets/images/footerName.svg";
 
 interface SignInPageProps {
-   theme: "light" | "dark";
+   theme: any;
    handleToggleTheme: () => void;
    user: any;
    signedIn: boolean;
@@ -41,6 +41,7 @@ const SignInPage: React.FC<SignInPageProps> = ({
    const [isSendingEmail, setIsSendingEmail] = useState(false);
    const [footerHeight, setFooterHeight] = useState(0);
    const imgRef = useRef<HTMLImageElement | null>(null);
+   const isDark = theme.palette.mode === "dark";
 
    useEffect(() => {
       if (isSignInWithEmailLink(auth, window.location.href)) {
@@ -245,6 +246,7 @@ const SignInPage: React.FC<SignInPageProps> = ({
                display: "flex",
                justifyContent: "center",
                alignItems: "center",
+               backgroundColor: isDark ? "#010e00" : "#fff2d8",
             }}
          >
             <img

@@ -9,7 +9,7 @@ import FeatureSelector from "../../components/marketing/featureSelector";
 import FooterName from "../../assets/images/footerName.svg";
 
 interface HomeProps {
-   theme: string;
+   theme: any;
    handleToggleTheme: () => void;
    signedIn: boolean;
    user: any;
@@ -23,7 +23,7 @@ const Home: React.FC<HomeProps> = ({
 }) => {
    const [footerHeight, setFooterHeight] = useState(0);
    const imgRef = useRef<HTMLImageElement | null>(null);
-   const [activeIndex, setActiveIndex] = useState(1); 
+   const [activeIndex, setActiveIndex] = useState(1);
 
    useEffect(() => {
       const starContainer = document.querySelector(".star-container");
@@ -60,13 +60,15 @@ const Home: React.FC<HomeProps> = ({
       }
    }, []);
 
+   const isDark = theme.palette.mode === "dark";
+
    return (
       <React.Fragment>
          <div
             style={{
                position: "relative",
                zIndex: 10,
-               marginBottom: `${footerHeight}px`, 
+               marginBottom: `${footerHeight}px`,
                backgroundColor: "var(--background-color)",
             }}
          >
@@ -104,8 +106,9 @@ const Home: React.FC<HomeProps> = ({
 
          <div
             style={{
+               backgroundColor: isDark ? "#010e00" : "#fff2d8",
                width: "100%",
-               height: `${footerHeight}px`, 
+               height: `${footerHeight}px`,
                position: "fixed",
                bottom: 0,
                zIndex: 0,
@@ -116,7 +119,7 @@ const Home: React.FC<HomeProps> = ({
             }}
          >
             <img
-               ref={imgRef} 
+               ref={imgRef}
                src={FooterName}
                alt="Fulcrums"
                className="footer-bold-name"
