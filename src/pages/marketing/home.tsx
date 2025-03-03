@@ -106,7 +106,7 @@ const Home: React.FC<HomeProps> = ({
 
          <div
             style={{
-               backgroundColor: isDark ? "#010e00" : "#fff2d8",
+            backgroundColor: isDark ? "#380e05" : "#fff2d8",
                width: "100%",
                height: `${footerHeight}px`,
                position: "fixed",

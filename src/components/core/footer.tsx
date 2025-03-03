@@ -59,8 +59,8 @@ const groups = [
          {
             key: "contact",
             title: "Contact",
-            external: true,
-            href: "mailto:zhoueric882@gmail.com",
+            external: false,
+            href: "/contact",
          },
       ],
    },
@@ -104,7 +104,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
    };
 
    return (
-      <footer style={{position: "relative", paddingBottom: "25px"}}>
+      <footer className="footer-container" style={{position: "relative", paddingBottom: "25px"}}>
          <div className="footer">
             <div className="footer-divider"></div>
 

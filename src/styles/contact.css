@@ -1,0 +1,66 @@
+.dot-mask {
+   position: relative;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   flex-direction: column;
+   width: 80%;
+   max-width: 1400px;
+   margin: 0 auto;
+   inset: 0;
+   background-image: radial-gradient(
+      var(--primary-color) 1.5px,
+      transparent 1.5px
+   );
+   background-size: 40px 40px;
+   -webkit-mask-image: radial-gradient(
+      ellipse 50% 50% at 50% 50%,
+      var(--background-color) 60%,
+      transparent 100%
+   );
+   mask-image: radial-gradient(
+      ellipse 50% 50% at 50% 50%,
+      var(--background-color) 60%,
+      transparent 100%
+   );
+   transition: all 0.5s ease-in-out;
+   background-position: center;
+}
+
+.dot-mask:hover {
+   background-size: 20px 20px;
+}
+
+.dot-mask-container {
+   width: 80%;
+   margin: 0 auto;
+   border: 0.5px solid var(--text-secondary-color);
+   position: relative;
+
+   margin-bottom: 50px;
+}
+
+.dot-mask-container::before,
+.dot-mask-container::after {
+   content: "";
+   position: absolute;
+   width: 15px;
+   height: 15px;
+   border-color: var(--text-secondary-color);
+}
+
+.dot-mask-container::before {
+   top: -15px;
+   left: -15px;
+   border-left: 0.5px solid;
+   border-top: 0.5px solid;
+   transform: rotate(180deg);
+}
+
+.dot-mask-container::after {
+   bottom: -15px;
+   right: -15px;
+   border-right: 0.5px solid;
+   border-bottom: 0.5px solid;
+   transform: rotate(180deg)
+}

@@ -17,6 +17,7 @@ import InternalQuoationPage from "../pages/dashboard/internalQuotation";
 import ExternalQuotationPage from "../pages/dashboard/externalQuotation";
 import SearchPage from "../pages/dashboard/searchPage";
 import SettingPage from "../pages/dashboard/settingsPage";
+import ContactPage from "../pages/marketing/contactPage";
 
 export interface AppRoutesProps {
    signedIn: boolean;
@@ -198,6 +199,21 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
             path="/terms"
             element={
                <TermsOfServicePage
+                  signedIn={signedIn}
+                  toggleModal={toggleModal}
+                  user={user}
+                  handleSignOut={handleSignOut}
+                  isModalOpen={isModalOpen}
+                  theme={theme}
+                  handleToggleTheme={handleToggleTheme}
+               />
+            }
+         />
+
+         <Route
+            path="/contact"
+            element={
+               <ContactPage
                   signedIn={signedIn}
                   toggleModal={toggleModal}
                   user={user}
