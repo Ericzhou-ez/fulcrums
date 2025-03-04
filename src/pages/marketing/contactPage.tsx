@@ -51,8 +51,6 @@ export default function ContactPage({
             searchBar={false}
          />
 
-         <ContactMain />
-
          <div
             style={{
                position: "relative",
@@ -61,7 +59,7 @@ export default function ContactPage({
                backgroundColor: "var(--background-color)",
             }}
          >
-           
+            <ContactMain />
 
             <div style={{ padding: "0 16px" }}>
                <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
