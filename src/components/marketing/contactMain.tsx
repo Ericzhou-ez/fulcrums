@@ -77,7 +77,7 @@ export default function ContactMain() {
                      pb: { xs: "30px", md: "50px" },
                   }}
                >
-                  Contact Us.
+                  联系我们.
                </Typography>
             </Box>
          </div>
@@ -90,7 +90,7 @@ export default function ContactMain() {
                      sx={{
                         flex: 1,
                         border: `0.5px solid ${borderColor}`,
-                        padding: "30px",
+                        padding: "30px 40px",
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "flex-start",
@@ -112,29 +112,28 @@ export default function ContactMain() {
                      <Typography
                         variant="body1"
                         sx={{
-                           fontWeight: 700,
+                           fontWeight: 500,
                            color: "text.primary",
                            display: "inline",
                         }}
                      >
-                        Connect with me{" "}
+                        与我建立联系
                         <Typography
-                           variant="body2"
+                           variant="body1"
                            sx={{
                               color: textColor,
                               fontWeight: 400,
                               display: "inline",
                            }}
                         >
-                           on LinkedIn to exchange ideas and explore
-                           opportunities.
+                           在LinkedIn上与我交流想法并探索更多机会。
                         </Typography>
                      </Typography>
                      <Button
                         variant="text"
                         sx={{
                            color: textColor,
-                           marginTop: "15px",
+                           marginTop: "20px",
                            fontSize: "0.9rem",
                            textTransform: "none",
                            padding: "5px 20px",
@@ -148,7 +147,7 @@ export default function ContactMain() {
                            )
                         }
                      >
-                        Connect with me
+                        联系
                      </Button>
                   </Box>
                </Grid>
@@ -159,7 +158,7 @@ export default function ContactMain() {
                      sx={{
                         flex: 1,
                         border: `0.5px solid ${borderColor}`,
-                        padding: "30px",
+                        padding: "30px 40px",
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "flex-start",
@@ -181,29 +180,28 @@ export default function ContactMain() {
                      <Typography
                         variant="body1"
                         sx={{
-                           fontWeight: 700,
+                           fontWeight: 500,
                            color: "text.primary",
                            display: "inline",
                         }}
                      >
-                        See what I’m up to.{" "}
+                        关注我的Instagram动态
                         <Typography
-                           variant="body2"
+                           variant="body1"
                            sx={{
                               color: textColor,
                               fontWeight: 400,
                               display: "inline",
                            }}
                         >
-                           Follow me on Instagram for insights, updates, and a
-                           glimpse behind the scenes.
+                           来获取最新动态和幕后故事。
                         </Typography>
                      </Typography>
                      <Button
                         variant="text"
                         sx={{
                            color: textColor,
-                           marginTop: "15px",
+                           marginTop: "20px",
                            fontSize: "0.9rem",
                            textTransform: "none",
                            padding: "5px 20px",
@@ -217,7 +215,7 @@ export default function ContactMain() {
                            )
                         }
                      >
-                        Follow @eric_zh0u
+                        关注 @eric_zh0u
                      </Button>
                   </Box>
                </Grid>
@@ -228,7 +226,7 @@ export default function ContactMain() {
                      sx={{
                         flex: 1,
                         border: `0.5px solid ${borderColor}`,
-                        padding: "30px",
+                        padding: "30px 40px",
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "flex-start",
@@ -250,29 +248,28 @@ export default function ContactMain() {
                      <Typography
                         variant="body1"
                         sx={{
-                           fontWeight: 700,
+                           fontWeight: 500,
                            color: "text.primary",
                            display: "inline",
                         }}
                      >
-                        Let’s make things happen.{" "}
+                        让我们一起创造更多可能;{" "}
                         <Typography
-                           variant="body2"
+                           variant="body1"
                            sx={{
                               color: textColor,
                               fontWeight: 400,
                               display: "inline",
                            }}
                         >
-                           Reach out via email for inquiries related to
-                           Fulcrums.
+                           通过电子邮件联系我，咨询Fulcrums相关事宜。
                         </Typography>
                      </Typography>
                      <Button
                         variant="text"
                         sx={{
                            color: textColor,
-                           marginTop: "15px",
+                           marginTop: "20px",
                            fontSize: "0.9rem",
                            textTransform: "none",
                            padding: "5px 20px",
@@ -283,7 +280,7 @@ export default function ContactMain() {
                            window.open("mailto:zhoueric882@gmail.com", "_blank")
                         }
                      >
-                        Contact me
+                        联系我
                      </Button>
                   </Box>
                </Grid>

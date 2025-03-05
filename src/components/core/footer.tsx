@@ -43,22 +43,25 @@ interface FooterProps {
 const groups = [
    {
       key: "menu",
-      title: "Menu",
+      title: "菜单",
       items: [
-         { key: "home", title: "Home", href: "/" },
-         { key: "signin", title: "Login", href: "/signin" },
-         { key: "dashboard", title: "Dashboard", href: "/dashboard" },
+         { key: "home", title: "主页", href: "/" },
+         { key: "dashboard", title: "概览", href: "/dashboard" },
+         { key: "product", title: "产品管理", href: "/products" },
+         { key: "quotation", title: "报价管理", href: "/quotations" },
+         { key: "customs", title: "报关管理", href: "/customs" },
       ],
    },
    {
       key: "legal",
-      title: "Legal",
+      title: "法律",
       items: [
-         { key: "terms", title: "Terms", href: "/terms" },
-         { key: "privacy", title: "Privacy", href: "/privacy" },
+         { key: "terms", title: "条款", href: "/terms" },
+         { key: "privacy", title: "隐私", href: "/privacy" },
+         { key: "cookies", title: "Cookie 政策", href: "/cookies" },
          {
             key: "contact",
-            title: "Contact",
+            title: "联系我们",
             external: false,
             href: "/contact",
          },
@@ -66,8 +69,14 @@ const groups = [
    },
    {
       key: "social",
-      title: "Socials",
+      title: "社交",
       items: [
+         {
+            key: "email",
+            title: "邮件",
+            external: true,
+            href: "mailto:zhoueric882@gmail.com",
+         },
          {
             key: "instagram",
             title: "Instagram",
@@ -200,7 +209,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                         >
                            <Typography
                               color="text.secondary"
-                              fontWeight="700"
+                              fontWeight="800"
                               style={{
                                  display: "flex",
                                  alignItems: "center",
@@ -240,7 +249,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                            <Typography
                               fontWeight="600"
                               sx={{
-                                 display: { xs: "none", sm: "inline-block" },
+                                 display: { xs: "none", sm: "inline-block", fontSize: "1.1rem" },
                               }}
                            >
                               {section.title}
@@ -331,7 +340,10 @@ function NavItem({ href, external, title }: NavItemProps) {
                   },
                   textDecoration: "none",
                   display: "inline-block",
-                  "&:hover": { textDecoration: "underline !important" },
+                  "&:hover": {
+                     textDecoration: "underline !important",
+                     color: "#db772a !important",
+                  },
                   cursor: "pointer !important",
                }}
             >
@@ -349,7 +361,10 @@ function NavItem({ href, external, title }: NavItemProps) {
                   },
                   textDecoration: "none",
                   display: "inline-block",
-                  "&:hover": { textDecoration: "underline !important" },
+                  "&:hover": {
+                     textDecoration: "underline !important",
+                     color: "#db772a !important",
+                  },
                   cursor: "pointer !important",
                }}
                onClick={(e) => {
