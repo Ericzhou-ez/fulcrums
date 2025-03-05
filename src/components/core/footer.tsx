@@ -113,7 +113,10 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
    };
 
    return (
-      <footer className="footer-container" style={{position: "relative", paddingBottom: "25px"}}>
+      <footer
+         className="footer-container"
+         style={{ position: "relative", paddingBottom: "25px" }}
+      >
          <div className="footer">
             <div className="footer-divider"></div>
 
@@ -179,7 +182,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                            src={Logo}
                            alt="logo"
                         />
-                        <Typography color="text.secondary" variant="caption">
+                        <Typography variant="caption">
                            Powered by BATI-MAT DISTRIBUTION LIMITED.
                            <br />© {year} Fulcrums, Eric Zhou.
                         </Typography>
@@ -232,7 +235,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
 
                         <Stack
                            component="ul"
-                           spacing={0.8}
+                           spacing={0.5}
                            sx={{
                               listStyle: "none",
                               display: {
@@ -249,7 +252,12 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                            <Typography
                               fontWeight="600"
                               sx={{
-                                 display: { xs: "none", sm: "inline-block", fontSize: "1.1rem" },
+                                 display: {
+                                    xs: "none",
+                                    sm: "inline-block",
+                                    fontSize: "1.1rem",
+                                    marginBottom: "8px !important",
+                                 },
                               }}
                            >
                               {section.title}
@@ -299,7 +307,10 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                      All Rights Reserved.
                   </Typography>
                   <div className="theme-btn-container">
-                     <ThemeSwitch currentTheme={theme} handleToggleTheme={handleToggleTheme} />
+                     <ThemeSwitch
+                        currentTheme={theme}
+                        handleToggleTheme={handleToggleTheme}
+                     />
                   </div>
                </Stack>
             </Container>
@@ -332,11 +343,11 @@ function NavItem({ href, external, title }: NavItemProps) {
                href={href}
                target="_blank"
                rel="noopener noreferrer"
-               color="text.secondary"
                sx={{
                   fontSize: {
                      xs: "0.8rem !important",
                      sm: "0.9rem !important",
+                     color: "var(--text-secondary-color) !important",
                   },
                   textDecoration: "none",
                   display: "inline-block",
@@ -353,11 +364,11 @@ function NavItem({ href, external, title }: NavItemProps) {
             <Link
                component={RouterLink}
                to={href || ""}
-               color="text.secondary"
                sx={{
                   fontSize: {
                      xs: "0.8rem !important",
                      sm: "0.9rem !important",
+                     color: "var(--text-secondary-color) !important",
                   },
                   textDecoration: "none",
                   display: "inline-block",
