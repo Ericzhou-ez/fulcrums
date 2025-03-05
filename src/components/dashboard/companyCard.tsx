@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import { X as XIcon, ArrowUpRight as ArrowUpRightIcon } from "phosphor-react";
 import { useTheme } from "@mui/material/styles";
-import data from "../../data/products_companies.json"
+import data from "../../data/products_companies.json";
 
 interface ProductData {
    [key: string]: {
@@ -28,7 +28,7 @@ interface Company {
    phoneNumber: number;
    address: string;
    category: string[];
-   products: { name: string; link: string }[]; 
+   products: { name: string; link: string }[];
 }
 
 interface CompanyCardProps {
@@ -62,9 +62,9 @@ export function CompanyCard({ company }: CompanyCardProps) {
             }}
          >
             <CardContent>
-               <Stack spacing={2}>
+               <Stack spacing={1.5}>
                   <Stack direction="row" spacing={2}>
-                     <Stack spacing={1}>
+                     <Stack spacing={0.5}>
                         <div
                            style={{
                               display: "flex",
@@ -98,7 +98,7 @@ export function CompanyCard({ company }: CompanyCardProps) {
                         <Typography
                            variant="body2"
                            color="text.secondary"
-                           sx={{ fontSize: { xs: "0.6rem", md: "0.8rem" } }}
+                           sx={{ fontSize: { xs: "0.7rem", md: "0.9rem" } }}
                         >
                            {company.category.join(", ")}
                         </Typography>
@@ -129,7 +129,7 @@ export function CompanyCard({ company }: CompanyCardProps) {
                            fontWeight: 600,
                            letterSpacing: "0.4px",
                            pb: 2,
-                           pt: 3,
+                           pt: 4,
                         }}
                      >
                         {company.name}
@@ -140,23 +140,23 @@ export function CompanyCard({ company }: CompanyCardProps) {
                      </IconButton>
                   </div>
 
-                  <Typography sx={{ pb: 1 }}>
+                  <Typography sx={{ pb: 0.5 }}>
                      <strong>类别:</strong> {company.category.join(", ")}
                   </Typography>
-                  <Typography sx={{ pb: 1 }}>
+                  <Typography sx={{ pb: 0.5 }}>
                      <strong>地址:</strong> {company.address}
                   </Typography>
-                  <Typography sx={{ pb: 1 }}>
+                  <Typography sx={{ pb: 0.5 }}>
                      <strong>联系人:</strong> {company.ownerName}
                   </Typography>
-                  <Typography sx={{ pb: 1 }}>
+                  <Typography sx={{ pb: 0.5 }}>
                      <strong>联系电话:</strong> {company.phoneNumber}
                   </Typography>
 
                   {productsWithLinks.length > 0 && (
                      <div className="more-products">
-                        <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>
-                           更多来自
+                        <Typography variant="h6" sx={{ mt: 3, mb: 1.5 }}>
+                           来自
                            <span
                               style={{ color: isDark ? "#FFA500" : "#D35400" }}
                            >
@@ -164,32 +164,46 @@ export function CompanyCard({ company }: CompanyCardProps) {
                            </span>
                            的产品
                         </Typography>
-                        <ul>
-                           {productsWithLinks.map((product) => (
-                              <li key={product.name}>
+                        <div
+                           style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              borderRadius: "20px",
+                              overflow: "hidden",
+                              textAlign: "center",
+                              border: `1px solid ${isDark ? "#444" : "#ddd"}`,
+                           }}
+                        >
+                           {productsWithLinks.map((product, index) => (
+                              <div
+                                 key={product.name}
+                                 style={{
+                                    padding: "10px",
+                                    borderBottom:
+                                       index !== productsWithLinks.length - 1
+                                          ? `0.5px solid ${
+                                               isDark ? "#444" : "#ddd"
+                                            }`
+                                          : "none",
+                                 }}
+                              >
                                  <a
                                     href={product.link}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    style={{
+                                       textDecoration: "underline",
+                                       cursor: "pointer !important",
+                                       color: isDark ? "#FFA500" : "#D35400",
+                                       fontSize: "0.95rem",
+                                       fontWeight: 500,
+                                    }}
                                  >
-                                    <Typography
-                                       sx={{
-                                          textDecoration: "underline",
-                                          cursor: "pointer",
-                                          paddingBottom: "5px",
-                                          "&:hover": {
-                                             color: isDark
-                                                ? "#FFA500"
-                                                : "#D35400",
-                                          },
-                                       }}
-                                    >
-                                       {product.name}
-                                    </Typography>
+                                    {product.name}
                                  </a>
-                              </li>
+                              </div>
                            ))}
-                        </ul>
+                        </div>
                      </div>
                   )}
                </div>

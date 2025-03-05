@@ -56,9 +56,9 @@ export function ProductCard({ product }: ProductCardProps) {
             }}
          >
             <CardContent>
-               <Stack spacing={2}>
+               <Stack spacing={1.5}>
                   <Stack direction="row" spacing={2}>
-                     <Stack spacing={1}>
+                     <Stack spacing={0.5}>
                         <div
                            style={{
                               display: "flex",
@@ -92,7 +92,7 @@ export function ProductCard({ product }: ProductCardProps) {
                         <Typography
                            variant="body2"
                            color="text.secondary"
-                           sx={{ fontSize: { xs: "0.6rem", md: "0.8rem" } }}
+                           sx={{ fontSize: { xs: "0.7rem", md: "0.9rem" } }}
                         >
                            {product.storeName}
                         </Typography>
@@ -129,7 +129,7 @@ export function ProductCard({ product }: ProductCardProps) {
                               fontWeight: 600,
                               letterSpacing: "0.4px",
                               pb: 2,
-                              pt: 3,
+                              pt: 4,
                               textDecoration: "underline",
                               cursor: "pointer",
                            }}
@@ -143,58 +143,61 @@ export function ProductCard({ product }: ProductCardProps) {
                      </IconButton>
                   </div>
 
-                  <Typography sx={{ pb: 1 }}>
+                  <Typography sx={{ pb: 0.5 }}>
                      <strong>类别:</strong> {product.category.join(", ")}
                   </Typography>
-                  <Typography sx={{ pb: 1 }}>
+                  <Typography sx={{ pb: 0.5 }}>
                      <strong>卖家:</strong> {product.ownerName}
                   </Typography>
-                  <Typography sx={{ pb: 1 }}>
+                  <Typography sx={{ pb: 0.5 }}>
                      <strong>联系电话:</strong> {product.phoneNumber}
                   </Typography>
 
                   {moreProducts.length > 0 && (
                      <div className="more-products">
-                        <Typography variant="h6" sx={{ mt: 5, mb: 2 }}>
-                           更多来自{" "}
-                           <Link
-                              href="#"
-                              underline="hover"
-                              sx={{
-                                 fontWeight: 600,
-                                 color: isDark ? "#FFA500" : "#D35400",
-                              }}
-                           >
-                              {product.storeName}
-                           </Link>{" "}
-                           的产品
+                        <Typography variant="h6" sx={{ mt: 3, mb: 1.5 }}>
+                           更多来自{product.storeName}的产品
                         </Typography>
-                        <ul>
-                           {moreProducts.map((p: any) => (
-                              <li key={p.name}>
+                        <div
+                           style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              borderRadius: "20px",
+                              overflow: "hidden",
+                              textAlign: "center",
+                              border: `1px solid ${isDark ? "#444" : "#ddd"}`,
+                           }}
+                        >
+                           {moreProducts.map((p: any, index: any) => (
+                              <div
+                                 key={p.name}
+                                 style={{
+                                    padding: "10px",
+                                    borderBottom:
+                                       index !== moreProducts.length - 1
+                                          ? `0.5px solid ${
+                                               isDark ? "#444" : "#ddd"
+                                            }`
+                                          : "none",
+                                 }}
+                              >
                                  <a
-                                    href="p.link"
+                                    href={p.link}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    style={{
+                                       textDecoration: "underline",
+                                       cursor: "pointer",
+                                       color: isDark ? "#FFA500" : "#D35400",
+                                       fontSize: "0.95rem",
+                                       fontWeight: 500,
+                                    }}
                                  >
-                                    <Typography
-                                       sx={{
-                                          textDecoration: "underline",
-                                          cursor: "pointer",
-                                          paddingBottom: "5px",
-                                          "&:hover": {
-                                             color: isDark
-                                                ? "#FFA500"
-                                                : "#D35400",
-                                          },
-                                       }}
-                                    >
-                                       {p.name}
-                                    </Typography>
+                                    {p.name}
                                  </a>
-                              </li>
+                              </div>
                            ))}
-                        </ul>
+                        </div>
                      </div>
                   )}
                </div>

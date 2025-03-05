@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Stack, Pagination, Select, MenuItem } from "@mui/material";
+import { Box, Stack, Pagination, Select, MenuItem, Typography } from "@mui/material";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import SideNav from "../../components/dashboard/dashboardNav";
@@ -8,6 +8,7 @@ import { ProductFilters } from "../../components/dashboard/productFilter";
 import { ProductCard } from "../../components/dashboard/productSearchCard";
 import data from "../../data/products_companies.json";
 import InfoIcon from "../../assets/icons/iconly-glass-info.svg";
+import { useTheme } from "@mui/material/styles";
 
 const mainContentStyles = (navOpen: boolean) => ({
    marginLeft: { xs: 0, md: navOpen ? "240px" : "0px" },
@@ -255,6 +256,8 @@ const SearchPage: React.FC<SearchPageProps> = ({
             </Stack>
          </Stack>
 
+         <FooterDisclaimer />
+
          {overlay && (
             <div
                style={{
@@ -280,3 +283,41 @@ const SearchPage: React.FC<SearchPageProps> = ({
 };
 
 export default SearchPage;
+
+const FooterDisclaimer = () => {
+   const theme = useTheme();
+   const textColor =
+      theme.palette.mode === "dark"
+         ? "rgba(255, 255, 255, 0.6)"
+         : "rgba(0, 0, 0, 0.6)";
+
+   return (
+      <Box
+         sx={{
+            mt: 4,
+            mp: 2,
+            ml: "16px",
+            backgroundColor: theme.palette.background.default,
+         }}
+      >
+         <Typography
+            variant="body2"
+            sx={{
+               color: textColor,
+               fontSize: { xs: "0.75rem", sm: "0.875rem", md: "0.9rem" },
+               fontWeight: 400,
+               lineHeight: 1.6,
+            }}
+         >
+            1. Fulcrums与义乌购（YiWuGo）没有任何形式的关联.
+            <br />
+            2.
+            产品和店铺信息，以及以上提供的信息，可能存在不准确、不完整或虚假的情况.
+            <br />
+            3.
+            Fulcrums不对信息的真实性、准确性或完整性负责，也不承担任何法律责任.
+            <br />
+         </Typography>
+      </Box>
+   );
+};
