@@ -147,7 +147,7 @@
    padding: 20px 50px;
    padding-top: 10px;
    padding-right: 30px;
-   overflow-y: scroll;
+   overflow-y: auto;
    transform: translateY(-50%);
    opacity: 0;
    animation: fadeExpand 0.5s cubic-bezier(0.22, 1, 0.8, 1) forwards;
@@ -191,7 +191,7 @@
 
 .x-icon {
    position: fixed;
-   top: -5px;
+   top: 0px;
    right: -25px;
 }
 

@@ -129,7 +129,7 @@ export function CompanyCard({ company }: CompanyCardProps) {
                            fontWeight: 600,
                            letterSpacing: "0.4px",
                            pb: 2,
-                           pt: 4,
+                           pt: {xs: 0, sm: 3},
                         }}
                      >
                         {company.name}
