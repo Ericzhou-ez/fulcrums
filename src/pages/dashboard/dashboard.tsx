@@ -51,7 +51,10 @@ const Dashboard: React.FC<DashboardProps> = ({
 
    React.useEffect(() => {
       if (isMdUp) {
+         setNavOpen(true);
+      } else {
          setNavOpen(false);
+         closeOverlay();
       }
    }, [isMdUp]);
 

@@ -28,6 +28,7 @@ const SignInPage: React.FC<SignInPageProps> = ({
 }) => {
    const [email, setEmail] = useState("");
    const [password, setPassword] = useState("");
+   const [name, setName] = useState("");
    const [isUserSigningUp, setIsUserSigningUp] = useState(false);
    const [isSendingEmail, setIsSendingEmail] = useState(false);
    const [footerHeight, setFooterHeight] = useState(0);
@@ -98,6 +99,22 @@ const SignInPage: React.FC<SignInPageProps> = ({
                      onChange={(e) => setPassword(e.target.value)}
                   />
                </div>
+               {isUserSigningUp ? (
+                  <React.Fragment>
+                     <div className="name-input">
+                        <label>名字</label>
+                        <input
+                           type="text"
+                           required
+                           value={name}
+                           onChange={(e) => setName(e.target.value)}
+                        />
+                     </div>
+                     <div className="profile-photo-input"></div>
+                  </React.Fragment>
+               ) : (
+                  ""
+               )}
 
                {errorMessage && <p className="error-message">{errorMessage}</p>}
                {successMessage && (
@@ -108,7 +125,7 @@ const SignInPage: React.FC<SignInPageProps> = ({
                   className="signin-btn"
                   onClick={() => {
                      isUserSigningUp
-                        ? signUpWithEmail(email, password)
+                        ? signUpWithEmail(email, password, name)
                         : signInWithEmail(email, password);
                   }}
                   disabled={isSendingEmail}

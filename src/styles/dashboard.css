@@ -78,6 +78,7 @@ img {
    background: linear-gradient(90deg, #ff3131, #ff914d);
    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
    transition: all 1s ease !important;
+   z-index: 800;
 }
 
 .add-product:hover {

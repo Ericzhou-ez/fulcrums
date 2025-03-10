@@ -12,7 +12,7 @@ import { auth, googleAuth, db } from "../configs/firebase";
 interface UserContextProps {
    signInWithGoogle: () => Promise<void>;
    signInWithEmail: (email: string, password: string) => Promise<void>;
-   signUpWithEmail: (email: string, password: string) => Promise<void>;
+   signUpWithEmail: (email: string, password: string, name: string) => Promise<void>;
    logOut: () => Promise<void>;
    user: UserType | null;
    loading: boolean;
@@ -49,7 +49,7 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
       try {
          setLoading(true);
          const res = await signInWithPopup(auth, googleAuth);
-         await setNewUserDoc(res);
+         await setNewUserDoc(res, "");
          // if exists loaded by auth context
       } catch (err) {
          setErrorMessage("无法使用Google登录.");
@@ -81,7 +81,7 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
       }
    }
 
-   async function signUpWithEmail(email: string, password: string) {
+   async function signUpWithEmail(email: string, password: string, name: string) {
       try {
          setLoading(true);
          if (!email || !/\S+@\S+\.\S+/.test(email)) {
@@ -98,7 +98,7 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
             password
          );
          // create new collection in users
-         await setNewUserDoc(res);
+         await setNewUserDoc(res, name);
       } catch (err) {
          console.error(err);
           setErrorMessage(err instanceof Error ? err.message : "注册失败");
@@ -149,7 +149,7 @@ export function useUserServices() {
    return context;
 }
 
-async function setNewUserDoc(res: { user: any }): Promise<void> {
+async function setNewUserDoc(res: { user: any }, name: string): Promise<void> {
    try {
       const userUID = res.user.uid;
       const currUser = res.user;
@@ -160,7 +160,7 @@ async function setNewUserDoc(res: { user: any }): Promise<void> {
          await setDoc(
             userRef,
             {
-               name: currUser.displayName || "用户",
+               name: currUser.displayName || name || "用户",
                email: currUser.email || "",
                photo: currUser.photoURL || "",
                uid: userUID,

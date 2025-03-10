@@ -17,7 +17,7 @@ import {
    Keyhole,
    Gauge,
 } from "phosphor-react";
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { useUserServices } from "../../contexts/userServices";
 
 interface ProfileModalProps {
    isOpen: boolean;
@@ -35,20 +35,20 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
    setIsSettingsOpen,
 }) => {
    const theme = useTheme();
-   const auth = getAuth();
-const [user, setUser] = useState<any>(null);
 
-   useEffect(() => {
-      const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-         setUser(currentUser);
-      });
-      return () => unsubscribe();
-   }, [auth]);
+   // useEffect(() => {
+   //    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+   //       setUser(currentUser);
+   //    });
+   //    return () => unsubscribe();
+   // }, [auth]);
 
-   const handleSignOut = async () => {
-      await signOut(auth);
-      onClose();
-   };
+   // const handleSignOut = async () => {
+   //    await signOut(auth);
+   //    onClose();
+   // };
+   const { logOut, user } = useUserServices();
+   console.log(user);
 
    return (
       <Menu
@@ -76,14 +76,14 @@ const [user, setUser] = useState<any>(null);
             }}
          >
             <Avatar
-               src={user?.photoURL || ""}
+               src={user?.photo || ""}
                sx={{
                   width: 40,
                   height: 40,
                   bgcolor: theme.palette.primary.main,
                }}
             >
-               {!user?.photoURL && <User size={22} color="white" />}
+               {!user?.photo && <User size={22} color="white" />}
             </Avatar>
 
             <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
@@ -98,7 +98,7 @@ const [user, setUser] = useState<any>(null);
                      maxWidth: "130px",
                   }}
                >
-                  {user?.displayName || "未登录用户"}
+                  {user?.name}
                </Typography>
                {user?.email && (
                   <Typography
@@ -185,7 +185,7 @@ const [user, setUser] = useState<any>(null);
 
          {/* Sign Out */}
          <MenuItem
-            onClick={handleSignOut}
+            onClick={logOut}
             sx={{
                py: 1.2,
                color: theme.palette.error.main,

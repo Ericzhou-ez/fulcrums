@@ -17,14 +17,16 @@ body {
 }
 
 .email-signin-input,
-.password-signin-input {
+.password-signin-input,
+.name-input {
    display: flex;
    flex-direction: column;
    padding-bottom: 20px;
 }
 
 .email-signin-input label,
-.password-signin-input label {
+.password-signin-input label,
+.name-input label {
    color: var(--dark-gray-accent);
    font-weight: 500;
    font-size: 0.9rem;
@@ -32,7 +34,8 @@ body {
 }
 
 .email-signin-input input,
-.password-signin-input input {
+.password-signin-input input,
+.name-input input {
    padding: 3px 5px;
    border-radius: 10px;
    height: 40px;
@@ -42,6 +45,13 @@ body {
    font-size: 1rem;
    font-family: "oxygen", Helvetica, sans-serif;
    box-shadow: 0 4px 17px rgba(255, 203, 203, 0.1);
+}
+
+.email-signin-input input:focus,
+.password-signin-input input:focus,
+.name-input input:focus {
+   box-shadow: 0 4px 17px rgba(255, 203, 203, 0.18);
+   border: 1px solid var(--focus-border-color, #f98e4b);
 }
 
 .signin-btn {

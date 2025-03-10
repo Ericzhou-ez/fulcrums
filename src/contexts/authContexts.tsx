@@ -21,13 +21,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
    user,
    loading,
 }) => {
-   const hasFetchedUserData = useRef(false);
-
    useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
          if (currentUser) {
-            const { uid } = currentUser;
-            setUser({ uid: currentUser.uid } as UserType);
+            setUser({ uid: currentUser?.uid, name: currentUser?.displayName, email: currentUser?.email } as UserType);
             setLoading(false);
          } else {
             setUser(null);
@@ -40,12 +37,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
    useEffect(() => {
       const uid = user?.uid;
-
-      console.log("fetched user data")
       
       if (uid) {
          fetchUserData(uid).then((userData) => setUser(userData));
       }
+
+      console.log(user);
    }, []);
 
    const signedIn = !!user;

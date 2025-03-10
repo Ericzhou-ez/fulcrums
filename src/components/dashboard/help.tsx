@@ -42,7 +42,9 @@ export function Documentation() {
          <Typography className="help-description">
             如需帮助或反馈，请随时与我们取得联系.
          </Typography>
-         <button className="help-btn">联系我们</button>
+         <a href="/contact">
+            <button className="help-btn">联系我们</button>
+         </a>
       </div>
    );
 }

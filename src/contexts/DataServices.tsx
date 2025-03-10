@@ -12,5 +12,6 @@ const DataContext = createContext<DataContextProps | null>(null);
 export const DataContextProvider: React.FC<DataContextProviderProps> = ({
    children,
 }) => {
+   
    return <DataContext.Provider value={{}}>{children}</DataContext.Provider>;
 };
