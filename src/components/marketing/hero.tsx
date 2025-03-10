@@ -40,7 +40,7 @@ export default function Hero({ activeIndex = 0 }: HeroProps) {
          } else {
             videoRef.current?.pause();
          }
-      };
+   };
 
       window.addEventListener("scroll", handleScroll);
       return () => window.removeEventListener("scroll", handleScroll);

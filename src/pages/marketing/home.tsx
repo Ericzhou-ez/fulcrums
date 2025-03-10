@@ -8,17 +8,18 @@ import { Faqs } from "../../components/marketing/faqs";
 import FeatureSelector from "../../components/marketing/featureSelector";
 import FooterName from "../../assets/images/footerName.svg";
 import { useThemeContext } from "../../contexts/themeContextProvider";
+import { useMediaQuery } from "@mui/material";
 
 const Home = () => {
    const [footerHeight, setFooterHeight] = useState(0);
    const imgRef = useRef<HTMLImageElement | null>(null);
    const [activeIndex, setActiveIndex] = useState(1);
+   const isMdUp = useMediaQuery("(min-width:600px)");
 
    useEffect(() => {
       const starContainer = document.querySelector(".star-container");
       if (!starContainer) return;
-
-      const numStars = 100;
+      const numStars = isMdUp ? 150 : 100;
       const stars: HTMLDivElement[] = [];
 
       for (let i = 0; i < numStars; i++) {

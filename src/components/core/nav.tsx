@@ -96,7 +96,7 @@ const Nav: React.FC<NavProps> = ({
             >
                <div
                   className="nav-logo"
-                  style={home ? {} : { display: "none" }}
+                  style={home ? {display: "flex", alignItems: "center"} : { display: "none" }}
                >
                   <img src={Logo} alt="Logo" />
                   <p>Fulcrums</p>
@@ -135,7 +135,7 @@ const Nav: React.FC<NavProps> = ({
             ) : (
                <div className="nav-links">
                   <a href="/dashboard">
-                     <button className="cta-btn-join">登录</button>
+                     <button className="cta-btn-join-nav">登录</button>
                   </a>
                </div>
             )}

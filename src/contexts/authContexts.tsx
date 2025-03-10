@@ -24,7 +24,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
    useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
          if (currentUser) {
-            setUser({ uid: currentUser?.uid, name: currentUser?.displayName, email: currentUser?.email } as UserType);
+            setUser({ uid: currentUser?.uid, name: currentUser?.displayName, email: currentUser?.email, photo: currentUser?.photoURL } as UserType);
             setLoading(false);
          } else {
             setUser(null);
@@ -42,7 +42,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
          fetchUserData(uid).then((userData) => setUser(userData));
       }
 
-      console.log(user);
    }, []);
 
    const signedIn = !!user;

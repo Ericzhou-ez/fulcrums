@@ -71,7 +71,7 @@
 
 .cta-login {
    background-color: var(--background-secondary-color) !important;
-   padding: 9px 28px;
+   padding: 10px 28px;
    color: var(--text-secondary-color) !important;
    font-weight: 500;
    font-size: 1rem;
@@ -87,7 +87,7 @@
 
 .cta-join-button-hero {
    background-color: var(--text-primary-color) !important;
-   padding: 7px 18px !important;
+   padding: 6px 18px !important;
    color: var(--background-color) !important;
    font-weight: 500;
    font-size: 1rem;
@@ -239,10 +239,9 @@
       font-size: 0.8rem;
       padding: 6px 15px !important;
    }
-
    .cta-login {
       font-size: 0.8rem;
-      padding: 8px 20px !important;
+      padding: 8.5px 22px !important;
    }
    .cta-bottom-btn {
       font-size: 0.7rem !important;
