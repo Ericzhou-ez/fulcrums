@@ -17,8 +17,6 @@ import DashboardOverview from "../../components/dashboard/dashboardOverview";
 import SideNav from "../../components/dashboard/dashboardNav";
 
 interface DashboardProps {
-   user: { name: string; photo: string };
-   signedIn: boolean;
    isModalOpen: boolean;
    theme: any;
    handleToggleTheme: () => void;
@@ -41,8 +39,6 @@ const mainContentStyles = (navOpen: boolean) => ({
 });
 
 const Dashboard: React.FC<DashboardProps> = ({
-   user,
-   signedIn,
    isModalOpen,
    theme,
    handleToggleTheme,
@@ -67,11 +63,8 @@ const Dashboard: React.FC<DashboardProps> = ({
          <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
 
          <Nav
-            user={user}
             home={false}
             navOpen={navOpen}
-            signedIn={signedIn}
-            handleSignOut={handleSignOut}
             isModalOpen={isModalOpen}
             toggleModal={toggleModal}
             setNavOpen={setNavOpen}

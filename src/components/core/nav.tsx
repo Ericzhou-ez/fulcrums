@@ -11,15 +11,10 @@ import {
    Tooltip,
 } from "@mui/material";
 import { MagnifyingGlass, List } from "phosphor-react";
+import { useAuth } from "../../contexts/authContexts";
 import { ProfileModal } from "./floatingSettings";
 
 interface NavProps {
-   signedIn: boolean;
-   user: {
-      name?: string;
-      photo?: string;
-   };
-   handleSignOut: () => void;
    isModalOpen: boolean;
    toggleModal: () => void;
    home: boolean;
@@ -31,9 +26,6 @@ interface NavProps {
 }
 
 const Nav: React.FC<NavProps> = ({
-   signedIn,
-   user,
-   handleSignOut,
    isModalOpen,
    toggleModal,
    home,
@@ -48,7 +40,8 @@ const Nav: React.FC<NavProps> = ({
    const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
+   const {user, signedIn} = useAuth();
+   
    useEffect(() => {
       if (!isMdUp) {
          setOverlay(navOpen);
@@ -119,8 +112,8 @@ const Nav: React.FC<NavProps> = ({
                >
                   <Tooltip title="账号">
                      <img
-                        src={user.photo || DefaultProfile}
-                        alt={user.name || "p"}
+                        src={user?.photo || DefaultProfile}
+                        alt={user?.name || "p"}
                         className="user-photo"
                         style={{
                            borderRadius: "50%",

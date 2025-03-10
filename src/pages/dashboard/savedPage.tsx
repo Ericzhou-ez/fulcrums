@@ -9,9 +9,6 @@ import ClockDark from "../../assets/icons/recent-dark.svg";
 import SideNav from "../../components/dashboard/dashboardNav";
 
 export interface SavedPageProps {
-   signedIn: boolean;
-   user: any;
-   handleSignOut: () => Promise<void>;
    isModalOpen: boolean;
    theme: any;
    handleToggleTheme: () => void;
@@ -33,9 +30,6 @@ const mainContentStyles = (navOpen: boolean) => ({
 });
 
 const SavedPage: React.FC<SavedPageProps> = ({
-   signedIn,
-   user,
-   handleSignOut,
    isModalOpen,
    theme,
    handleToggleTheme,
@@ -113,9 +107,6 @@ const SavedPage: React.FC<SavedPageProps> = ({
 
          <Nav
             home={false}
-            signedIn={signedIn}
-            user={user}
-            handleSignOut={handleSignOut}
             isModalOpen={isModalOpen}
             toggleModal={toggleModal}
             navOpen={navOpen}

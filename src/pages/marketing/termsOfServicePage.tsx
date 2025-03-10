@@ -27,41 +27,34 @@ const TOS_SECTIONS = [
 ];
 
 interface TermsOfServicePageProps {
-   signedIn: boolean;
    toggleModal: () => void;
-   user: any;
-   handleSignOut: () => void;
+
    isModalOpen: boolean;
    theme: any;
    handleToggleTheme: () => void;
 }
 
 function TermsOfServicePage({
-   signedIn,
    toggleModal,
-   user,
-   handleSignOut,
+
    isModalOpen,
    theme,
    handleToggleTheme,
 }: TermsOfServicePageProps) {
-      const [footerHeight, setFooterHeight] = useState(0);
-      const imgRef = useRef<HTMLImageElement | null>(null);
-      useEffect(() => {
-         if (imgRef.current) {
-            setFooterHeight(imgRef.current.clientHeight);
-         }
-      }, []);
+   const [footerHeight, setFooterHeight] = useState(0);
+   const imgRef = useRef<HTMLImageElement | null>(null);
+   useEffect(() => {
+      if (imgRef.current) {
+         setFooterHeight(imgRef.current.clientHeight);
+      }
+   }, []);
 
-      const isDark = theme.palette.mode === "dark";
+   const isDark = theme.palette.mode === "dark";
 
    return (
       <React.Fragment>
          <Nav
-            signedIn={signedIn}
             toggleModal={toggleModal}
-            user={user}
-            handleSignOut={handleSignOut}
             isModalOpen={isModalOpen}
             home={true}
             navOpen={false}

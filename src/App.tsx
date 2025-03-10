@@ -17,18 +17,16 @@ import Loading from "./components/core/loading";
 import ScrollToTop from "./components/core/scrollToTop";
 import { Analytics } from "@vercel/analytics/react";
 
-type User = {
-   name: string;
-   photo: string;
-};
-
 declare module "@mui/material/styles" {
    interface TypeBackground {
       secondary: string;
+      tertiary: string;
    }
 }
 
 function App() {
+   const [isModalOpen, setIsModalOpen] = useState(false);
+   const [loading, setLoading] = useState(true);
    const [mode, setMode] = useState<"light" | "dark">(() => {
       const savedTheme = localStorage.getItem("theme");
       if (savedTheme === "light" || savedTheme === "dark") {
@@ -57,32 +55,9 @@ function App() {
    }, [mode]);
    // Default to device theme
 
-   const [user, setUser] = useState<User | null>(null);
-   const [signedIn, setSignedIn] = useState(false);
-   const [loading, setLoading] = useState(true);
-   const [isModalOpen, setIsModalOpen] = useState(false);
-
    const toggleModal = () => {
       setIsModalOpen(!isModalOpen);
    };
-
-   useEffect(() => {
-      const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-         if (currentUser) {
-            const { displayName, photoURL } = currentUser;
-            setUser({
-               name: displayName || "User",
-               photo: photoURL || "",
-            });
-            setSignedIn(true);
-         } else {
-            setUser(null);
-            setSignedIn(false);
-         }
-         setLoading(false);
-      });
-      return () => unsubscribe();
-   }, []);
 
    const theme = useMemo(
       () =>
@@ -152,19 +127,18 @@ function App() {
          <CssBaseline />
          <BrowserRouter>
             <ScrollToTop />
-            {loading ? (
-               <Loading />
-            ) : (
-               <AppRoutes
-                  signedIn={signedIn}
-                  toggleModal={toggleModal}
-                  user={user}
-                  handleSignOut={handleSignOut}
-                  isModalOpen={isModalOpen}
-                  theme={theme}
-                  handleToggleTheme={handleToggleTheme}
-               />
-            )}
+
+            {loading && <Loading />}
+
+            <AppRoutes
+               loading={loading}
+               setLoading={setLoading}
+               toggleModal={toggleModal}
+               handleSignOut={handleSignOut}
+               isModalOpen={isModalOpen}
+               theme={theme}
+               handleToggleTheme={handleToggleTheme}
+            />
          </BrowserRouter>
       </ThemeProvider>
    );

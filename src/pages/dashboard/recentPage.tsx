@@ -10,9 +10,6 @@ import ClockLight from "../../assets/icons/description-light.svg";
 import ClockDark from "../../assets/icons/description-dark.svg";
 
 export interface RecentProductsPageProps {
-   signedIn: boolean;
-   user: any;
-   handleSignOut: () => Promise<void>;
    isModalOpen: boolean;
    theme: any;
    handleToggleTheme: () => void;
@@ -34,9 +31,6 @@ const mainContentStyles = (navOpen: boolean) => ({
 });
 
 const RecentProductsPage: React.FC<RecentProductsPageProps> = ({
-   signedIn,
-   user,
-   handleSignOut,
    isModalOpen,
    theme,
    handleToggleTheme,
@@ -116,9 +110,6 @@ const RecentProductsPage: React.FC<RecentProductsPageProps> = ({
             home={false}
             navOpen={navOpen}
             setNavOpen={setNavOpen}
-            signedIn={signedIn}
-            user={user}
-            handleSignOut={handleSignOut}
             isModalOpen={isModalOpen}
             toggleModal={toggleModal}
             overlay={overlay}

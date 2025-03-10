@@ -45,20 +45,16 @@ body {
 }
 
 .signin-btn {
-   background-color: rgb(250, 91, 37);
+   background-color: var(--background-secondary-color);
    box-shadow: 0 4px 17px rgba(0, 0, 0, 0.1);
    border-radius: 12px;
    padding: 10px 0;
    margin: 5px 0;
    border: none;
-   color: white;
+   color: var(--text-primary);
    transition: 0.2s all;
    height: 38px;
    width: 100%;
-}
-
-.signin-btn:hover {
-   background-color: rgb(255, 68, 0);
 }
 
 .signin-btn:active {
@@ -99,15 +95,22 @@ body {
 }
 
 .google-signin {
-   background-color: white;
+   background-color: rgb(254, 106, 57);
    display: flex;
    align-items: center;
    justify-content: center;
    padding: 10px 0;
-   border: 1px solid black;
+   border: 0.5px solid rgb(244, 158, 112);
+    box-shadow: 0 4px 17px rgba(255, 124, 2, 0.3);
    border-radius: 10px;
    transition: all 0.2s;
    width: 100%;
+   color: white;
+}
+
+.google-signin:hover {
+   background-color: rgb(253, 95, 42);
+   cursor: pointer;
 }
 
 .google-signin svg {
@@ -119,10 +122,6 @@ body {
    font-family: "oxygen", Helvetica, sans-serif;
    font-size: 1.2rem;
    font-weight: 600;
-}
-
-.google-signin:hover {
-   background-color: rgba(255, 244, 237, 0.453);
 }
 
 .google-signin:active {
@@ -142,4 +141,3 @@ body {
    bottom: 2%;
    right: 1%;
 }
-

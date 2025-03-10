@@ -71,13 +71,14 @@
 
 .cta-login {
    background-color: var(--background-secondary-color) !important;
-   padding: 11px 25px;
+   padding: 13px 28px;
    color: var(--text-secondary-color) !important;
    font-weight: 500;
    font-size: 1rem;
    border: none;
    border-radius: 50px !important;
    transition: all 0.3s ease;
+   z-index: 100;
 }
 
 .cta-buttons a {

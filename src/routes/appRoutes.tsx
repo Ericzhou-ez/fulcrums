@@ -1,5 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useMediaQuery } from "@mui/material";
+import { AuthProvider } from "../contexts/authContexts";
+import { UserServiceProvider } from "../contexts/userServices";
+import { UserType } from "../types/types";
 import SignInPage from "../pages/SignInPage";
 import Dashboard from "../pages/dashboard/dashboard";
 import NotFoundPage from "../pages/NotFoundPage";
@@ -8,35 +12,33 @@ import Components from "../pages/components";
 import RecentProductsPage from "../pages/dashboard/recentPage";
 import PrivateRoute from "./privateRoute";
 import SavedPage from "../pages/dashboard/savedPage";
-import ScrollToTop from "../components/core/scrollToTop";
 import TermsOfServicePage from "../pages/marketing/termsOfServicePage";
 import PrivacyPolicyPage from "../pages/marketing/privacyPage";
-import { useState, useEffect } from "react";
-import { useMediaQuery } from "@mui/material";
-import InternalQuoationPage from "../pages/dashboard/internalQuotation";
+import InternalQuotationPage from "../pages/dashboard/internalQuotation";
 import ExternalQuotationPage from "../pages/dashboard/externalQuotation";
 import SearchPage from "../pages/dashboard/searchPage";
 import SettingPage from "../pages/dashboard/settingsPage";
 import ContactPage from "../pages/marketing/contactPage";
+import Loading from "../components/core/loading";
 
 export interface AppRoutesProps {
-   signedIn: boolean;
-   user: any;
    handleSignOut: () => Promise<void>;
    isModalOpen: boolean;
    theme: any;
-   handleToggleTheme: any
+   handleToggleTheme: any;
    toggleModal: () => void;
+   loading: boolean;
+   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AppRoutes: React.FC<AppRoutesProps> = ({
-   signedIn,
-   user,
    handleSignOut,
    isModalOpen,
    theme,
    handleToggleTheme,
    toggleModal,
+   loading,
+   setLoading,
 }) => {
    const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
    const [navOpen, setNavOpen] = useState(() => isMdUp);
@@ -45,251 +47,221 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
       setOverlay(false);
       setNavOpen(false);
    };
+   const [user, setUser] = useState<UserType | null>(null);
+   const [errorMessage, setErrorMessage] = useState("");
+   const [successMessage, setSuccessMessage] = useState("");
+   const signedIn = !!user; 
 
    return (
-      <Routes>
-         {/* Route for sign-in */}
-         <Route
-            path="/signin"
-            element={
-               signedIn ? (
-                  <Navigate to="/dashboard" />
-               ) : (
-                  <SignInPage
-                     theme={theme}
-                     handleToggleTheme={handleToggleTheme}
-                     user={user}
-                     signedIn={signedIn}
-                     handleSignOut={handleSignOut}
-                     isModalOpen={isModalOpen}
-                     toggleModal={toggleModal}
-                  />
-               )
-            }
-         />
-
-         {/* Main Dashboard route */}
-         <Route
-            path="/dashboard"
-            element={
-               <PrivateRoute signedIn={signedIn}>
-                  <Dashboard
-                     signedIn={signedIn}
-                     toggleModal={toggleModal}
-                     user={user}
-                     handleSignOut={handleSignOut}
-                     isModalOpen={isModalOpen}
-                     theme={theme}
-                     handleToggleTheme={handleToggleTheme}
-                     navOpen={navOpen}
-                     setNavOpen={setNavOpen}
-                     overlay={overlay}
-                     setOverlay={setOverlay}
-                     closeOverlay={closeOverlay}
-                  />
-               </PrivateRoute>
-            }
-         />
-
-         <Route
-            path="/dashboard/settings"
-            element={
-               <PrivateRoute signedIn={signedIn}>
-                  <SettingPage
-                     signedIn={signedIn}
-                     toggleModal={toggleModal}
-                     user={user}
-                     handleSignOut={handleSignOut}
-                     isModalOpen={isModalOpen}
-                     theme={theme}
-                     handleToggleTheme={handleToggleTheme}
-                     navOpen={navOpen}
-                     setNavOpen={setNavOpen}
-                     overlay={overlay}
-                     setOverlay={setOverlay}
-                     closeOverlay={closeOverlay}
-                  />
-               </PrivateRoute>
-            }
-         />
-
-         <Route
-            path="/quotation/internal"
-            element={
-               <PrivateRoute signedIn={signedIn}>
-                  <InternalQuoationPage
-                     signedIn={signedIn}
-                     toggleModal={toggleModal}
-                     user={user}
-                     handleSignOut={handleSignOut}
-                     isModalOpen={isModalOpen}
-                     theme={theme}
-                     handleToggleTheme={handleToggleTheme}
-                     navOpen={navOpen}
-                     setNavOpen={setNavOpen}
-                     overlay={overlay}
-                     setOverlay={setOverlay}
-                     closeOverlay={closeOverlay}
-                  />
-               </PrivateRoute>
-            }
-         />
-
-         <Route
-            path="/quotation/external"
-            element={
-               <PrivateRoute signedIn={signedIn}>
-                  <ExternalQuotationPage
-                     signedIn={signedIn}
-                     toggleModal={toggleModal}
-                     user={user}
-                     handleSignOut={handleSignOut}
-                     isModalOpen={isModalOpen}
-                     theme={theme}
-                     handleToggleTheme={handleToggleTheme}
-                     navOpen={navOpen}
-                     setNavOpen={setNavOpen}
-                     overlay={overlay}
-                     setOverlay={setOverlay}
-                     closeOverlay={closeOverlay}
-                  />
-               </PrivateRoute>
-            }
-         />
-         <Route
-            path="/search"
-            element={
-               <PrivateRoute signedIn={signedIn}>
-                  <SearchPage
-                     signedIn={signedIn}
-                     toggleModal={toggleModal}
-                     user={user}
-                     handleSignOut={handleSignOut}
-                     isModalOpen={isModalOpen}
-                     theme={theme}
-                     handleToggleTheme={handleToggleTheme}
-                     navOpen={navOpen}
-                     setNavOpen={setNavOpen}
-                     overlay={overlay}
-                     setOverlay={setOverlay}
-                     closeOverlay={closeOverlay}
-                  />
-               </PrivateRoute>
-            }
-         />
-
-         {/* Component dev route */}
-         <Route path="/components" element={<Components />} />
-
-         {/* marketing page */}
-         <Route
-            path="/"
-            element={
-               <Home
-                  theme={theme}
-                  handleToggleTheme={handleToggleTheme}
-                  signedIn={signedIn}
-                  user={user}
+      <UserServiceProvider
+         setUser={setUser}
+         loading={loading}
+         user={user}
+         setLoading={setLoading}
+         errorMessage={errorMessage}
+         setErrorMessage={setErrorMessage}
+         successMessage={successMessage}
+         setSuccessMessage={setSuccessMessage}
+      >
+         <AuthProvider
+            setLoading={setLoading}
+            setUser={setUser}
+            loading={loading}
+            user={user}
+         >
+            <Routes>
+               <Route
+                  path="/signin"
+                  element={
+                     loading ? (
+                        <Loading />
+                     ) : signedIn ? (
+                        <Navigate to="/dashboard" />
+                     ) : (
+                        <SignInPage
+                           theme={theme}
+                           handleToggleTheme={handleToggleTheme}
+                           isModalOpen={isModalOpen}
+                           toggleModal={toggleModal}
+                        />
+                     )
+                  }
                />
-            }
-         />
 
-         {/* tos page */}
-         <Route
-            path="/terms"
-            element={
-               <TermsOfServicePage
-                  signedIn={signedIn}
-                  toggleModal={toggleModal}
-                  user={user}
-                  handleSignOut={handleSignOut}
-                  isModalOpen={isModalOpen}
-                  theme={theme}
-                  handleToggleTheme={handleToggleTheme}
+               <Route
+                  path="/dashboard"
+                  element={
+                     <PrivateRoute>
+                        <Dashboard
+                           toggleModal={toggleModal}
+                           handleSignOut={handleSignOut}
+                           isModalOpen={isModalOpen}
+                           theme={theme}
+                           handleToggleTheme={handleToggleTheme}
+                           navOpen={navOpen}
+                           setNavOpen={setNavOpen}
+                           overlay={overlay}
+                           setOverlay={setOverlay}
+                           closeOverlay={closeOverlay}
+                        />
+                     </PrivateRoute>
+                  }
                />
-            }
-         />
-
-         <Route
-            path="/contact"
-            element={
-               <ContactPage
-                  signedIn={signedIn}
-                  toggleModal={toggleModal}
-                  user={user}
-                  handleSignOut={handleSignOut}
-                  isModalOpen={isModalOpen}
-                  theme={theme}
-                  handleToggleTheme={handleToggleTheme}
+               <Route
+                  path="/dashboard/settings"
+                  element={
+                     <PrivateRoute>
+                        <SettingPage
+                           toggleModal={toggleModal}
+                           isModalOpen={isModalOpen}
+                           theme={theme}
+                           handleToggleTheme={handleToggleTheme}
+                           navOpen={navOpen}
+                           setNavOpen={setNavOpen}
+                           overlay={overlay}
+                           setOverlay={setOverlay}
+                           closeOverlay={closeOverlay}
+                        />
+                     </PrivateRoute>
+                  }
                />
-            }
-         />
-
-         {/* pp page */}
-         <Route
-            path="/privacy"
-            element={
-               <PrivacyPolicyPage
-                  signedIn={signedIn}
-                  toggleModal={toggleModal}
-                  user={user}
-                  handleSignOut={handleSignOut}
-                  isModalOpen={isModalOpen}
-                  theme={theme}
-                  handleToggleTheme={handleToggleTheme}
+               <Route
+                  path="/quotation/internal"
+                  element={
+                     <PrivateRoute>
+                        <InternalQuotationPage
+                           toggleModal={toggleModal}
+                           isModalOpen={isModalOpen}
+                           theme={theme}
+                           handleToggleTheme={handleToggleTheme}
+                           navOpen={navOpen}
+                           setNavOpen={setNavOpen}
+                           overlay={overlay}
+                           setOverlay={setOverlay}
+                           closeOverlay={closeOverlay}
+                        />
+                     </PrivateRoute>
+                  }
                />
-            }
-         />
-
-         {/* recently added products page */}
-         <Route
-            path="/recent"
-            element={
-               <PrivateRoute signedIn={signedIn}>
-                  <RecentProductsPage
-                     signedIn={signedIn}
-                     toggleModal={toggleModal}
-                     user={user}
-                     handleSignOut={handleSignOut}
-                     isModalOpen={isModalOpen}
-                     theme={theme}
-                     handleToggleTheme={handleToggleTheme}
-                     navOpen={navOpen}
-                     setNavOpen={setNavOpen}
-                     overlay={overlay}
-                     setOverlay={setOverlay}
-                     closeOverlay={closeOverlay}
-                  />
-               </PrivateRoute>
-            }
-         />
-
-         {/* saved page */}
-         <Route
-            path="/saved"
-            element={
-               <PrivateRoute signedIn={signedIn}>
-                  <SavedPage
-                     signedIn={signedIn}
-                     toggleModal={toggleModal}
-                     user={user}
-                     handleSignOut={handleSignOut}
-                     isModalOpen={isModalOpen}
-                     theme={theme}
-                     handleToggleTheme={handleToggleTheme}
-                     navOpen={navOpen}
-                     setNavOpen={setNavOpen}
-                     overlay={overlay}
-                     setOverlay={setOverlay}
-                     closeOverlay={closeOverlay}
-                  />
-               </PrivateRoute>
-            }
-         />
-
-         {/* Catch-all redirect */}
-         <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+               <Route
+                  path="/quotation/external"
+                  element={
+                     <PrivateRoute>
+                        <ExternalQuotationPage
+                           toggleModal={toggleModal}
+                           isModalOpen={isModalOpen}
+                           theme={theme}
+                           handleToggleTheme={handleToggleTheme}
+                           navOpen={navOpen}
+                           setNavOpen={setNavOpen}
+                           overlay={overlay}
+                           setOverlay={setOverlay}
+                           closeOverlay={closeOverlay}
+                        />
+                     </PrivateRoute>
+                  }
+               />
+               <Route
+                  path="/search"
+                  element={
+                     <PrivateRoute>
+                        <SearchPage
+                           toggleModal={toggleModal}
+                           isModalOpen={isModalOpen}
+                           theme={theme}
+                           handleToggleTheme={handleToggleTheme}
+                           navOpen={navOpen}
+                           setNavOpen={setNavOpen}
+                           overlay={overlay}
+                           setOverlay={setOverlay}
+                           closeOverlay={closeOverlay}
+                        />
+                     </PrivateRoute>
+                  }
+               />
+               <Route
+                  path="/recent"
+                  element={
+                     <PrivateRoute>
+                        <RecentProductsPage
+                           toggleModal={toggleModal}
+                           isModalOpen={isModalOpen}
+                           theme={theme}
+                           handleToggleTheme={handleToggleTheme}
+                           navOpen={navOpen}
+                           setNavOpen={setNavOpen}
+                           overlay={overlay}
+                           setOverlay={setOverlay}
+                           closeOverlay={closeOverlay}
+                        />
+                     </PrivateRoute>
+                  }
+               />
+               <Route
+                  path="/saved"
+                  element={
+                     <PrivateRoute>
+                        <SavedPage
+                           toggleModal={toggleModal}
+                           isModalOpen={isModalOpen}
+                           theme={theme}
+                           handleToggleTheme={handleToggleTheme}
+                           navOpen={navOpen}
+                           setNavOpen={setNavOpen}
+                           overlay={overlay}
+                           setOverlay={setOverlay}
+                           closeOverlay={closeOverlay}
+                        />
+                     </PrivateRoute>
+                  }
+               />
+               <Route path="/components" element={<Components />} />
+               <Route
+                  path="/"
+                  element={
+                     <Home
+                        theme={theme}
+                        handleToggleTheme={handleToggleTheme}
+                     />
+                  }
+               />
+               <Route
+                  path="/terms"
+                  element={
+                     <TermsOfServicePage
+                        toggleModal={toggleModal}
+                        isModalOpen={isModalOpen}
+                        theme={theme}
+                        handleToggleTheme={handleToggleTheme}
+                     />
+                  }
+               />
+               <Route
+                  path="/contact"
+                  element={
+                     <ContactPage
+                        toggleModal={toggleModal}
+                        isModalOpen={isModalOpen}
+                        theme={theme}
+                        handleToggleTheme={handleToggleTheme}
+                     />
+                  }
+               />
+               <Route
+                  path="/privacy"
+                  element={
+                     <PrivacyPolicyPage
+                        toggleModal={toggleModal}
+                        isModalOpen={isModalOpen}
+                        theme={theme}
+                        handleToggleTheme={handleToggleTheme}
+                     />
+                  }
+               />
+               <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+         </AuthProvider>
+      </UserServiceProvider>
    );
 };
 

@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Box, Stack, Pagination, Select, MenuItem, Typography } from "@mui/material";
+import {
+   Box,
+   Stack,
+   Pagination,
+   Select,
+   MenuItem,
+   Typography,
+} from "@mui/material";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import SideNav from "../../components/dashboard/dashboardNav";
@@ -21,8 +28,8 @@ interface Company {
    ownerName: string;
    phoneNumber: number;
    address: string;
-   category: string[]; 
-   products: { name: string; link: string; }[];
+   category: string[];
+   products: { name: string; link: string }[];
 }
 
 interface Product {
@@ -37,9 +44,6 @@ interface Product {
 }
 
 interface SearchPageProps {
-   signedIn: boolean;
-   user: any;
-   handleSignOut: () => void;
    isModalOpen: boolean;
    theme: any;
    handleToggleTheme: () => void;
@@ -52,9 +56,6 @@ interface SearchPageProps {
 }
 
 const SearchPage: React.FC<SearchPageProps> = ({
-   signedIn,
-   user,
-   handleSignOut,
    isModalOpen,
    theme,
    handleToggleTheme,
@@ -84,8 +85,12 @@ const SearchPage: React.FC<SearchPageProps> = ({
             address: info.Address,
             category: Array.isArray(info.Category)
                ? info.Category
-               : [info.Category], 
-            products: info.Products.map((product: string) => ({ name: product, link: "" })) || [],
+               : [info.Category],
+            products:
+               info.Products.map((product: string) => ({
+                  name: product,
+                  link: "",
+               })) || [],
          })
       );
 
@@ -108,11 +113,10 @@ const SearchPage: React.FC<SearchPageProps> = ({
          companies = companies.filter((company) =>
             company.category.includes(productType)
          );
-         products = products.filter(
-            (product) => product.category.includes(productType) 
+         products = products.filter((product) =>
+            product.category.includes(productType)
          );
       }
-
 
       let results =
          searchMode === "company"
@@ -150,9 +154,6 @@ const SearchPage: React.FC<SearchPageProps> = ({
             home={false}
             navOpen={navOpen}
             setNavOpen={setNavOpen}
-            signedIn={signedIn}
-            user={user}
-            handleSignOut={handleSignOut}
             isModalOpen={isModalOpen}
             toggleModal={toggleModal}
             overlay={overlay}

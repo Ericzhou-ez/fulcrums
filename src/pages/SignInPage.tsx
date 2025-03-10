@@ -13,13 +13,12 @@ import Footer from "../components/core/footer";
 import Nav from "../components/core/nav";
 import { Typography } from "@mui/material";
 import FooterName from "../assets/images/footerName.svg";
+import { useAuth } from "../contexts/authContexts";
+import { useUserServices } from "../contexts/userServices";
 
 interface SignInPageProps {
    theme: any;
    handleToggleTheme: () => void;
-   user: any;
-   signedIn: boolean;
-   handleSignOut: () => void;
    isModalOpen: boolean;
    toggleModal: () => void;
 }
@@ -27,102 +26,17 @@ interface SignInPageProps {
 const SignInPage: React.FC<SignInPageProps> = ({
    theme,
    handleToggleTheme,
-   user,
-   signedIn,
-   handleSignOut,
    isModalOpen,
    toggleModal,
 }) => {
    const [email, setEmail] = useState("");
    const [password, setPassword] = useState("");
    const [isUserSigningUp, setIsUserSigningUp] = useState(false);
-   const [errorMessage, setErrorMessage] = useState("");
-   const [successMessage, setSuccessMessage] = useState("");
    const [isSendingEmail, setIsSendingEmail] = useState(false);
    const [footerHeight, setFooterHeight] = useState(0);
    const imgRef = useRef<HTMLImageElement | null>(null);
    const isDark = theme.palette.mode === "dark";
-
-   useEffect(() => {
-      if (isSignInWithEmailLink(auth, window.location.href)) {
-         const storedEmail = window.localStorage.getItem("emailForSignUp");
-
-         if (storedEmail) {
-            completeSignUp(storedEmail);
-         } else {
-            setErrorMessage("邮箱验证失败，请重新注册。");
-         }
-      }
-   }, []);
-
-   async function handleSendSignUpEmail() {
-      try {
-         setErrorMessage("");
-         setSuccessMessage("");
-         setIsSendingEmail(true);
-
-         if (!email || !/\S+@\S+\.\S+/.test(email)) {
-            throw new Error("请输入有效的邮箱地址。");
-         }
-
-         await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-         window.localStorage.setItem("emailForSignUp", email);
-
-         setSuccessMessage("请检查您的邮箱并点击链接以完成注册。");
-      } catch (error) {
-         setErrorMessage(
-            error instanceof Error ? error.message : "无法发送邮件。"
-         );
-      }
-   }
-
-   async function completeSignUp(storedEmail: string) {
-      try {
-         setErrorMessage("");
-         setSuccessMessage("正在验证您的邮箱...");
-
-         const userCredential = await signInWithEmailLink(
-            auth,
-            storedEmail,
-            window.location.href
-         );
-         await createUserWithEmailAndPassword(auth, storedEmail, password);
-         setSuccessMessage("账户创建成功！");
-
-         window.localStorage.removeItem("emailForSignUp");
-      } catch (error) {
-         setErrorMessage(error instanceof Error ? error.message : "注册失败。");
-      }
-   }
-
-   async function handleSignIn() {
-      try {
-         setErrorMessage("");
-         setSuccessMessage("");
-
-         if (!email || !/\S+@\S+\.\S+/.test(email)) {
-            throw new Error("请输入有效的邮箱地址。");
-         }
-         if (!password || password.length < 6) {
-            throw new Error("密码至少需要6个字符。");
-         }
-
-         await signInWithEmailAndPassword(auth, email, password);
-         setSuccessMessage("用户登录成功！");
-      } catch (err) {
-         setErrorMessage(
-            err instanceof Error ? err.message : "发生了意外错误。"
-         );
-      }
-   }
-
-   async function handleGoogleSignIn() {
-      try {
-         await signInWithPopup(auth, googleAuth);
-      } catch (err) {
-         setErrorMessage("无法使用 Google 登录。");
-      }
-   }
+   const { signUpWithEmail, signInWithEmail, signInWithGoogle, successMessage, errorMessage } = useUserServices();
 
    return (
       <React.Fragment>
@@ -135,9 +49,6 @@ const SignInPage: React.FC<SignInPageProps> = ({
             }}
          >
             <Nav
-               user={user}
-               signedIn={signedIn}
-               handleSignOut={handleSignOut}
                isModalOpen={isModalOpen}
                toggleModal={toggleModal}
                home={true}
@@ -193,7 +104,7 @@ const SignInPage: React.FC<SignInPageProps> = ({
                <button
                   className="signin-btn"
                   onClick={() => {
-                     isUserSigningUp ? handleSendSignUpEmail() : handleSignIn();
+                     isUserSigningUp ? signUpWithEmail(email, password) : signInWithEmail(email, password);
                   }}
                   disabled={isSendingEmail}
                   style={{
@@ -226,8 +137,8 @@ const SignInPage: React.FC<SignInPageProps> = ({
                   </strong>
                </p>
 
-               <button className="google-signin" onClick={handleGoogleSignIn}>
-                  使用 Google 继续
+               <button className="google-signin" onClick={signInWithGoogle}>
+                  使用Google继续
                </button>
             </div>
 

@@ -8,20 +8,15 @@ import FooterName from "../../assets/images/footerName.svg";
 import ContactMain from "../../components/marketing/contactMain";
 
 interface ContactUsPageProps {
-   signedIn: boolean;
    toggleModal: () => void;
-   user: any;
-   handleSignOut: () => void;
    isModalOpen: boolean;
    theme: any;
    handleToggleTheme: () => void;
 }
 
 export default function ContactPage({
-   signedIn,
    toggleModal,
-   user,
-   handleSignOut,
+
    isModalOpen,
    theme,
    handleToggleTheme,
@@ -38,10 +33,7 @@ export default function ContactPage({
    return (
       <React.Fragment>
          <Nav
-            signedIn={signedIn}
             toggleModal={toggleModal}
-            user={user}
-            handleSignOut={handleSignOut}
             isModalOpen={isModalOpen}
             home={true}
             navOpen={false}
@@ -99,4 +91,3 @@ export default function ContactPage({
       </React.Fragment>
    );
 }
-

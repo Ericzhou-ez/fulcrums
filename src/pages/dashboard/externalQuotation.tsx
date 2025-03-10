@@ -6,9 +6,6 @@ import SideNav from "../../components/dashboard/dashboardNav";
 import "../../styles/quotation.css";
 
 export interface ExternalQuotationProps {
-   signedIn: boolean;
-   user: any;
-   handleSignOut: () => Promise<void>;
    isModalOpen: boolean;
    theme: any;
    handleToggleTheme: () => void;
@@ -30,9 +27,6 @@ const mainContentStyles = (navOpen: boolean) => ({
 });
 
 const ExternalQuotationPage: React.FC<ExternalQuotationProps> = ({
-   signedIn,
-   user,
-   handleSignOut,
    isModalOpen,
    theme,
    handleToggleTheme,
@@ -52,9 +46,6 @@ const ExternalQuotationPage: React.FC<ExternalQuotationProps> = ({
             home={false}
             navOpen={navOpen}
             setNavOpen={setNavOpen}
-            signedIn={signedIn}
-            user={user}
-            handleSignOut={handleSignOut}
             isModalOpen={isModalOpen}
             toggleModal={toggleModal}
             overlay={overlay}

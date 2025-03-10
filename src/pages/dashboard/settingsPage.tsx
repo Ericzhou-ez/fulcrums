@@ -8,9 +8,6 @@ import { ThemeSwitch } from "../../components/dashboard/settings/Appearance";
 import { DeleteAccount } from "../../components/dashboard/settings/DeleteAccount";
 
 export interface SettingPageProps {
-   signedIn: boolean;
-   user: any;
-   handleSignOut: () => Promise<void>;
    isModalOpen: boolean;
    theme: any;
    handleToggleTheme: () => void;
@@ -32,9 +29,6 @@ const mainContentStyles = (navOpen: boolean) => ({
 });
 
 const SettingPage: React.FC<SettingPageProps> = ({
-   signedIn,
-   user,
-   handleSignOut,
    isModalOpen,
    theme,
    handleToggleTheme,
@@ -55,9 +49,6 @@ const SettingPage: React.FC<SettingPageProps> = ({
             home={false}
             navOpen={navOpen}
             setNavOpen={setNavOpen}
-            signedIn={signedIn}
-            user={user}
-            handleSignOut={handleSignOut}
             isModalOpen={isModalOpen}
             toggleModal={toggleModal}
             overlay={overlay}
