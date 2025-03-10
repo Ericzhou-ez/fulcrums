@@ -20,27 +20,22 @@ import SearchPage from "../pages/dashboard/searchPage";
 import SettingPage from "../pages/dashboard/settingsPage";
 import ContactPage from "../pages/marketing/contactPage";
 import Loading from "../components/core/loading";
+import { useThemeContext } from "../contexts/themeContextProvider";
 
 export interface AppRoutesProps {
-   handleSignOut: () => Promise<void>;
    isModalOpen: boolean;
-   theme: any;
-   handleToggleTheme: any;
    toggleModal: () => void;
    loading: boolean;
    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AppRoutes: React.FC<AppRoutesProps> = ({
-   handleSignOut,
    isModalOpen,
-   theme,
-   handleToggleTheme,
    toggleModal,
    loading,
    setLoading,
 }) => {
-   const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
+   const { isMdUp } = useThemeContext();
    const [navOpen, setNavOpen] = useState(() => isMdUp);
    const [overlay, setOverlay] = useState(() => !isMdUp);
    const closeOverlay = () => {
@@ -50,7 +45,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
    const [user, setUser] = useState<UserType | null>(null);
    const [errorMessage, setErrorMessage] = useState("");
    const [successMessage, setSuccessMessage] = useState("");
-   const signedIn = !!user; 
+   const signedIn = !!user;
 
    return (
       <UserServiceProvider
@@ -79,8 +74,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                         <Navigate to="/dashboard" />
                      ) : (
                         <SignInPage
-                           theme={theme}
-                           handleToggleTheme={handleToggleTheme}
                            isModalOpen={isModalOpen}
                            toggleModal={toggleModal}
                         />
@@ -94,10 +87,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                      <PrivateRoute>
                         <Dashboard
                            toggleModal={toggleModal}
-                           handleSignOut={handleSignOut}
                            isModalOpen={isModalOpen}
-                           theme={theme}
-                           handleToggleTheme={handleToggleTheme}
                            navOpen={navOpen}
                            setNavOpen={setNavOpen}
                            overlay={overlay}
@@ -114,8 +104,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                         <SettingPage
                            toggleModal={toggleModal}
                            isModalOpen={isModalOpen}
-                           theme={theme}
-                           handleToggleTheme={handleToggleTheme}
                            navOpen={navOpen}
                            setNavOpen={setNavOpen}
                            overlay={overlay}
@@ -132,8 +120,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                         <InternalQuotationPage
                            toggleModal={toggleModal}
                            isModalOpen={isModalOpen}
-                           theme={theme}
-                           handleToggleTheme={handleToggleTheme}
                            navOpen={navOpen}
                            setNavOpen={setNavOpen}
                            overlay={overlay}
@@ -150,8 +136,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                         <ExternalQuotationPage
                            toggleModal={toggleModal}
                            isModalOpen={isModalOpen}
-                           theme={theme}
-                           handleToggleTheme={handleToggleTheme}
                            navOpen={navOpen}
                            setNavOpen={setNavOpen}
                            overlay={overlay}
@@ -168,8 +152,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                         <SearchPage
                            toggleModal={toggleModal}
                            isModalOpen={isModalOpen}
-                           theme={theme}
-                           handleToggleTheme={handleToggleTheme}
                            navOpen={navOpen}
                            setNavOpen={setNavOpen}
                            overlay={overlay}
@@ -186,8 +168,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                         <RecentProductsPage
                            toggleModal={toggleModal}
                            isModalOpen={isModalOpen}
-                           theme={theme}
-                           handleToggleTheme={handleToggleTheme}
                            navOpen={navOpen}
                            setNavOpen={setNavOpen}
                            overlay={overlay}
@@ -204,8 +184,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                         <SavedPage
                            toggleModal={toggleModal}
                            isModalOpen={isModalOpen}
-                           theme={theme}
-                           handleToggleTheme={handleToggleTheme}
                            navOpen={navOpen}
                            setNavOpen={setNavOpen}
                            overlay={overlay}
@@ -216,23 +194,13 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                   }
                />
                <Route path="/components" element={<Components />} />
-               <Route
-                  path="/"
-                  element={
-                     <Home
-                        theme={theme}
-                        handleToggleTheme={handleToggleTheme}
-                     />
-                  }
-               />
+               <Route path="/" element={<Home />} />
                <Route
                   path="/terms"
                   element={
                      <TermsOfServicePage
                         toggleModal={toggleModal}
                         isModalOpen={isModalOpen}
-                        theme={theme}
-                        handleToggleTheme={handleToggleTheme}
                      />
                   }
                />
@@ -242,8 +210,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                      <ContactPage
                         toggleModal={toggleModal}
                         isModalOpen={isModalOpen}
-                        theme={theme}
-                        handleToggleTheme={handleToggleTheme}
+                        
                      />
                   }
                />
@@ -253,8 +220,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                      <PrivacyPolicyPage
                         toggleModal={toggleModal}
                         isModalOpen={isModalOpen}
-                        theme={theme}
-                        handleToggleTheme={handleToggleTheme}
                      />
                   }
                />

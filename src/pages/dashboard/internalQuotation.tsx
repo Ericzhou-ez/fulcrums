@@ -7,8 +7,6 @@ import "../../styles/quotation.css";
 
 export interface InternalQuoationPageProps {
    isModalOpen: boolean;
-   theme: any;
-   handleToggleTheme: () => void;
    toggleModal: () => void;
    navOpen: boolean;
    setNavOpen: any;
@@ -28,8 +26,6 @@ const mainContentStyles = (navOpen: boolean) => ({
 
 const InternalQuoationPage: React.FC<InternalQuoationPageProps> = ({
    isModalOpen,
-   theme,
-   handleToggleTheme,
    toggleModal,
    navOpen,
    setNavOpen,
@@ -37,7 +33,6 @@ const InternalQuoationPage: React.FC<InternalQuoationPageProps> = ({
    setOverlay,
    closeOverlay,
 }) => {
-   const isDarkMode = theme === "dark";
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
          <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
@@ -89,7 +84,7 @@ const InternalQuoationPage: React.FC<InternalQuoationPageProps> = ({
             ></div>
          )}
 
-         <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
+         <Footer />
       </Box>
    );
 };

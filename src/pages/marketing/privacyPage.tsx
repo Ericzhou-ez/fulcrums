@@ -7,6 +7,7 @@ import { Tooltip } from "@mui/material";
 import BottomCTA from "../../components/marketing/bottomCta";
 import { useState, useEffect, useRef } from "react";
 import FooterName from "../../assets/images/footerName.svg";
+import { useThemeContext } from "../../contexts/themeContextProvider";
 
 const PRIVACY_SECTIONS = [
    { id: "introduction", label: "1. Introduction" },
@@ -27,15 +28,11 @@ interface PrivacyPolicyPageProps {
    toggleModal: () => void;
 
    isModalOpen: boolean;
-   theme: any;
-   handleToggleTheme: () => void;
 }
 
 function PrivacyPolicyPage({
    toggleModal,
    isModalOpen,
-   theme,
-   handleToggleTheme,
 }: PrivacyPolicyPageProps) {
    const [footerHeight, setFooterHeight] = useState(0);
    const imgRef = useRef<HTMLImageElement | null>(null);
@@ -45,7 +42,8 @@ function PrivacyPolicyPage({
       }
    }, []);
 
-   const isDark = theme.palette.mode === "dark";
+   const { isDark } = useThemeContext();
+
    return (
       <React.Fragment>
          <Nav
@@ -620,10 +618,10 @@ function PrivacyPolicyPage({
                </main>
             </div>
 
-            <BottomCTA theme={theme} />
+            <BottomCTA />
 
             <div style={{ padding: "0 16px" }}>
-               <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
+               <Footer />
             </div>
          </div>
 

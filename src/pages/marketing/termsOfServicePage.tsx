@@ -7,6 +7,7 @@ import { Tooltip, useTheme } from "@mui/material";
 import BottomCTA from "../../components/marketing/bottomCta";
 import { useState, useEffect, useRef } from "react";
 import FooterName from "../../assets/images/footerName.svg";
+import { useThemeContext } from "../../contexts/themeContextProvider";
 
 const TOS_SECTIONS = [
    { id: "acceptance-of-terms", label: "1. Acceptance of Terms" },
@@ -28,18 +29,13 @@ const TOS_SECTIONS = [
 
 interface TermsOfServicePageProps {
    toggleModal: () => void;
-
    isModalOpen: boolean;
-   theme: any;
-   handleToggleTheme: () => void;
 }
 
 function TermsOfServicePage({
    toggleModal,
 
    isModalOpen,
-   theme,
-   handleToggleTheme,
 }: TermsOfServicePageProps) {
    const [footerHeight, setFooterHeight] = useState(0);
    const imgRef = useRef<HTMLImageElement | null>(null);
@@ -49,7 +45,7 @@ function TermsOfServicePage({
       }
    }, []);
 
-   const isDark = theme.palette.mode === "dark";
+   const { isDark } = useThemeContext();
 
    return (
       <React.Fragment>
@@ -745,10 +741,10 @@ function TermsOfServicePage({
                </main>
             </div>
 
-            <BottomCTA theme={theme} />
+            <BottomCTA />
 
             <div style={{ padding: "0 16px" }}>
-               <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
+               <Footer />
             </div>
          </div>
 

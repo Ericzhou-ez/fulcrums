@@ -7,7 +7,8 @@ import {
    Typography,
    Stack,
    Box,
-   useMediaQuery
+   useMediaQuery,
+   useTheme,
 } from "@mui/material";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
@@ -15,12 +16,11 @@ import "../../styles/dashboard.css";
 import { Auth } from "firebase/auth";
 import DashboardOverview from "../../components/dashboard/dashboardOverview";
 import SideNav from "../../components/dashboard/dashboardNav";
+import { useThemeContext } from "../../contexts/themeContextProvider";
 
 interface DashboardProps {
    isModalOpen: boolean;
-   theme: any;
-   handleToggleTheme: () => void;
-   handleSignOut: () => Promise<void>;
+
    toggleModal: () => void;
    navOpen: boolean;
    setNavOpen: any;
@@ -40,9 +40,6 @@ const mainContentStyles = (navOpen: boolean) => ({
 
 const Dashboard: React.FC<DashboardProps> = ({
    isModalOpen,
-   theme,
-   handleToggleTheme,
-   handleSignOut,
    toggleModal,
    navOpen,
    setNavOpen,
@@ -50,7 +47,7 @@ const Dashboard: React.FC<DashboardProps> = ({
    setOverlay,
    closeOverlay,
 }) => {
-   const isMdUp = useMediaQuery(theme.breakpoints.down("md"));
+   const { isMdUp } = useThemeContext();
 
    React.useEffect(() => {
       if (isMdUp) {
@@ -73,12 +70,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             searchBar={false}
          />
 
-         <DashboardOverview
-            theme={theme}
-            handleToggleTheme={handleToggleTheme}
-            navOpen={navOpen}
-            setNavOpen={setNavOpen}
-         />
+         <DashboardOverview navOpen={navOpen} setNavOpen={setNavOpen} />
 
          {overlay && (
             <div

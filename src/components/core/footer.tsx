@@ -33,12 +33,7 @@ import {
    PhoneIncoming,
 } from "phosphor-react";
 import { blueGrey } from "@mui/material/colors";
-
-
-interface FooterProps {
-   theme: string;
-   handleToggleTheme: () => void;
-}
+import { useThemeContext } from "../../contexts/themeContextProvider";
 
 const groups = [
    {
@@ -99,8 +94,11 @@ const groups = [
    },
 ];
 
-const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
+const Footer = () => {
+   const mode = useTheme();
+   const theme = mode.palette.mode;
    const isDark = theme === "dark";
+   const {toggleTheme} = useThemeContext();
    const year = new Date().getFullYear();
    const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>(
       {}
@@ -309,7 +307,7 @@ const Footer: React.FC<FooterProps> = ({ theme, handleToggleTheme }) => {
                   <div className="theme-btn-container">
                      <ThemeSwitch
                         currentTheme={theme}
-                        handleToggleTheme={handleToggleTheme}
+                        handleToggleTheme={toggleTheme}
                      />
                   </div>
                </Stack>

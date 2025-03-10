@@ -1,6 +1,6 @@
 import React from "react";
 import { Stack, Box, Typography, Button, Link } from "@mui/material";
-import { Theme } from "@mui/material/styles";
+import { Theme, useTheme } from "@mui/material/styles";
 import DescriptionLight from "../../assets/icons/description-light.svg";
 import DescriptionDark from "../../assets/icons/description-dark.svg";
 import RecentLight from "../../assets/icons/recent-light.svg";
@@ -17,8 +17,6 @@ import {
 } from "phosphor-react";
 
 interface DashboardOverviewProps {
-   theme: any;
-   handleToggleTheme: () => void;
    navOpen: boolean;
    setNavOpen: any;
 }
@@ -38,7 +36,8 @@ const sampleData = [
    { name: "Dec", v1: 58, v2: 7700 },
 ];
 
-export default function DashboardOverview({ theme, handleToggleTheme, navOpen, setNavOpen }: DashboardOverviewProps) {
+export default function DashboardOverview({ navOpen, setNavOpen }: DashboardOverviewProps) {
+   const theme = useTheme();
    const isDarkMode = theme.palette.mode === "dark";
 
    return (
@@ -155,7 +154,7 @@ export default function DashboardOverview({ theme, handleToggleTheme, navOpen, s
             </button>
          </Box>
 
-         <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
+         <Footer />
       </div>
    );
 }

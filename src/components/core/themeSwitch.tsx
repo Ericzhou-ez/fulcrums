@@ -86,7 +86,7 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({
             </CircleButton>
 
             <CircleButton
-               isSelected={false}
+               isSelected={currentTheme === "system"}
                isDarkMode={isAppDarkMode}
                onClick={() => handleButtonClick("system")}
                aria-label="system mode"

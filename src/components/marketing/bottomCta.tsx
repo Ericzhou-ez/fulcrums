@@ -6,18 +6,14 @@ import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-
 import CTADark from "../../assets/images/home-cta-dark.png";
 import CTALight from "../../assets/images/home-cta-light.png";
 import Triangle from "../../assets/images/home-rectangles.svg";
 import Cosmic from "../../assets/images/home-cosmic.svg";
+import { useThemeContext } from "../../contexts/themeContextProvider";
 
-interface BottomCTAProps {
-   theme: any;
-}
-
-export default function BottomCTA({ theme }: BottomCTAProps) {
-   const isDark = theme.palette.mode === "dark";
+export default function BottomCTA() {
+   const {isDark} = useThemeContext();
 
    return (
       <Box>

@@ -7,11 +7,10 @@ import Footer from "../../components/core/footer";
 import ClockLight from "../../assets/icons/recent-light.svg";
 import ClockDark from "../../assets/icons/recent-dark.svg";
 import SideNav from "../../components/dashboard/dashboardNav";
+import { useThemeContext } from "../../contexts/themeContextProvider";
 
 export interface SavedPageProps {
    isModalOpen: boolean;
-   theme: any;
-   handleToggleTheme: () => void;
    toggleModal: () => void;
    navOpen: boolean;
    setNavOpen: any;
@@ -31,8 +30,6 @@ const mainContentStyles = (navOpen: boolean) => ({
 
 const SavedPage: React.FC<SavedPageProps> = ({
    isModalOpen,
-   theme,
-   handleToggleTheme,
    toggleModal,
    navOpen,
    setNavOpen,
@@ -40,7 +37,7 @@ const SavedPage: React.FC<SavedPageProps> = ({
    setOverlay,
    closeOverlay,
 }) => {
-   const isDarkMode = theme === "dark";
+   const {isDark} = useThemeContext();
 
    const productList = [
       {
@@ -99,7 +96,7 @@ const SavedPage: React.FC<SavedPageProps> = ({
       },
    ];
 
-   const clockIcon = isDarkMode ? ClockDark : ClockLight;
+   const clockIcon = isDark ? ClockDark : ClockLight;
 
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
@@ -145,7 +142,7 @@ const SavedPage: React.FC<SavedPageProps> = ({
 
          <div className="cards-grid">
             {productList.map((item) => (
-               <ProductCard key={item.id} item={item} isDarkMode={isDarkMode} />
+               <ProductCard key={item.id} item={item} isDarkMode={isDark} />
             ))}
          </div>
 
@@ -165,7 +162,7 @@ const SavedPage: React.FC<SavedPageProps> = ({
             ></div>
          )}
 
-         <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
+         <Footer />
       </Box>
    );
 };

@@ -15,17 +15,14 @@ import { Typography } from "@mui/material";
 import FooterName from "../assets/images/footerName.svg";
 import { useAuth } from "../contexts/authContexts";
 import { useUserServices } from "../contexts/userServices";
+import { useThemeContext } from "../contexts/themeContextProvider";
 
 interface SignInPageProps {
-   theme: any;
-   handleToggleTheme: () => void;
    isModalOpen: boolean;
    toggleModal: () => void;
 }
 
 const SignInPage: React.FC<SignInPageProps> = ({
-   theme,
-   handleToggleTheme,
    isModalOpen,
    toggleModal,
 }) => {
@@ -35,8 +32,14 @@ const SignInPage: React.FC<SignInPageProps> = ({
    const [isSendingEmail, setIsSendingEmail] = useState(false);
    const [footerHeight, setFooterHeight] = useState(0);
    const imgRef = useRef<HTMLImageElement | null>(null);
-   const isDark = theme.palette.mode === "dark";
-   const { signUpWithEmail, signInWithEmail, signInWithGoogle, successMessage, errorMessage } = useUserServices();
+   const { isDark } = useThemeContext();
+   const {
+      signUpWithEmail,
+      signInWithEmail,
+      signInWithGoogle,
+      successMessage,
+      errorMessage,
+   } = useUserServices();
 
    return (
       <React.Fragment>
@@ -104,7 +107,9 @@ const SignInPage: React.FC<SignInPageProps> = ({
                <button
                   className="signin-btn"
                   onClick={() => {
-                     isUserSigningUp ? signUpWithEmail(email, password) : signInWithEmail(email, password);
+                     isUserSigningUp
+                        ? signUpWithEmail(email, password)
+                        : signInWithEmail(email, password);
                   }}
                   disabled={isSendingEmail}
                   style={{
@@ -143,7 +148,7 @@ const SignInPage: React.FC<SignInPageProps> = ({
             </div>
 
             <div style={{ padding: "0 16px" }}>
-               <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
+               <Footer />
             </div>
          </div>
          <div

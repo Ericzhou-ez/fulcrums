@@ -45,8 +45,6 @@ interface Product {
 
 interface SearchPageProps {
    isModalOpen: boolean;
-   theme: any;
-   handleToggleTheme: () => void;
    toggleModal: () => void;
    navOpen: boolean;
    setNavOpen: (navOpen: boolean) => void;
@@ -57,8 +55,6 @@ interface SearchPageProps {
 
 const SearchPage: React.FC<SearchPageProps> = ({
    isModalOpen,
-   theme,
-   handleToggleTheme,
    toggleModal,
    navOpen,
    setNavOpen,
@@ -277,7 +273,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
          )}
 
          <div style={{ padding: "0 16px" }}>
-            <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
+            <Footer />
          </div>
       </Box>
    );

@@ -6,11 +6,10 @@ import SideNav from "../../components/dashboard/dashboardNav";
 import { PasswordForm } from "../../components/dashboard/settings/PasswordForms";
 import { ThemeSwitch } from "../../components/dashboard/settings/Appearance";
 import { DeleteAccount } from "../../components/dashboard/settings/DeleteAccount";
+import { useThemeContext } from "../../contexts/themeContextProvider";
 
 export interface SettingPageProps {
    isModalOpen: boolean;
-   theme: any;
-   handleToggleTheme: () => void;
    toggleModal: () => void;
    navOpen: boolean;
    setNavOpen: any;
@@ -30,8 +29,6 @@ const mainContentStyles = (navOpen: boolean) => ({
 
 const SettingPage: React.FC<SettingPageProps> = ({
    isModalOpen,
-   theme,
-   handleToggleTheme,
    toggleModal,
    navOpen,
    setNavOpen,
@@ -39,7 +36,7 @@ const SettingPage: React.FC<SettingPageProps> = ({
    setOverlay,
    closeOverlay,
 }) => {
-   const isDark = theme.palette.mode === "dark";
+   const { isDark } = useThemeContext();
 
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
@@ -98,7 +95,7 @@ const SettingPage: React.FC<SettingPageProps> = ({
             ></div>
          )}
 
-         <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
+         <Footer />
       </Box>
    );
 };

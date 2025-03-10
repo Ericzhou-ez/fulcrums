@@ -7,13 +7,9 @@ import BottomCTA from "../../components/marketing/bottomCta";
 import { Faqs } from "../../components/marketing/faqs";
 import FeatureSelector from "../../components/marketing/featureSelector";
 import FooterName from "../../assets/images/footerName.svg";
+import { useThemeContext } from "../../contexts/themeContextProvider";
 
-interface HomeProps {
-   theme: any;
-   handleToggleTheme: () => void;
-}
-
-const Home: React.FC<HomeProps> = ({ theme, handleToggleTheme }) => {
+const Home = () => {
    const [footerHeight, setFooterHeight] = useState(0);
    const imgRef = useRef<HTMLImageElement | null>(null);
    const [activeIndex, setActiveIndex] = useState(1);
@@ -53,7 +49,7 @@ const Home: React.FC<HomeProps> = ({ theme, handleToggleTheme }) => {
       }
    }, []);
 
-   const isDark = theme.palette.mode === "dark";
+   const {isDark} = useThemeContext();
 
    return (
       <React.Fragment>
@@ -87,10 +83,10 @@ const Home: React.FC<HomeProps> = ({ theme, handleToggleTheme }) => {
 
             <Faqs />
 
-            <BottomCTA theme={theme} />
+            <BottomCTA />
 
             <div style={{ padding: "0 16px" }}>
-               <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
+               <Footer />
             </div>
          </div>
 

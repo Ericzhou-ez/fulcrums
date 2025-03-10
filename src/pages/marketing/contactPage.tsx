@@ -6,20 +6,17 @@ import { Tooltip } from "@mui/material";
 import { useState, useEffect, useRef } from "react";
 import FooterName from "../../assets/images/footerName.svg";
 import ContactMain from "../../components/marketing/contactMain";
+import { useThemeContext } from "../../contexts/themeContextProvider";
 
 interface ContactUsPageProps {
    toggleModal: () => void;
    isModalOpen: boolean;
-   theme: any;
-   handleToggleTheme: () => void;
 }
 
 export default function ContactPage({
    toggleModal,
 
    isModalOpen,
-   theme,
-   handleToggleTheme,
 }: ContactUsPageProps) {
    const [footerHeight, setFooterHeight] = useState(0);
    const imgRef = useRef<HTMLImageElement | null>(null);
@@ -29,7 +26,7 @@ export default function ContactPage({
       }
    }, []);
 
-   const isDark = theme.palette.mode === "dark";
+   const { isDark } = useThemeContext();
    return (
       <React.Fragment>
          <Nav
@@ -54,7 +51,7 @@ export default function ContactPage({
             <ContactMain />
 
             <div style={{ padding: "0 16px" }}>
-               <Footer theme={theme} handleToggleTheme={handleToggleTheme} />
+               <Footer />
             </div>
          </div>
 

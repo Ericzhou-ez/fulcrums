@@ -16,11 +16,11 @@ import { BrowserRouter } from "react-router";
 import Loading from "./components/core/loading";
 import ScrollToTop from "./components/core/scrollToTop";
 import { Analytics } from "@vercel/analytics/react";
+import { ThemeContextProvider } from "./contexts/themeContextProvider";
 
 declare module "@mui/material/styles" {
    interface TypeBackground {
       secondary: string;
-      tertiary: string;
    }
 }
 
@@ -32,28 +32,8 @@ function App() {
       if (savedTheme === "light" || savedTheme === "dark") {
          return savedTheme;
       }
-      return window.matchMedia("(prefers-color-scheme: dark)").matches
-         ? "dark"
-         : "light";
+      return "light";
    });
-
-   useEffect(() => {
-      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-      const handleThemeChange = (e: MediaQueryListEvent) => {
-         const newMode = e.matches ? "dark" : "light";
-         setMode(newMode);
-         localStorage.setItem("theme", newMode); // Save updated theme to localStorage
-      };
-
-      mediaQuery.addEventListener("change", handleThemeChange);
-      return () => mediaQuery.removeEventListener("change", handleThemeChange);
-   }, []);
-
-   useEffect(() => {
-      localStorage.setItem("theme", mode);
-   }, [mode]);
-   // Default to device theme
 
    const toggleModal = () => {
       setIsModalOpen(!isModalOpen);
@@ -65,7 +45,7 @@ function App() {
             palette: {
                mode,
                primary: {
-                  main: "#f27e35",
+                  main: "#f57c31",
                },
                secondary: {
                   main: "#f5bf46",
@@ -115,31 +95,24 @@ function App() {
       );
    }, [theme]);
 
-   const handleToggleTheme = (newTheme: any) => {
-      setMode(newTheme);
-   };
-
-   const handleSignOut = async () => await signOut(auth);
-
    return (
       <ThemeProvider theme={theme}>
-         <Analytics />
-         <CssBaseline />
-         <BrowserRouter>
-            <ScrollToTop />
+         <ThemeContextProvider mode={mode} setMode={setMode}>
+            <Analytics />
+            <CssBaseline />
+            <BrowserRouter>
+               <ScrollToTop />
 
-            {loading && <Loading />}
+               {loading && <Loading />}
 
-            <AppRoutes
-               loading={loading}
-               setLoading={setLoading}
-               toggleModal={toggleModal}
-               handleSignOut={handleSignOut}
-               isModalOpen={isModalOpen}
-               theme={theme}
-               handleToggleTheme={handleToggleTheme}
-            />
-         </BrowserRouter>
+               <AppRoutes
+                  loading={loading}
+                  setLoading={setLoading}
+                  toggleModal={toggleModal}
+                  isModalOpen={isModalOpen}
+               />
+            </BrowserRouter>
+         </ThemeContextProvider>
       </ThemeProvider>
    );
 }
