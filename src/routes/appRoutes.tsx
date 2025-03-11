@@ -114,7 +114,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                   }
                />
                <Route
-                  path="/quotation/internal"
+                  path="/dashboard/quotation/internal"
                   element={
                      <PrivateRoute>
                         <InternalQuotationPage
@@ -130,7 +130,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                   }
                />
                <Route
-                  path="/quotation/external"
+                  path="/dashboard/quotation/external"
                   element={
                      <PrivateRoute>
                         <ExternalQuotationPage
@@ -146,7 +146,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                   }
                />
                <Route
-                  path="/search"
+                  path="/dashboard/search"
                   element={
                      <PrivateRoute>
                         <SearchPage
@@ -162,7 +162,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                   }
                />
                <Route
-                  path="/recent"
+                  path="/dashboard/recent"
                   element={
                      <PrivateRoute>
                         <RecentProductsPage
@@ -178,7 +178,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                   }
                />
                <Route
-                  path="/saved"
+                  path="/dashboard/saved"
                   element={
                      <PrivateRoute>
                         <SavedPage
@@ -210,7 +210,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                      <ContactPage
                         toggleModal={toggleModal}
                         isModalOpen={isModalOpen}
-                        
                      />
                   }
                />

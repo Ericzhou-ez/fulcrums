@@ -45,7 +45,7 @@ const ExternalQuotationPage: React.FC<ExternalQuotationProps> = ({
             toggleModal={toggleModal}
             overlay={overlay}
             setOverlay={setOverlay}
-            searchBar={false}
+            searchBar={true}
          />
 
          <div className="title-recent">

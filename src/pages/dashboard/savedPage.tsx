@@ -110,7 +110,7 @@ const SavedPage: React.FC<SavedPageProps> = ({
             setNavOpen={setNavOpen}
             overlay={overlay}
             setOverlay={setOverlay}
-            searchBar={false}
+            searchBar={true}
          />
 
          <div className="title-recent">

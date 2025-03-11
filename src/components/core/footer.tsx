@@ -42,9 +42,9 @@ const groups = [
       items: [
          { key: "home", title: "主页", href: "/" },
          { key: "dashboard", title: "概览", href: "/dashboard" },
-         { key: "product", title: "产品管理", href: "/products" },
-         { key: "quotation", title: "报价管理", href: "/quotations" },
-         { key: "customs", title: "报关管理", href: "/customs" },
+         { key: "product", title: "产品管理", href: "/dashboard/products" },
+         { key: "quotation", title: "报价管理", href: "/dashboard/quotations" },
+         { key: "customs", title: "报关管理", href: "/dashboard/customs" },
       ],
    },
    {
@@ -133,7 +133,7 @@ const Footer = () => {
                         <img src={isDark ? HomeDark : HomeLight} alt="Home" />
                      </Tooltip>
                   </RouterLink>
-                  <RouterLink to="/recent">
+                  <RouterLink to="/dashboard/recent">
                      <Tooltip title="最近">
                         <img
                            src={isDark ? RecentDark : RecentLight}
@@ -141,7 +141,7 @@ const Footer = () => {
                         />
                      </Tooltip>
                   </RouterLink>
-                  <RouterLink to="/saved">
+                  <RouterLink to="/dashboard/saved">
                      <Tooltip title="已保存">
                         <img
                            src={isDark ? HeartDark : HeartLight}

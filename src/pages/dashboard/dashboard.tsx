@@ -70,7 +70,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             setNavOpen={setNavOpen}
             overlay={overlay}
             setOverlay={setOverlay}
-            searchBar={false}
+            searchBar={true}
          />
 
          <DashboardOverview navOpen={navOpen} setNavOpen={setNavOpen} />
