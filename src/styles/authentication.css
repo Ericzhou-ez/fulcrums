@@ -29,6 +29,7 @@ body {
    .auth {
       margin-left: 10px !important;
       max-width: 800px !important;
+      background-image: none !important;
    }
    .signin-page-container {
       display: flex;
@@ -126,13 +127,13 @@ body {
 }
 
 .signin-btn {
-   background-color: var(--background-secondary-color);
+   background-color: rgb(38, 34, 34);
    box-shadow: 0 4px 17px rgba(0, 0, 0, 0.1);
    border-radius: 12px;
    padding: 10px 0;
    margin: 5px 0;
    border: none;
-   color: var(--text-primary);
+   color: white;
    transition: 0.2s all;
    height: 38px;
    width: 100%;
