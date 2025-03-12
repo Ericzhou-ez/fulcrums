@@ -3,17 +3,76 @@ body {
    place-content: center;
 }
 
-.auth {
-   background-color: var(--background-primary-color);
-   padding: 150px 30px 25px 25px;
+.signin-page-container {
    display: flex;
+   justify-content: space-between;
+}
+
+.photo-signin-container {
+   position: relative;
+   overflow: hidden;
+   border-radius: 20px;
+   margin: 10px;
+}
+
+.photo-signin-container img {
+   object-fit: cover;
+   height: calc(100vh - 20px);
+   display: block;
+}
+
+@media (width <= 800px) {
+   .photo-signin-container {
+      display: none;
+      opacity: 0;
+   }
+   .auth {
+      margin-left: 10px !important;
+      max-width: 800px !important;
+   }
+   .signin-page-container {
+      display: flex;
+      place-content: center;
+   }
+   .signin-nav {
+      display: flex !important;
+   }
+}
+
+.signin-nav {
+   display: none;
+}
+
+.photo-signin-container::after {
+   content: "";
+   position: absolute;
+   bottom: 0;
+   left: 0;
+   right: 0;
+   height: 100%;
+   background: linear-gradient(to top, black, transparent);
+   pointer-events: none;
+   border-radius: 20px;
+}
+
+.auth {
+   padding: 60px 20px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
    flex-direction: column;
    font-family: "oxygen", Helvetica, sans-serif;
    font-size: 1rem;
    border-radius: 20px;
-   width: 84vw;
+   width: 100%;
    max-width: 600px;
-   margin: 0 auto;
+   height: calc(100vh - 20px);
+   margin-top: 10px;
+   margin-right: 10px;
+   background-image: url(/src/assets/images/signin-background.svg);
+   object-fit: contain;
+   background-repeat: no-repeat;
+   background-position: center;
 }
 
 .email-signin-input,
@@ -22,6 +81,16 @@ body {
    display: flex;
    flex-direction: column;
    padding-bottom: 20px;
+}
+
+.email-signin-input .error,
+.password-signin-input .error,
+.name-input .error {
+   border: 2px solid red;
+}
+
+.error-label {
+   color: red !important;
 }
 
 .email-signin-input label,
@@ -40,18 +109,20 @@ body {
    border-radius: 10px;
    height: 40px;
    background-color: #fff7f2;
-   border: none;
+   border: 1px solid #f9a978;
    font-weight: 500;
    font-size: 1rem;
    font-family: "oxygen", Helvetica, sans-serif;
    box-shadow: 0 4px 17px rgba(255, 203, 203, 0.1);
+   outline: none;
+   color: black;
 }
 
 .email-signin-input input:focus,
 .password-signin-input input:focus,
 .name-input input:focus {
    box-shadow: 0 4px 17px rgba(255, 203, 203, 0.18);
-   border: 1px solid var(--focus-border-color, #f98e4b);
+   border: 2px solid #f98e4b;
 }
 
 .signin-btn {
@@ -111,7 +182,7 @@ body {
    justify-content: center;
    padding: 10px 0;
    border: 0.5px solid rgb(244, 158, 112);
-    box-shadow: 0 4px 17px rgba(255, 124, 2, 0.3);
+   box-shadow: 0 4px 17px rgba(255, 124, 2, 0.3);
    border-radius: 10px;
    transition: all 0.2s;
    width: 100%;
@@ -139,10 +210,8 @@ body {
 }
 
 .error-message {
-   color: red;
+   color: red !important;
    font-size: 0.8rem;
-   text-align: center;
-   margin-top: -10px;
    margin-bottom: 15px;
 }
 
@@ -150,4 +219,19 @@ body {
    position: absolute;
    bottom: 2%;
    right: 1%;
+}
+
+.home-btn {
+   position: absolute;
+   top: 0;
+   right: 0;
+   padding: 8px 20px;
+   z-index: 100;
+   margin: 20px;
+   background-color: rgba(46, 24, 1, 0.01);
+   backdrop-filter: blur(20px);
+   border-radius: 30px;
+   border: 1px solid #e3e3e392;
+   font-size: 1.2rem;
+   font-weight: 600;
 }

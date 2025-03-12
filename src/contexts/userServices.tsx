@@ -11,12 +11,23 @@ import { auth, googleAuth, db } from "../configs/firebase";
 
 interface UserContextProps {
    signInWithGoogle: () => Promise<void>;
-   signInWithEmail: (email: string, password: string) => Promise<void>;
-   signUpWithEmail: (email: string, password: string, name: string) => Promise<void>;
+   signInWithEmail: (
+      email: string,
+      password: string,
+      setError: any
+   ) => Promise<void>;
+   signUpWithEmail: (
+      email: string,
+      password: string,
+      name: string,
+      checked: boolean,
+      setError: any
+   ) => Promise<void>;
    logOut: () => Promise<void>;
    user: UserType | null;
    loading: boolean;
    errorMessage: string;
+   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
    successMessage: string;
 }
 
@@ -59,7 +70,11 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
       }
    }
 
-   async function signInWithEmail(email: string, password: string) {
+   async function signInWithEmail(
+      email: string,
+      password: string,
+      setError: React.Dispatch<React.SetStateAction<boolean>>
+   ) {
       try {
          setLoading(true);
          if (!email || !/\S+@\S+\.\S+/.test(email)) {
@@ -76,12 +91,19 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
          setErrorMessage(
             err instanceof Error ? err.message : "发生了意外错误."
          );
+         setError(true);
       } finally {
          setLoading(false);
       }
    }
 
-   async function signUpWithEmail(email: string, password: string, name: string) {
+   async function signUpWithEmail(
+      email: string,
+      password: string,
+      name: string,
+      checked: boolean,
+      setError: React.Dispatch<React.SetStateAction<boolean>>
+   ) {
       try {
          setLoading(true);
          if (!email || !/\S+@\S+\.\S+/.test(email)) {
@@ -89,6 +111,12 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
          }
          if (!password || password.length < 6) {
             throw new Error("密码至少需要6个字符.");
+         }
+         if (!name) {
+            throw new Error("请输入有效的名字.");
+         }
+         if (!checked) {
+            throw new Error("请同意隐私政策和使用条款及Cookie政策.");
          }
          setSuccessMessage("注册中，请稍等");
          // only call if signing up
@@ -101,7 +129,8 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
          await setNewUserDoc(res, name);
       } catch (err) {
          console.error(err);
-          setErrorMessage(err instanceof Error ? err.message : "注册失败");
+         setErrorMessage(err instanceof Error ? err.message : "注册失败");
+         setError(true);
       } finally {
          setLoading(false);
       }
@@ -130,6 +159,7 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
             loading,
             successMessage,
             errorMessage,
+            setErrorMessage,
          }}
       >
          {children}
