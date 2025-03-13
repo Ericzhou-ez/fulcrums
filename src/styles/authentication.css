@@ -70,10 +70,6 @@ body {
    height: calc(100vh - 20px);
    margin-top: 10px;
    margin-right: 10px;
-   background-image: url(/src/assets/images/signin-background.svg);
-   object-fit: contain;
-   background-repeat: no-repeat;
-   background-position: center;
 }
 
 .email-signin-input,
@@ -123,17 +119,17 @@ body {
 .password-signin-input input:focus,
 .name-input input:focus {
    box-shadow: 0 4px 17px rgba(255, 203, 203, 0.18);
-   border: 2px solid #f98e4b;
+   border: 1px solid #ff6200;
 }
 
 .signin-btn {
-   background-color: rgb(38, 34, 34);
-   box-shadow: 0 4px 17px rgba(0, 0, 0, 0.1);
+   background-color: rgb(252, 236, 226);
+   box-shadow: 0 4px 17px rgba(155, 57, 12, 0.1);
+   color: black;
    border-radius: 12px;
    padding: 10px 0;
    margin: 5px 0;
    border: none;
-   color: white;
    transition: 0.2s all;
    height: 38px;
    width: 100%;
@@ -233,6 +229,7 @@ body {
    backdrop-filter: blur(20px);
    border-radius: 30px;
    border: 1px solid #e3e3e392;
-   font-size: 1.2rem;
+   font-size: 1.1rem;
    font-weight: 600;
+   color: white;
 }

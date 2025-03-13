@@ -14,12 +14,11 @@ const Home = () => {
    const [footerHeight, setFooterHeight] = useState(0);
    const imgRef = useRef<HTMLImageElement | null>(null);
    const [activeIndex, setActiveIndex] = useState(1);
-   const isMdUp = useMediaQuery("(min-width:600px)");
 
    useEffect(() => {
       const starContainer = document.querySelector(".star-container");
       if (!starContainer) return;
-      const numStars = isMdUp ? 150 : 100;
+      const numStars = 100;
       const stars: HTMLDivElement[] = [];
 
       for (let i = 0; i < numStars; i++) {

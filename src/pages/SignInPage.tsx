@@ -185,6 +185,7 @@ const SignInPage: React.FC<SignInPageProps> = ({
                            <div className="profile-photo-input"></div>
                            <Box display="flex" alignItems="center">
                               <Checkbox
+                                 color="info"
                                  checked={checked}
                                  onChange={() => setChecked(!checked)}
                               />
@@ -280,11 +281,7 @@ const SignInPage: React.FC<SignInPageProps> = ({
                            cursor: "pointer",
                         }}
                      >
-                        {isUserSigningUp
-                           ? isSendingEmail
-                              ? "请确认注册"
-                              : "注册"
-                           : "登录"}
+                        {isUserSigningUp ? "注册" : "登录"}
                      </button>
 
                      <p>

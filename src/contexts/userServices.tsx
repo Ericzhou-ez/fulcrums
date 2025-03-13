@@ -8,6 +8,7 @@ import {
 } from "firebase/auth";
 import { getDoc, doc, setDoc } from "firebase/firestore";
 import { auth, googleAuth, db } from "../configs/firebase";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 interface UserContextProps {
    signInWithGoogle: () => Promise<void>;
@@ -119,6 +120,7 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
             throw new Error("请同意隐私政策和使用条款及Cookie政策.");
          }
          setSuccessMessage("注册中，请稍等");
+
          // only call if signing up
          const res = await createUserWithEmailAndPassword(
             auth,
@@ -145,6 +147,27 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
          console.error("Logout Error:", error);
       } finally {
          setLoading(false);
+      }
+   }
+
+   async function setNewUserDoc(
+      res: { user: any },
+      name: string
+   ): Promise<void> {
+      try {
+         const functions = getFunctions(undefined, "us-central1");
+         const createUserDoc = httpsCallable(functions, "createUserDoc");
+
+         console.log("creating user doc called");
+         const { uid, email, displayName, photoURL } = res.user;
+         await createUserDoc({uid, email, displayName, photoURL, name});
+         console.log("finish call");
+
+         setSuccessMessage("");
+         setErrorMessage("");
+      } catch (error) {
+         console.error("Error setting user document in Firestore:", error);
+         setErrorMessage("注册失败");
       }
    }
 
@@ -177,33 +200,4 @@ export function useUserServices() {
    }
 
    return context;
-}
-
-async function setNewUserDoc(res: { user: any }, name: string): Promise<void> {
-   try {
-      const userUID = res.user.uid;
-      const currUser = res.user;
-      const userRef = doc(db, "users", userUID);
-      const userDoc = await getDoc(userRef);
-
-      if (!userDoc.exists()) {
-         await setDoc(
-            userRef,
-            {
-               name: currUser.displayName || name || "用户",
-               email: currUser.email || "",
-               photo: currUser.photoURL || "",
-               uid: userUID,
-               createdAt: new Date().toISOString(),
-               role: "user",
-               supplier: {},
-               products: {},
-               clients: {},
-            },
-            { merge: true }
-         );
-      }
-   } catch (error) {
-      console.error("Error setting user document in Firestore:", error);
-   }
 }

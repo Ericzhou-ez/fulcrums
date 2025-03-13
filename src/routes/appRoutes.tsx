@@ -47,6 +47,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
    const [successMessage, setSuccessMessage] = useState("");
    const signedIn = !!user;
 
+
    return (
       <UserServiceProvider
          setUser={setUser}

@@ -3,6 +3,7 @@ import { AuthContextType, UserType } from "../types/types";
 import { auth, db } from "../configs/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { getDoc, doc } from "firebase/firestore";
+import { useLocation } from "react-router-dom";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -21,10 +22,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
    user,
    loading,
 }) => {
+   const location = useLocation();
+
    useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
          if (currentUser) {
-            setUser({ uid: currentUser?.uid, name: currentUser?.displayName, email: currentUser?.email, photo: currentUser?.photoURL } as UserType);
+            setUser({
+               uid: currentUser?.uid,
+               name: currentUser?.displayName,
+               email: currentUser?.email,
+               photo: currentUser?.photoURL,
+            } as UserType);
             setLoading(false);
          } else {
             setUser(null);
@@ -36,13 +44,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
    }, []);
 
    useEffect(() => {
-      const uid = user?.uid;
-      
-      if (uid) {
-         fetchUserData(uid).then((userData) => setUser(userData));
+      if (user?.uid && !user?.name) {
+         fetchUserData(user.uid)
+            .then((userData) => setUser(userData))
+            .catch((err) =>
+               console.error("Failed to retrieve Firestore data: " + err)
+            );
       }
+   }, [user?.uid]); // this is the point where later we want to retrive products on change
 
-   }, []);
 
    const signedIn = !!user;
 
