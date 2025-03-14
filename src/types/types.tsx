@@ -3,7 +3,7 @@ export type Mass = {
    unit: string;
 };
 
-export type ProductDimension = {
+export type VolumetricDimensions = {
    height: number;
    length: number;
    unit: "m" | "cm" | "in" | "L";
@@ -11,25 +11,25 @@ export type ProductDimension = {
 };
 
 export type Product = {
-   productId: string;
-   name: string;
-   packaging: string;
-   cbm: number;
-   mass: Mass;
-   pcs: number;
-   productDimension: ProductDimension;
-   purchaseVolume: number; //not req
-   salesVolume: number; //maybe not needed
-   saved: boolean;
-   stock: number;
+   productId: string; //auto generate
+   image: string; //optional
+   name: string; // required
    unitPrice: number; // number only unit price already implies one unit
+   productDimension: VolumetricDimensions;  // this is the CBM ********* 
+   mass: Mass; // per unit
+
+   packaging: string; // unit of items per box
+   packagingDimensions: VolumetricDimensions; // should be of the box | user should be allowed to input by l*w*h or just v
+   saved: boolean;
    updatedAt: string;
-   supplier: string;
+
    supplierName: string;
    supplierId: string; // maps to supplier
-   image: string; //optional
+
    additionalNotes: string;
    catagory: string; //optional (will be dorp down)
+   purchaseVolume: number; //not req
+   salesVolume: number; // only needed later for quotation when client indicates how many they want
 };
 
 export type Supplier = {
@@ -46,7 +46,7 @@ export type SupplierMapping = {
 };
 
 export type Clients = {
-   products: { [key: string]: Product }; //should have all details of the product
+   products: { [key: string]: Product }; //should have all details of the product  key is product id
    phoneNumber: string;
    address: string;
    contactName: string; //联系人

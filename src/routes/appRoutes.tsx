@@ -21,6 +21,7 @@ import SettingPage from "../pages/dashboard/settingsPage";
 import ContactPage from "../pages/marketing/contactPage";
 import Loading from "../components/core/loading";
 import { useThemeContext } from "../contexts/themeContextProvider";
+import AddProductPage from "../pages/dashboard/AddProductPage";
 
 export interface AppRoutesProps {
    isModalOpen: boolean;
@@ -135,6 +136,22 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                   element={
                      <PrivateRoute>
                         <ExternalQuotationPage
+                           toggleModal={toggleModal}
+                           isModalOpen={isModalOpen}
+                           navOpen={navOpen}
+                           setNavOpen={setNavOpen}
+                           overlay={overlay}
+                           setOverlay={setOverlay}
+                           closeOverlay={closeOverlay}
+                        />
+                     </PrivateRoute>
+                  }
+               />
+               <Route
+                  path="/dashboard/add-product"
+                  element={
+                     <PrivateRoute>
+                        <AddProductPage
                            toggleModal={toggleModal}
                            isModalOpen={isModalOpen}
                            navOpen={navOpen}

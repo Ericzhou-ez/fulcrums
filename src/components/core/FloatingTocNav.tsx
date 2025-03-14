@@ -8,10 +8,17 @@ interface TocItem {
 
 interface FloatingTocNavProps {
    sections: TocItem[];
+   hoveredWidth: string; 
+   defaultWidth?: string;
 }
 
-const FloatingTocNav: React.FC<FloatingTocNavProps> = ({ sections }) => {
+const FloatingTocNav: React.FC<FloatingTocNavProps> = ({
+   sections,
+   hoveredWidth = 250,
+   defaultWidth = 50,
+}) => {
    const [activeId, setActiveId] = useState("");
+   const [isHovered, setIsHovered] = useState(false);
    const sectionsRef = useRef<(HTMLElement | null)[]>([]);
 
    useEffect(() => {
@@ -47,9 +54,26 @@ const FloatingTocNav: React.FC<FloatingTocNavProps> = ({ sections }) => {
       el.scrollIntoView({ behavior: "smooth", block: "end" });
    };
 
+   const navStyle = {
+      width: isHovered ? hoveredWidth : defaultWidth,
+   };
+
+   const tocListStyle = isHovered
+      ? {
+           display: "grid",
+           gap: "8px",
+           padding: "0 10px",
+        }
+      : { padding: "0 10px" };
+
    return (
-      <nav className="floating-toc-nav">
-         <ul className="toc-list" style={{ padding: "0 10px" }}>
+      <nav
+         className="floating-toc-nav"
+         style={navStyle}
+         onMouseEnter={() => setIsHovered(true)}
+         onMouseLeave={() => setIsHovered(false)}
+      >
+         <ul className="toc-list" style={tocListStyle}>
             {sections.map(({ id, label }) => (
                <li
                   key={id}
@@ -57,7 +81,15 @@ const FloatingTocNav: React.FC<FloatingTocNavProps> = ({ sections }) => {
                   onClick={() => handleClick(id)}
                >
                   <div className="toc-bar" />
-                  <div className="toc-label" style={{ padding: "0 10px" }}>{label}</div>
+                  <div
+                     className="toc-label"
+                     style={{
+                        padding: "0 10px",
+                        width: parseInt(hoveredWidth as string, 10) - 50,
+                     }}
+                  >
+                     {label}
+                  </div>
                </li>
             ))}
          </ul>

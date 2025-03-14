@@ -5,16 +5,11 @@ import DescriptionLight from "../../assets/icons/description-light.svg";
 import DescriptionDark from "../../assets/icons/description-dark.svg";
 import RecentLight from "../../assets/icons/recent-light.svg";
 import RecentDark from "../../assets/icons/recent-dark.svg";
-import AddLightBtn from "../../assets/icons/add-light.svg";
 import CardSlider from "./cardSlider";
 import Footer from "../core/footer";
-import SideNav from "./dashboardNav";
 import { QuickStats10, Chart1 } from "../../components/dashboard/performance";
 import {Documentation, Help} from "./help";
-import {
-   FileText as FileTextIcon,
-   ChatTeardropText as ChatTeardropTextIcon,
-} from "phosphor-react";
+
 
 interface DashboardOverviewProps {
    navOpen: boolean;
@@ -148,10 +143,6 @@ export default function DashboardOverview({ navOpen, setNavOpen }: DashboardOver
                <Help />
                <Documentation />
             </div>
-
-            <button className="add-product">
-               <img src={AddLightBtn} alt="+" />
-            </button>
          </Box>
 
          <Footer />
