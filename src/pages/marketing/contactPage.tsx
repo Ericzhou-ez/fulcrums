@@ -26,6 +26,10 @@ export default function ContactPage({
       }
    }, []);
 
+   useEffect(() => {
+      document.title = "Fulcrums | 联系我们";
+   }, []);
+
    const { isDark } = useThemeContext();
    return (
       <React.Fragment>

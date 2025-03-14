@@ -20,6 +20,7 @@ export default function NotFound() {
                   style={{
                      border: "none",
                      backgroundColor: "rgb(230, 230, 230)",
+                     color: "black",
                      padding: "10px 18px",
                      borderRadius: "20px",
                      marginRight: "10px",
@@ -33,6 +34,7 @@ export default function NotFound() {
                   style={{
                      border: "none",
                      backgroundColor: "#de9849",
+                     color: "black",
                      padding: "10px 18px",
                      borderRadius: "20px",
                   }}

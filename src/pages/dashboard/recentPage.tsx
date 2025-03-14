@@ -1,4 +1,5 @@
 import React from "react";
+import { useEffect } from "react";
 import { Typography, Box } from "@mui/material";
 import ProductCard from "../../components/dashboard/minProductCard";
 import "../../styles/RecentProductPage.css";
@@ -100,6 +101,10 @@ const RecentProductsPage: React.FC<RecentProductsPageProps> = ({
    ];
 
    const clockIcon = isDark ? ClockDark : ClockLight;
+
+   useEffect(() => {
+      document.title = "Fulcrums | 最近";
+   }, []);
 
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>

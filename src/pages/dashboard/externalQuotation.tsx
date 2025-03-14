@@ -4,6 +4,7 @@ import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import SideNav from "../../components/dashboard/dashboardNav";
 import "../../styles/quotation.css";
+import { useEffect } from "react";
 
 export interface ExternalQuotationProps {
    isModalOpen: boolean;
@@ -33,6 +34,10 @@ const ExternalQuotationPage: React.FC<ExternalQuotationProps> = ({
    setOverlay,
    closeOverlay,
 }) => {
+    useEffect(() => {
+       document.title = "Fulcrums | 客户报价";
+    }, []);
+
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
          <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />

@@ -1,5 +1,10 @@
-import NotFound from "../components/core/notFound"
+import NotFound from "../components/core/notFound";
+import { useEffect } from "react";
 
 export default function NotFoundPage() {
-   return <NotFound />
+   useEffect(() => {
+      document.title = "Fulcrums | 404";
+   }, []);
+
+   return <NotFound />;
 }

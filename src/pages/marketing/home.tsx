@@ -49,6 +49,10 @@ const Home = () => {
       }
    }, []);
 
+   useEffect(() => {
+      document.title = "Fulcrums";
+   }, []);
+
    const {isDark} = useThemeContext();
 
    return (

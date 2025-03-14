@@ -45,6 +45,10 @@ function TermsOfServicePage({
       }
    }, []);
 
+   useEffect(() => {
+      document.title = "Fulcrums | 条款";
+   }, []);
+
    const { isDark } = useThemeContext();
 
    return (
@@ -60,7 +64,11 @@ function TermsOfServicePage({
             searchBar={false}
          />
 
-         <FloatingTocNav sections={TOS_SECTIONS} />
+         <FloatingTocNav
+            sections={TOS_SECTIONS}
+            hoveredWidth={"250"}
+            defaultWidth={"50"}
+         />
 
          <div
             style={{

@@ -8,6 +8,7 @@ import ClockLight from "../../assets/icons/recent-light.svg";
 import ClockDark from "../../assets/icons/recent-dark.svg";
 import SideNav from "../../components/dashboard/dashboardNav";
 import { useThemeContext } from "../../contexts/themeContextProvider";
+import { useEffect } from "react";
 
 export interface SavedPageProps {
    isModalOpen: boolean;
@@ -97,6 +98,10 @@ const SavedPage: React.FC<SavedPageProps> = ({
    ];
 
    const clockIcon = isDark ? ClockDark : ClockLight;
+
+    useEffect(() => {
+       document.title = "Fulcrums | 保存";
+    }, []);
 
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>

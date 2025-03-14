@@ -71,6 +71,10 @@ const SearchPage: React.FC<SearchPageProps> = ({
       (Company | Product)[]
    >([]);
 
+    useEffect(() => {
+       document.title = "Fulcrums | 搜索";
+    }, []);
+
    useEffect(() => {
       let companies: Company[] = Object.entries(data.search_by_store).map(
          ([name, info]: [string, any], idx) => ({

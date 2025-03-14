@@ -42,6 +42,10 @@ function PrivacyPolicyPage({
       }
    }, []);
 
+   useEffect(() => {
+      document.title = "Fulcrums | 隐私";
+   }, []);
+
    const { isDark } = useThemeContext();
 
    return (
@@ -57,7 +61,11 @@ function PrivacyPolicyPage({
             searchBar={false}
          />
 
-         <FloatingTocNav sections={PRIVACY_SECTIONS} />
+         <FloatingTocNav
+            sections={PRIVACY_SECTIONS}
+            hoveredWidth={"250"}
+            defaultWidth={"50"}
+         />
 
          <div
             style={{

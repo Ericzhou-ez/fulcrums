@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
    createTheme,
    ThemeProvider,
@@ -57,6 +57,10 @@ const Dashboard: React.FC<DashboardProps> = ({
          closeOverlay();
       }
    }, [isMdUp]);
+
+   useEffect(() => {
+      document.title = "Fulcrums | 仪表";
+   }, []);
 
    return (
       <Box className="dashboard" sx={mainContentStyles(navOpen)}>

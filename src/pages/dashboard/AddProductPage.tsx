@@ -704,6 +704,10 @@ const AddProductPage: React.FC<AddProductPageProps> = ({
    setOverlay,
    closeOverlay,
 }) => {
+   useEffect(() => {
+      document.title = "Fulcrums | 添加产品";
+   }, []);
+   
    return (
       <Box sx={mainContentStyles(navOpen)}>
          <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
