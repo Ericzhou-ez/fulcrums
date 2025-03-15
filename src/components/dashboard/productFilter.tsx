@@ -3,7 +3,7 @@ import { Card, Stack, TextField, useMediaQuery, useTheme } from "@mui/material";
 import { MultiSelect } from "./multiSelect";
 import "../../styles/search.css";
 
-const typeOptions = [
+export const typeOptions = [
    { label: "饰品", value: "Jewels" },
    { label: "玩具", value: "Toys" },
    { label: "百货", value: "general_merchandise" },

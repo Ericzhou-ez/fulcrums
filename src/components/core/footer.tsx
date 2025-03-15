@@ -42,8 +42,8 @@ const groups = [
       items: [
          { key: "home", title: "主页", href: "/" },
          { key: "dashboard", title: "概览", href: "/dashboard" },
-         { key: "product", title: "产品管理", href: "/dashboard/products" },
-         { key: "quotation", title: "报价管理", href: "/dashboard/quotations" },
+         { key: "product", title: "产品管理", href: "/dashboard/add-product" },
+         { key: "quotation", title: "报价管理", href: "/dashboard/quotation/external" },
          { key: "customs", title: "报关管理", href: "/dashboard/customs" },
       ],
    },

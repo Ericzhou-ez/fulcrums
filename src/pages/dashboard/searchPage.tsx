@@ -128,7 +128,7 @@ const SearchPage = () => {
    };
 
    return (
-      <Box sx={mainContentStyles(navOpen)}>
+      <Box sx={{ ...mainContentStyles(navOpen), padding: "0 !important" }}>
          <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
          <Nav home={false} searchBar={false} />
 

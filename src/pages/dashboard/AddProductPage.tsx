@@ -12,6 +12,7 @@ import {
    FormControl,
    InputLabel,
    FormHelperText,
+   Tooltip,
 } from "@mui/material";
 import { Exam, X } from "phosphor-react";
 import Nav from "../../components/core/nav";
@@ -31,6 +32,8 @@ import {
 import ProductDefaultImage from "../../assets/images/product-background.svg";
 import ExmapleProduct from "/public/demo/O1CN01pln4jM203FPjV7zaX_!!2214227246793-0-cib.220x220.jpg";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
+import { MultiSelect } from "../../components/dashboard/multiSelect";
+import { typeOptions } from "../../components/dashboard/productFilter";
 
 const TOS_SECTIONS = [
    { id: "product-input", label: "产品" },
@@ -41,17 +44,19 @@ const TOS_SECTIONS = [
 ];
 
 const AddProductForm = () => {
+   const [saved, setSaved] = useState(false);
    const [productName, setProductName] = useState("");
    const [unitPrice, setUnitPrice] = useState("");
-   const [currency, setCurrency] = useState("$"); // 切换：$, €, ¥
+   const [currency, setCurrency] = useState("¥"); // 切换：$, €, ¥
    const [mass, setMass] = useState("");
-   const [massUnit, setMassUnit] = useState("kg"); // 切换 kg <-> g
+   const [massUnit, setMassUnit] = useState("g"); // 切换 kg <-> g
    // For dimensions: either separate L/W/H OR single volume when toggled
    const [length, setLength] = useState("");
    const [width, setWidth] = useState("");
    const [height, setHeight] = useState("");
    const [volume, setVolume] = useState(""); // used when volume mode is true
    const [dimensionUnit, setDimensionUnit] = useState("cm"); // 切换 cm <-> m; volume unit will be derived (cm³ or m³)
+   const [productCatagory, setProductCatagory] = useState(""); // required
    const [isVolumeMode, setIsVolumeMode] = useState(false); // false = 分拆模式 (L/W/H), true = 体积模式
    const [category, setCategory] = useState("");
    const [packing, setPacking] = useState("");
@@ -69,12 +74,63 @@ const AddProductForm = () => {
    const [additionalNotes, setAdditionalNotes] = useState("");
    const handleClear = (setter: (value: string) => void) => () => setter("");
 
+   // default values
+   const [forexRates, setForexRates] = useState({
+      CNYtoUSD: 0.1381677,
+      CNYtoEURO: 0.1269832,
+   });
+
+   useEffect(() => {
+      const fetchForexRates = async () => {
+         try {
+            const res = await fetch(
+               "https://api.freecurrencyapi.com/v1/latest?apikey=YOUR_API_KEY&currencies=USD%2CEUR&base_currency=CNY"
+            );
+            // todo: replace with actual key in .env
+
+            const { data } = await res.json();
+
+            setForexRates({
+               CNYtoUSD: parseFloat(data.USD),
+               CNYtoEURO: parseFloat(data.EUR),
+            });
+
+            console.log("Fetched Rates:", data);
+         } catch (err) {
+            console.error("Error fetching rates: " + err);
+            // Use fallback values if fetch fails
+            setForexRates({
+               CNYtoUSD: 0.1381677,
+               CNYtoEURO: 0.1269832,
+            });
+         }
+      };
+
+      fetchForexRates();
+   }, []);
+
    const toggleCurrency = () => {
-      setCurrency((prev) => {
-         if (prev === "$") return "€";
-         else if (prev === "€") return "¥";
-         else return "$";
-      });
+      const base = parseFloat(unitPrice);
+      let converted = 0;
+      let newCurrency = currency;
+      const USDtoEURO = forexRates.CNYtoEURO / forexRates.CNYtoUSD;
+      const EUROtoCNY = 1 / forexRates.CNYtoEURO;
+
+      if (currency === "¥") {
+         // Convert from CNY to USD
+         converted = base * forexRates.CNYtoUSD;
+         newCurrency = "$";
+      } else if (currency === "$") {
+         // Convert from USD to EUR
+         converted = base * USDtoEURO;
+         newCurrency = "€";
+      } else if (currency === "€") {
+         // Convert from EUR to CNY
+         converted = base * EUROtoCNY;
+         newCurrency = "¥";
+      }
+      setUnitPrice(converted.toFixed(2));
+      setCurrency(newCurrency);
    };
 
    const toggleMassUnit = () => {
@@ -113,6 +169,8 @@ const AddProductForm = () => {
          <ProductImage
             src={ProductDefaultImage}
             isMdUp={isMdUp}
+            saved={saved}
+            setSaved={setSaved}
             alt="product-image"
          />
 
@@ -171,7 +229,7 @@ const AddProductForm = () => {
                   InputProps={{
                      startAdornment: (
                         <InputAdornment position="start">
-                           <IconButton onClick={toggleCurrency}>
+                           <IconButton onClick={toggleCurrency} color="primary">
                               <Typography>{currency}</Typography>
                            </IconButton>
                         </InputAdornment>
@@ -212,122 +270,127 @@ const AddProductForm = () => {
                   sx={{ my: 2 }}
                />
                {/* 尺寸（长 x 宽 x 高） 或体积模式 */}
-               {isVolumeMode ? (
-                  // Volume mode
-                  <Box
-                     sx={{
-                        display: "flex",
-                        alignItems: "flex-sart",
-                        my: 2,
-                        gap: 1,
-                     }}
-                  >
-                     <IconButton onClick={toggleVolumeMode}>
-                        <ToggleRight size={22} weight="fill" />
-                     </IconButton>
-                     <TextField
-                        label="体积"
-                        type="number"
-                        size="small"
-                        value={volume}
-                        onChange={(e) => setVolume(e.target.value)}
-                        required
-                     />
-                     <IconButton onClick={toggleDimensionUnit}>
-                        <Typography>
-                           {dimensionUnit === "cm" ? "cm³" : "m³"}
-                        </Typography>
-                     </IconButton>
-                  </Box>
-               ) : (
-                  // Dimension mode: three separate fields for 长, 宽, 高 with clear buttons on left
-                  <Box
-                     sx={{
-                        display: "flex",
-                        gap: 1,
-                        alignItems: "flex-start",
-                        my: 2,
-                     }}
-                  >
-                     <IconButton onClick={toggleVolumeMode}>
-                        <ToggleLeft size={22} weight="fill" />
-                     </IconButton>
-                     <TextField
-                        label="长"
-                        type="number"
-                        size="small"
-                        value={length}
-                        onChange={(e) => setLength(e.target.value)}
-                        required
-                        InputProps={{
-                           startAdornment: length && (
-                              <InputAdornment position="start">
-                                 <IconButton onClick={handleClear(setLength)}>
-                                    <X size={20} />
-                                 </IconButton>
-                              </InputAdornment>
-                           ),
-                        }}
-                     />
-                     <TextField
-                        label="宽"
-                        type="number"
-                        size="small"
-                        value={width}
-                        onChange={(e) => setWidth(e.target.value)}
-                        required
-                        InputProps={{
-                           startAdornment: width && (
-                              <InputAdornment position="start">
-                                 <IconButton onClick={handleClear(setWidth)}>
-                                    <X size={20} />
-                                 </IconButton>
-                              </InputAdornment>
-                           ),
-                        }}
-                     />
-                     <TextField
-                        label="高"
-                        type="number"
-                        size="small"
-                        value={height}
-                        onChange={(e) => setHeight(e.target.value)}
-                        required
-                        InputProps={{
-                           startAdornment: height && (
-                              <InputAdornment position="start">
-                                 <IconButton onClick={handleClear(setHeight)}>
-                                    <X size={20} />
-                                 </IconButton>
-                              </InputAdornment>
-                           ),
-                        }}
-                     />
-
-                     <IconButton onClick={toggleDimensionUnit}>
-                        <Typography>{dimensionUnit}</Typography>
-                     </IconButton>
-                  </Box>
-               )}
-               {/* to be loaded with multi select */}
-               <TextField
-                  fullWidth
-                  label="产品类别"
-                  size="small"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  placeholder="请选择产品类别"
-                  InputProps={{
-                     endAdornment: category && (
-                        <InputAdornment position="end">
-                           <IconButton onClick={handleClear(setCategory)}>
-                              <X size={20} />
-                           </IconButton>
-                        </InputAdornment>
-                     ),
+               <Box
+                  sx={{
+                     display: { xs: "block", sm: "flex" },
+                     justifyContent: "space-between",
+                     alignItems: "center",
                   }}
-                  sx={{ my: 1 }}
-               />
+               >
+                  {isVolumeMode ? (
+                     // Volume mode
+                     <Box
+                        sx={{
+                           display: "flex",
+                           alignItems: "flex-sart",
+                           my: 2,
+                           gap: 1,
+                        }}
+                     >
+                        <IconButton onClick={toggleVolumeMode}>
+                           <ToggleRight size={22} weight="fill" />
+                        </IconButton>
+                        <TextField
+                           label="体积"
+                           type="number"
+                           size="small"
+                           value={volume}
+                           onChange={(e) => setVolume(e.target.value)}
+                           required
+                        />
+                        <IconButton
+                           onClick={toggleDimensionUnit}
+                           color="primary"
+                        >
+                           <Typography>
+                              {dimensionUnit === "cm" ? "cm³" : "m³"}
+                           </Typography>
+                        </IconButton>
+                     </Box>
+                  ) : (
+                     // Dimension mode: three separate fields for 长, 宽, 高 with clear buttons on left
+                     <Box
+                        sx={{
+                           display: "flex",
+                           gap: 1,
+                           alignItems: "flex-start",
+                           my: 2,
+                        }}
+                     >
+                        <IconButton onClick={toggleVolumeMode}>
+                           <ToggleLeft size={22} weight="fill" />
+                        </IconButton>
+                        <TextField
+                           label="长"
+                           type="number"
+                           size="small"
+                           value={length}
+                           onChange={(e) => setLength(e.target.value)}
+                           required
+                           InputProps={{
+                              startAdornment: length && (
+                                 <InputAdornment position="start">
+                                    <IconButton
+                                       onClick={handleClear(setLength)}
+                                    >
+                                       <X size={20} />
+                                    </IconButton>
+                                 </InputAdornment>
+                              ),
+                           }}
+                        />
+                        <TextField
+                           label="宽"
+                           type="number"
+                           size="small"
+                           value={width}
+                           onChange={(e) => setWidth(e.target.value)}
+                           required
+                           InputProps={{
+                              startAdornment: width && (
+                                 <InputAdornment position="start">
+                                    <IconButton onClick={handleClear(setWidth)}>
+                                       <X size={20} />
+                                    </IconButton>
+                                 </InputAdornment>
+                              ),
+                           }}
+                        />
+                        <TextField
+                           label="高"
+                           type="number"
+                           size="small"
+                           value={height}
+                           onChange={(e) => setHeight(e.target.value)}
+                           required
+                           InputProps={{
+                              startAdornment: height && (
+                                 <InputAdornment position="start">
+                                    <IconButton
+                                       onClick={handleClear(setHeight)}
+                                    >
+                                       <X size={20} />
+                                    </IconButton>
+                                 </InputAdornment>
+                              ),
+                           }}
+                        />
+
+                        <IconButton
+                           onClick={toggleDimensionUnit}
+                           color="primary"
+                        >
+                           <Typography>{dimensionUnit}</Typography>
+                        </IconButton>
+                     </Box>
+                  )}
+                  <MultiSelect
+                     label="类别"
+                     options={typeOptions}
+                     value={productCatagory}
+                     onChange={(value: string) => setProductCatagory(value)}
+                  />
+               </Box>
             </Box>
 
             {/* -------------- 包装信息 -------------- */}
@@ -394,7 +457,10 @@ const AddProductForm = () => {
                         required
                         size="small"
                      />
-                     <IconButton onClick={togglePackingDimensionUnit}>
+                     <IconButton
+                        onClick={togglePackingDimensionUnit}
+                        color="primary"
+                     >
                         <Typography>
                            {packingDimensionUnit === "cm" ? "cm³" : "m³"}
                         </Typography>
@@ -472,7 +538,10 @@ const AddProductForm = () => {
                         }}
                      />
 
-                     <IconButton onClick={togglePackingDimensionUnit}>
+                     <IconButton
+                        onClick={togglePackingDimensionUnit}
+                        color="primary"
+                     >
                         <Typography>{packingDimensionUnit}</Typography>
                      </IconButton>
                   </Box>
@@ -614,9 +683,11 @@ const AddProductForm = () => {
                         ))}
                      </Select>
                   </FormControl>
-                  <button className="add-btn">
-                     <Plus size={20} fill="filled" />
-                  </button>
+                  <Tooltip title="添加客户">
+                     <button className="add-btn">
+                        <Plus size={20} fill="filled" />
+                     </button>
+                  </Tooltip>
                </Box>
             </Box>
 
@@ -722,14 +793,15 @@ interface ProductImageProps {
    src: string;
    alt: string;
    isMdUp: boolean;
+   saved: boolean;
+   setSaved: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const ProductImage: React.FC<ProductImageProps> = ({ src, alt, isMdUp }) => {
+const ProductImage: React.FC<ProductImageProps> = ({ src, alt, isMdUp, saved, setSaved }) => {
    const [isExpanded, setIsExpanded] = useState(false);
-   const [liked, setLiked] = useState(false);
 
    const toggleExpand = () => setIsExpanded(!isExpanded);
-   const toggleLike = () => setLiked(!liked);
+   const toggleLike = () => setSaved(!saved);
 
    return (
       <Box className="product-image-container">
@@ -749,16 +821,24 @@ const ProductImage: React.FC<ProductImageProps> = ({ src, alt, isMdUp }) => {
          </Box>
 
          <Box position="absolute" bottom={8} right={8}>
-            <IconButton onClick={toggleLike}>
-               {liked ? (
-                  <Heart size={24} color="red" weight="fill" />
-               ) : (
-                  <Heart size={24} />
-               )}
-            </IconButton>
-            <IconButton onClick={toggleExpand}>
-               {isExpanded ? <ArrowsIn size={24} /> : <ArrowsOut size={24} />}
-            </IconButton>
+            <Tooltip title="保存">
+               <IconButton onClick={toggleLike}>
+                  {saved ? (
+                     <Heart size={24} color="red" weight="fill" />
+                  ) : (
+                     <Heart size={24} />
+                  )}
+               </IconButton>
+            </Tooltip>
+            <Tooltip title="放大">
+               <IconButton onClick={toggleExpand}>
+                  {isExpanded ? (
+                     <ArrowsIn size={24} />
+                  ) : (
+                     <ArrowsOut size={24} />
+                  )}
+               </IconButton>
+            </Tooltip>
          </Box>
       </Box>
    );

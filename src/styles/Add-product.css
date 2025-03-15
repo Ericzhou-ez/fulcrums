@@ -16,8 +16,8 @@
    display: block;
    margin: 0 auto;
    height: 300px;
-   border-bottom-left-radius: 18px;
-   border-bottom-right-radius: 18px;
+   border-bottom-left-radius: 12px;
+   border-bottom-right-radius: 12px;
    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
 }
 
