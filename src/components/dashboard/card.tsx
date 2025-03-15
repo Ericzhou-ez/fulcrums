@@ -36,9 +36,15 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
                md: "270px",
             },
             borderRadius: 5,
-            boxShadow: 1,
             overflow: "hidden",
-            WebkitBoxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+            boxShadow: "0 3px 8px rgba(0, 0, 0, 0.1)",
+            WebkitBoxShadow: "0 3px 8px rgba(0, 0, 0, 0.1)",
+            transition: "all 0.28s ease",
+            "&:hover": {
+               boxShadow: "0 5px 9px rgba(0, 0, 0, 0.12)",
+               WebkitBoxShadow: "0 5px 9px rgba(0, 0, 0, 0.12)",
+               transform: "scale(1.01)",
+            },
          }}
       >
          <CardMedia
@@ -50,6 +56,7 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
                width: "100%",
                height: 130,
                objectFit: "cover",
+               boxShadow: "none",
             }}
          />
 

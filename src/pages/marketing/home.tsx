@@ -53,7 +53,7 @@ const Home = () => {
       document.title = "Fulcrums";
    }, []);
 
-   const {isDark} = useThemeContext();
+   const { isDark } = useThemeContext();
 
    return (
       <React.Fragment>
@@ -67,16 +67,7 @@ const Home = () => {
          >
             <div className="home">
                <div className="star-container"></div>
-               <Nav
-                  home={true}
-                  isModalOpen={false}
-                  toggleModal={() => {}}
-                  navOpen={false}
-                  setNavOpen={null}
-                  overlay={false}
-                  setOverlay={() => {}}
-                  searchBar={false}
-               />
+               <Nav home={true} searchBar={false} />
                <Hero activeIndex={activeIndex} />{" "}
             </div>
 

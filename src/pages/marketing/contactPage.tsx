@@ -8,16 +8,7 @@ import FooterName from "../../assets/images/footerName.svg";
 import ContactMain from "../../components/marketing/contactMain";
 import { useThemeContext } from "../../contexts/themeContextProvider";
 
-interface ContactUsPageProps {
-   toggleModal: () => void;
-   isModalOpen: boolean;
-}
-
-export default function ContactPage({
-   toggleModal,
-
-   isModalOpen,
-}: ContactUsPageProps) {
+export default function ContactPage() {
    const [footerHeight, setFooterHeight] = useState(0);
    const imgRef = useRef<HTMLImageElement | null>(null);
    useEffect(() => {
@@ -33,16 +24,7 @@ export default function ContactPage({
    const { isDark } = useThemeContext();
    return (
       <React.Fragment>
-         <Nav
-            toggleModal={toggleModal}
-            isModalOpen={isModalOpen}
-            home={true}
-            navOpen={false}
-            setNavOpen={null}
-            overlay={false}
-            setOverlay={() => {}}
-            searchBar={false}
-         />
+         <Nav home={true} searchBar={false} />
 
          <div
             style={{

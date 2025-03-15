@@ -13,35 +13,22 @@ import {
 import { MagnifyingGlass, List } from "phosphor-react";
 import { useAuth } from "../../contexts/authContexts";
 import { ProfileModal } from "./floatingSettings";
+import { useUIStateContext } from "../../contexts/UIStateContextProvider";
 
 interface NavProps {
-   isModalOpen: boolean;
-   toggleModal: () => void;
    home: boolean;
-   navOpen: boolean;
-   setNavOpen: any;
-   overlay: boolean;
-   setOverlay: (value: boolean) => void;
    searchBar: boolean;
 }
 
-const Nav: React.FC<NavProps> = ({
-   isModalOpen,
-   toggleModal,
-   home,
-   navOpen,
-   setNavOpen,
-   overlay,
-   setOverlay,
-   searchBar,
-}) => {
+const Nav: React.FC<NavProps> = ({ home, searchBar }) => {
+   const { navOpen, setNavOpen, setOverlay } = useUIStateContext();
    const theme = useTheme();
    const isDark = theme.palette.mode === "dark";
    const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-   const {user, signedIn} = useAuth();
-   
+   const { user, signedIn } = useAuth();
+
    useEffect(() => {
       if (!isMdUp) {
          setOverlay(navOpen);
@@ -57,7 +44,9 @@ const Nav: React.FC<NavProps> = ({
          <Box
             className={
                isMdUp
-                  ? `${home ? "nav" : "nav-dash"} ${navOpen ? "nav-open" : ""}`
+                  ? `${home ? "nav" : "nav-dash"} ${
+                       home ? "" : navOpen ? "nav-open" : ""
+                    }`
                   : `${home ? "nav" : "nav-dash"}`
             }
          >
@@ -96,7 +85,11 @@ const Nav: React.FC<NavProps> = ({
             >
                <div
                   className="nav-logo"
-                  style={home ? {display: "flex", alignItems: "center"} : { display: "none" }}
+                  style={
+                     home
+                        ? { display: "flex", alignItems: "center" }
+                        : { display: "none" }
+                  }
                >
                   <img src={Logo} alt="Logo" />
                   <p>Fulcrums</p>

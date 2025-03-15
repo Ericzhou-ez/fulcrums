@@ -16,11 +16,7 @@ import { ProductCard } from "../../components/dashboard/productSearchCard";
 import data from "../../data/products_companies.json";
 import InfoIcon from "../../assets/icons/iconly-glass-info.svg";
 import { useTheme } from "@mui/material/styles";
-
-const mainContentStyles = (navOpen: boolean) => ({
-   marginLeft: { xs: 0, md: navOpen ? "240px" : "0px" },
-   transition: "margin-left 0.3s ease",
-});
+import { useUIStateContext } from "../../contexts/UIStateContextProvider";
 
 interface Company {
    id: string;
@@ -43,25 +39,7 @@ interface Product {
    link: string;
 }
 
-interface SearchPageProps {
-   isModalOpen: boolean;
-   toggleModal: () => void;
-   navOpen: boolean;
-   setNavOpen: (navOpen: boolean) => void;
-   overlay: boolean;
-   setOverlay: (overlay: boolean) => void;
-   closeOverlay: () => void;
-}
-
-const SearchPage: React.FC<SearchPageProps> = ({
-   isModalOpen,
-   toggleModal,
-   navOpen,
-   setNavOpen,
-   overlay,
-   setOverlay,
-   closeOverlay,
-}) => {
+const SearchPage = () => {
    const [searchQuery, setSearchQuery] = useState("");
    const [page, setPage] = useState(1);
    const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -71,9 +49,11 @@ const SearchPage: React.FC<SearchPageProps> = ({
       (Company | Product)[]
    >([]);
 
-    useEffect(() => {
-       document.title = "Fulcrums | 搜索";
-    }, []);
+   useEffect(() => {
+      document.title = "Fulcrums | 搜索";
+   }, []);
+   const { navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles } =
+      useUIStateContext();
 
    useEffect(() => {
       let companies: Company[] = Object.entries(data.search_by_store).map(
@@ -150,16 +130,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
    return (
       <Box sx={mainContentStyles(navOpen)}>
          <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
-         <Nav
-            home={false}
-            navOpen={navOpen}
-            setNavOpen={setNavOpen}
-            isModalOpen={isModalOpen}
-            toggleModal={toggleModal}
-            overlay={overlay}
-            setOverlay={setOverlay}
-            searchBar={false}
-         />
+         <Nav home={false} searchBar={false} />
 
          <Stack spacing={4}>
             <div

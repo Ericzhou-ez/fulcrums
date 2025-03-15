@@ -5,53 +5,26 @@ import Footer from "../../components/core/footer";
 import SideNav from "../../components/dashboard/dashboardNav";
 import "../../styles/quotation.css";
 import { useEffect } from "react";
+import { useUIStateContext } from "../../contexts/UIStateContextProvider";
 
-export interface ExternalQuotationProps {
-   isModalOpen: boolean;
-   toggleModal: () => void;
-   navOpen: boolean;
-   setNavOpen: any;
-   overlay: boolean;
-   setOverlay: any;
-   closeOverlay: () => void;
-}
+const ExternalQuotationPage = () => {
+   useEffect(() => {
+      document.title = "Fulcrums | 客户报价";
+   }, []);
 
-const mainContentStyles = (navOpen: boolean) => ({
-   marginLeft: {
-      xs: 0,
-      md: navOpen ? "240px" : "0px",
-   },
-   transition: "margin-left 0.3s ease",
-   padding: 2,
-});
-
-const ExternalQuotationPage: React.FC<ExternalQuotationProps> = ({
-   isModalOpen,
-   toggleModal,
-   navOpen,
-   setNavOpen,
-   overlay,
-   setOverlay,
-   closeOverlay,
-}) => {
-    useEffect(() => {
-       document.title = "Fulcrums | 客户报价";
-    }, []);
+   const {
+      navOpen,
+      setNavOpen,
+      overlay,
+      closeOverlay,
+      mainContentStyles,
+   } = useUIStateContext();
 
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
          <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
 
-         <Nav
-            home={false}
-            navOpen={navOpen}
-            setNavOpen={setNavOpen}
-            isModalOpen={isModalOpen}
-            toggleModal={toggleModal}
-            overlay={overlay}
-            setOverlay={setOverlay}
-            searchBar={true}
-         />
+         <Nav home={false} searchBar={true} />
 
          <div className="title-recent">
             <Typography

@@ -24,16 +24,7 @@ const PRIVACY_SECTIONS = [
    { id: "contact-info", label: "12. Contact Us" },
 ];
 
-interface PrivacyPolicyPageProps {
-   toggleModal: () => void;
-
-   isModalOpen: boolean;
-}
-
-function PrivacyPolicyPage({
-   toggleModal,
-   isModalOpen,
-}: PrivacyPolicyPageProps) {
+function PrivacyPolicyPage() {
    const [footerHeight, setFooterHeight] = useState(0);
    const imgRef = useRef<HTMLImageElement | null>(null);
    useEffect(() => {
@@ -50,16 +41,7 @@ function PrivacyPolicyPage({
 
    return (
       <React.Fragment>
-         <Nav
-            toggleModal={toggleModal}
-            isModalOpen={isModalOpen}
-            home={true}
-            navOpen={false}
-            setNavOpen={null}
-            overlay={false}
-            setOverlay={() => {}}
-            searchBar={false}
-         />
+         <Nav home={true} searchBar={false} />
 
          <FloatingTocNav
             sections={PRIVACY_SECTIONS}

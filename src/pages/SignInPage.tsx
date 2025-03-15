@@ -18,16 +18,10 @@ import { useUserServices } from "../contexts/userServices";
 import { useThemeContext } from "../contexts/themeContextProvider";
 import CtaPhoto from "../assets/images/sunset_dune.svg";
 import LoginBackground from "../assets/images/signin-background.svg";
+import { useUIStateContext } from "../contexts/UIStateContextProvider";
 
-interface SignInPageProps {
-   isModalOpen: boolean;
-   toggleModal: () => void;
-}
 
-const SignInPage: React.FC<SignInPageProps> = ({
-   isModalOpen,
-   toggleModal,
-}) => {
+const SignInPage = () => {
    const [email, setEmail] = useState("");
    const [password, setPassword] = useState("");
    const [name, setName] = useState("");
@@ -51,13 +45,7 @@ const SignInPage: React.FC<SignInPageProps> = ({
       <React.Fragment>
          <div className="signin-nav">
             <Nav
-               isModalOpen={isModalOpen}
-               toggleModal={toggleModal}
                home={true}
-               navOpen={false}
-               setNavOpen={null}
-               overlay={false}
-               setOverlay={() => {}}
                searchBar={false}
             />
          </div>

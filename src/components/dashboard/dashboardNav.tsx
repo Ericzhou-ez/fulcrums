@@ -127,22 +127,11 @@ const navItems: NavGroupType[] = [
       href: "",
    },
    {
-      key: "group-clients",
+      key: "clients",
       title: "客户",
       icon: "Users",
-      items: [
-         {
-            key: "clients-list",
-            title: "客户1",
-            href: "/dashboard/client/fd037e8f-2ae2-4a82-a0a3-c65224b8e072",
-         },
-         {
-            key: "clients-list",
-            title: "客户2",
-            href: "/dashboard/client/ffc7eb27-5f0a-4c26-a931-5a85fc14216b",
-         },
-      ],
-      href: "",
+      items: [],
+      href: "/dashboard/clients",
    },
 ];
 

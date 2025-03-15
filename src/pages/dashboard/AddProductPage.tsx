@@ -30,7 +30,7 @@ import {
 } from "phosphor-react";
 import ProductDefaultImage from "../../assets/images/product-background.svg";
 import ExmapleProduct from "/public/demo/O1CN01pln4jM203FPjV7zaX_!!2214227246793-0-cib.220x220.jpg";
-import { isUnitless } from "@mui/material/styles/cssUtils";
+import { useUIStateContext } from "../../contexts/UIStateContextProvider";
 
 const TOS_SECTIONS = [
    { id: "product-input", label: "产品" },
@@ -40,25 +40,7 @@ const TOS_SECTIONS = [
    { id: "extra-input", label: "更多" },
 ];
 
-export interface AddProductPageProps {
-   isModalOpen: boolean;
-   toggleModal: () => void;
-   navOpen: boolean;
-   setNavOpen: any;
-   overlay: boolean;
-   setOverlay: any;
-   closeOverlay: () => void;
-}
-
-const mainContentStyles = (navOpen: boolean) => ({
-   marginLeft: {
-      xs: 0,
-      md: navOpen ? "240px" : "0px",
-   },
-   transition: "margin-left 0.3s ease",
-});
-
-const AddProductForm: React.FC = () => {
+const AddProductForm = () => {
    const [productName, setProductName] = useState("");
    const [unitPrice, setUnitPrice] = useState("");
    const [currency, setCurrency] = useState("$"); // 切换：$, €, ¥
@@ -519,8 +501,8 @@ const AddProductForm: React.FC = () => {
                   value={supplierName}
                   onChange={(e) => setSupplierName(e.target.value)}
                   InputProps={{
-                     startAdornment: supplierName && (
-                        <InputAdornment position="start">
+                     endAdornment: supplierName && (
+                        <InputAdornment position="end">
                            <IconButton onClick={handleClear(setSupplierName)}>
                               <X size={20} />
                            </IconButton>
@@ -695,37 +677,23 @@ const AddProductForm: React.FC = () => {
    );
 };
 
-const AddProductPage: React.FC<AddProductPageProps> = ({
-   isModalOpen,
-   toggleModal,
-   navOpen,
-   setNavOpen,
-   overlay,
-   setOverlay,
-   closeOverlay,
-}) => {
+const AddProductPage = () => {
+   const { navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles } =
+      useUIStateContext();
+
    useEffect(() => {
       document.title = "Fulcrums | 添加产品";
    }, []);
-   
+
    return (
-      <Box sx={mainContentStyles(navOpen)}>
+      <Box sx={{ ...mainContentStyles(navOpen), padding: "0 !important" }}>
          <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
 
-         <Nav
-            home={false}
-            navOpen={navOpen}
-            setNavOpen={setNavOpen}
-            isModalOpen={isModalOpen}
-            toggleModal={toggleModal}
-            overlay={overlay}
-            setOverlay={setOverlay}
-            searchBar={true}
-         />
+         <Nav home={false} searchBar={true} />
 
          <AddProductForm />
 
-         <div style={{padding: "0 16px"}}>
+         <div style={{ padding: "0 16px" }}>
             <Footer />
          </div>
 

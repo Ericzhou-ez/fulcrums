@@ -17,36 +17,18 @@ import { Auth } from "firebase/auth";
 import DashboardOverview from "../../components/dashboard/dashboardOverview";
 import SideNav from "../../components/dashboard/dashboardNav";
 import { useThemeContext } from "../../contexts/themeContextProvider";
+import { useUIStateContext } from "../../contexts/UIStateContextProvider";
 
-interface DashboardProps {
-   isModalOpen: boolean;
-   toggleModal: () => void;
-   navOpen: boolean;
-   setNavOpen: any;
-   overlay: any;
-   setOverlay: any;
-   closeOverlay: () => void;
-}
 
-const mainContentStyles = (navOpen: boolean) => ({
-   marginLeft: {
-      xs: 0,
-      md: navOpen ? "240px" : "0px",
-   },
-   transition: "margin-left 0.3s ease",
-   padding: 2,
-});
-
-const Dashboard: React.FC<DashboardProps> = ({
-   isModalOpen,
-   toggleModal,
-   navOpen,
-   setNavOpen,
-   overlay,
-   setOverlay,
-   closeOverlay,
-}) => {
+const Dashboard = () => {
    const { isMdUp } = useThemeContext();
+   const {
+      navOpen,
+      setNavOpen,
+      overlay,
+      closeOverlay,
+      mainContentStyles,
+   } = useUIStateContext();
 
    React.useEffect(() => {
       if (isMdUp) {
@@ -67,12 +49,6 @@ const Dashboard: React.FC<DashboardProps> = ({
 
          <Nav
             home={false}
-            navOpen={navOpen}
-            isModalOpen={isModalOpen}
-            toggleModal={toggleModal}
-            setNavOpen={setNavOpen}
-            overlay={overlay}
-            setOverlay={setOverlay}
             searchBar={true}
          />
 

@@ -9,36 +9,10 @@ import ClockDark from "../../assets/icons/recent-dark.svg";
 import SideNav from "../../components/dashboard/dashboardNav";
 import { useThemeContext } from "../../contexts/themeContextProvider";
 import { useEffect } from "react";
+import { useUIStateContext } from "../../contexts/UIStateContextProvider";
 
-export interface SavedPageProps {
-   isModalOpen: boolean;
-   toggleModal: () => void;
-   navOpen: boolean;
-   setNavOpen: any;
-   overlay: boolean;
-   setOverlay: any;
-   closeOverlay: () => void;
-}
-
-const mainContentStyles = (navOpen: boolean) => ({
-   marginLeft: {
-      xs: 0,
-      md: navOpen ? "240px" : "0px",
-   },
-   transition: "margin-left 0.3s ease",
-   padding: 2,
-});
-
-const SavedPage: React.FC<SavedPageProps> = ({
-   isModalOpen,
-   toggleModal,
-   navOpen,
-   setNavOpen,
-   overlay,
-   setOverlay,
-   closeOverlay,
-}) => {
-   const {isDark} = useThemeContext();
+const SavedPage = () => {
+   const { isDark } = useThemeContext();
 
    const productList = [
       {
@@ -99,24 +73,18 @@ const SavedPage: React.FC<SavedPageProps> = ({
 
    const clockIcon = isDark ? ClockDark : ClockLight;
 
-    useEffect(() => {
-       document.title = "Fulcrums | 保存";
-    }, []);
+   useEffect(() => {
+      document.title = "Fulcrums | 保存";
+   }, []);
 
+   const { navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles } =
+      useUIStateContext();
+      
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
          <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
 
-         <Nav
-            home={false}
-            isModalOpen={isModalOpen}
-            toggleModal={toggleModal}
-            navOpen={navOpen}
-            setNavOpen={setNavOpen}
-            overlay={overlay}
-            setOverlay={setOverlay}
-            searchBar={true}
-         />
+         <Nav home={false} searchBar={true} />
 
          <div className="title-recent">
             <img

@@ -139,8 +139,8 @@ img {
 }
 
 .help-card:hover {
-  transform: scale(1.01); 
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15); 
+  transform: scale(1.005); 
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12); 
 }
 
 @media (max-width: 600px) {
@@ -187,5 +187,5 @@ img {
 }
 
 .dashboard-card-display:hover {
-   transform: scale(1.01);
+   transform: scale(1.005);
 }

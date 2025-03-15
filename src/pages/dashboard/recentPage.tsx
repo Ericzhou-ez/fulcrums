@@ -10,10 +10,11 @@ import SideNav from "../../components/dashboard/dashboardNav";
 import ClockLight from "../../assets/icons/description-light.svg";
 import ClockDark from "../../assets/icons/description-dark.svg";
 import { useThemeContext } from "../../contexts/themeContextProvider";
+import { useUIStateContext } from "../../contexts/UIStateContextProvider";
 
 export interface RecentProductsPageProps {
    isModalOpen: boolean;
-   
+
    toggleModal: () => void;
    navOpen: boolean;
    setNavOpen: any;
@@ -31,17 +32,8 @@ const mainContentStyles = (navOpen: boolean) => ({
    padding: 2,
 });
 
-const RecentProductsPage: React.FC<RecentProductsPageProps> = ({
-   isModalOpen,
-   
-   toggleModal,
-   navOpen,
-   setNavOpen,
-   overlay,
-   setOverlay,
-   closeOverlay
-}) => {
-   const {isDark} = useThemeContext();
+const RecentProductsPage = () => {
+   const { isDark } = useThemeContext();
 
    const productList = [
       {
@@ -106,20 +98,14 @@ const RecentProductsPage: React.FC<RecentProductsPageProps> = ({
       document.title = "Fulcrums | 最近";
    }, []);
 
+    const { navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles } =
+       useUIStateContext();
+
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
          <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
 
-         <Nav
-            home={false}
-            navOpen={navOpen}
-            setNavOpen={setNavOpen}
-            isModalOpen={isModalOpen}
-            toggleModal={toggleModal}
-            overlay={overlay}
-            setOverlay={setOverlay}
-            searchBar={true}
-         />
+         <Nav home={false} searchBar={true} />
 
          <div className="title-recent">
             <img

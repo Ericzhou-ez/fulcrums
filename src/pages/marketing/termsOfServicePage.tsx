@@ -27,16 +27,7 @@ const TOS_SECTIONS = [
    { id: "contact-us", label: "15. Contact Us" },
 ];
 
-interface TermsOfServicePageProps {
-   toggleModal: () => void;
-   isModalOpen: boolean;
-}
-
-function TermsOfServicePage({
-   toggleModal,
-
-   isModalOpen,
-}: TermsOfServicePageProps) {
+function TermsOfServicePage() {
    const [footerHeight, setFooterHeight] = useState(0);
    const imgRef = useRef<HTMLImageElement | null>(null);
    useEffect(() => {
@@ -53,16 +44,7 @@ function TermsOfServicePage({
 
    return (
       <React.Fragment>
-         <Nav
-            toggleModal={toggleModal}
-            isModalOpen={isModalOpen}
-            home={true}
-            navOpen={false}
-            setNavOpen={null}
-            overlay={false}
-            setOverlay={() => {}}
-            searchBar={false}
-         />
+         <Nav home={true} searchBar={false} />
 
          <FloatingTocNav
             sections={TOS_SECTIONS}

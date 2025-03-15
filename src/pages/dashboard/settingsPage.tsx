@@ -7,51 +7,23 @@ import { PasswordForm } from "../../components/dashboard/settings/PasswordForms"
 import { ThemeSwitch } from "../../components/dashboard/settings/Appearance";
 import { DeleteAccount } from "../../components/dashboard/settings/DeleteAccount";
 import { useThemeContext } from "../../contexts/themeContextProvider";
+import { useUIStateContext } from "../../contexts/UIStateContextProvider";
 
-export interface SettingPageProps {
-   isModalOpen: boolean;
-   toggleModal: () => void;
-   navOpen: boolean;
-   setNavOpen: any;
-   overlay: boolean;
-   setOverlay: any;
-   closeOverlay: () => void;
-}
-
-const mainContentStyles = (navOpen: boolean) => ({
-   marginLeft: {
-      xs: 0,
-      md: navOpen ? "240px" : "0px",
-   },
-   transition: "margin-left 0.3s ease",
-   padding: 2,
-});
-
-const SettingPage: React.FC<SettingPageProps> = ({
-   isModalOpen,
-   toggleModal,
-   navOpen,
-   setNavOpen,
-   overlay,
-   setOverlay,
-   closeOverlay,
-}) => {
+const SettingPage = () => {
    const { isDark } = useThemeContext();
+   const {
+      navOpen,
+      setNavOpen,
+      overlay,
+      closeOverlay,
+      mainContentStyles,
+   } = useUIStateContext();
 
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
          <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
 
-         <Nav
-            home={false}
-            navOpen={navOpen}
-            setNavOpen={setNavOpen}
-            isModalOpen={isModalOpen}
-            toggleModal={toggleModal}
-            overlay={overlay}
-            setOverlay={setOverlay}
-            searchBar={false}
-         />
+         <Nav home={false} searchBar={false} />
 
          <div className="title-recent">
             <Typography

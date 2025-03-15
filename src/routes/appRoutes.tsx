@@ -22,6 +22,7 @@ import ContactPage from "../pages/marketing/contactPage";
 import Loading from "../components/core/loading";
 import { useThemeContext } from "../contexts/themeContextProvider";
 import AddProductPage from "../pages/dashboard/AddProductPage";
+import { UIStateContextProvider } from "../contexts/UIStateContextProvider";
 
 export interface AppRoutesProps {
    isModalOpen: boolean;
@@ -48,7 +49,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
    const [successMessage, setSuccessMessage] = useState("");
    const signedIn = !!user;
 
-
    return (
       <UserServiceProvider
          setUser={setUser}
@@ -60,189 +60,100 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
          successMessage={successMessage}
          setSuccessMessage={setSuccessMessage}
       >
-         <AuthProvider
-            setLoading={setLoading}
-            setUser={setUser}
-            loading={loading}
-            user={user}
-         >
-            <Routes>
-               <Route
-                  path="/signin"
-                  element={
-                     loading ? (
-                        <Loading />
-                     ) : signedIn ? (
-                        <Navigate to="/dashboard" />
-                     ) : (
-                        <SignInPage
-                           isModalOpen={isModalOpen}
-                           toggleModal={toggleModal}
-                        />
-                     )
-                  }
-               />
+         <UIStateContextProvider>
+            <AuthProvider
+               setLoading={setLoading}
+               setUser={setUser}
+               loading={loading}
+               user={user}
+            >
+               <Routes>
+                  <Route
+                     path="/signin"
+                     element={
+                        loading ? (
+                           <Loading />
+                        ) : signedIn ? (
+                           <Navigate to="/dashboard" />
+                        ) : (
+                           <SignInPage />
+                        )
+                     }
+                  />
 
-               <Route
-                  path="/dashboard"
-                  element={
-                     <PrivateRoute>
-                        <Dashboard
-                           toggleModal={toggleModal}
-                           isModalOpen={isModalOpen}
-                           navOpen={navOpen}
-                           setNavOpen={setNavOpen}
-                           overlay={overlay}
-                           setOverlay={setOverlay}
-                           closeOverlay={closeOverlay}
-                        />
-                     </PrivateRoute>
-                  }
-               />
-               <Route
-                  path="/dashboard/settings"
-                  element={
-                     <PrivateRoute>
-                        <SettingPage
-                           toggleModal={toggleModal}
-                           isModalOpen={isModalOpen}
-                           navOpen={navOpen}
-                           setNavOpen={setNavOpen}
-                           overlay={overlay}
-                           setOverlay={setOverlay}
-                           closeOverlay={closeOverlay}
-                        />
-                     </PrivateRoute>
-                  }
-               />
-               <Route
-                  path="/dashboard/quotation/internal"
-                  element={
-                     <PrivateRoute>
-                        <InternalQuotationPage
-                           toggleModal={toggleModal}
-                           isModalOpen={isModalOpen}
-                           navOpen={navOpen}
-                           setNavOpen={setNavOpen}
-                           overlay={overlay}
-                           setOverlay={setOverlay}
-                           closeOverlay={closeOverlay}
-                        />
-                     </PrivateRoute>
-                  }
-               />
-               <Route
-                  path="/dashboard/quotation/external"
-                  element={
-                     <PrivateRoute>
-                        <ExternalQuotationPage
-                           toggleModal={toggleModal}
-                           isModalOpen={isModalOpen}
-                           navOpen={navOpen}
-                           setNavOpen={setNavOpen}
-                           overlay={overlay}
-                           setOverlay={setOverlay}
-                           closeOverlay={closeOverlay}
-                        />
-                     </PrivateRoute>
-                  }
-               />
-               <Route
-                  path="/dashboard/add-product"
-                  element={
-                     <PrivateRoute>
-                        <AddProductPage
-                           toggleModal={toggleModal}
-                           isModalOpen={isModalOpen}
-                           navOpen={navOpen}
-                           setNavOpen={setNavOpen}
-                           overlay={overlay}
-                           setOverlay={setOverlay}
-                           closeOverlay={closeOverlay}
-                        />
-                     </PrivateRoute>
-                  }
-               />
-               <Route
-                  path="/dashboard/search"
-                  element={
-                     <PrivateRoute>
-                        <SearchPage
-                           toggleModal={toggleModal}
-                           isModalOpen={isModalOpen}
-                           navOpen={navOpen}
-                           setNavOpen={setNavOpen}
-                           overlay={overlay}
-                           setOverlay={setOverlay}
-                           closeOverlay={closeOverlay}
-                        />
-                     </PrivateRoute>
-                  }
-               />
-               <Route
-                  path="/dashboard/recent"
-                  element={
-                     <PrivateRoute>
-                        <RecentProductsPage
-                           toggleModal={toggleModal}
-                           isModalOpen={isModalOpen}
-                           navOpen={navOpen}
-                           setNavOpen={setNavOpen}
-                           overlay={overlay}
-                           setOverlay={setOverlay}
-                           closeOverlay={closeOverlay}
-                        />
-                     </PrivateRoute>
-                  }
-               />
-               <Route
-                  path="/dashboard/saved"
-                  element={
-                     <PrivateRoute>
-                        <SavedPage
-                           toggleModal={toggleModal}
-                           isModalOpen={isModalOpen}
-                           navOpen={navOpen}
-                           setNavOpen={setNavOpen}
-                           overlay={overlay}
-                           setOverlay={setOverlay}
-                           closeOverlay={closeOverlay}
-                        />
-                     </PrivateRoute>
-                  }
-               />
-               <Route path="/components" element={<Components />} />
-               <Route path="/" element={<Home />} />
-               <Route
-                  path="/terms"
-                  element={
-                     <TermsOfServicePage
-                        toggleModal={toggleModal}
-                        isModalOpen={isModalOpen}
-                     />
-                  }
-               />
-               <Route
-                  path="/contact"
-                  element={
-                     <ContactPage
-                        toggleModal={toggleModal}
-                        isModalOpen={isModalOpen}
-                     />
-                  }
-               />
-               <Route
-                  path="/privacy"
-                  element={
-                     <PrivacyPolicyPage
-                        toggleModal={toggleModal}
-                        isModalOpen={isModalOpen}
-                     />
-                  }
-               />
-               <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-         </AuthProvider>
+                  <Route
+                     path="/dashboard"
+                     element={
+                        <PrivateRoute>
+                           <Dashboard />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/dashboard/settings"
+                     element={
+                        <PrivateRoute>
+                           <SettingPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/dashboard/quotation/internal"
+                     element={
+                        <PrivateRoute>
+                           <InternalQuotationPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/dashboard/quotation/external"
+                     element={
+                        <PrivateRoute>
+                           <ExternalQuotationPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/dashboard/add-product"
+                     element={
+                        <PrivateRoute>
+                           <AddProductPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/dashboard/search"
+                     element={
+                        <PrivateRoute>
+                           <SearchPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/dashboard/recent"
+                     element={
+                        <PrivateRoute>
+                           <RecentProductsPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/dashboard/saved"
+                     element={
+                        <PrivateRoute>
+                           <SavedPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route path="/components" element={<Components />} />
+                  <Route path="/" element={<Home />} />
+                  <Route path="/terms" element={<TermsOfServicePage />} />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                  <Route path="*" element={<NotFoundPage />} />
+               </Routes>
+            </AuthProvider>
+         </UIStateContextProvider>
       </UserServiceProvider>
    );
 };
