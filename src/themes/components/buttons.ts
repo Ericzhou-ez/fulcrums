@@ -68,7 +68,7 @@ function getContainedVariantStyles(
          opacity: 1,
       },
       "&:active": {
-         backgroundImage: `linear-gradient(180deg, ${dark} 0%, ${dark} 100%)`,
+         backgroundImage: `linear-gradient(180deg, ${main} 10%, ${dark} 100%)`,
       },
       "&:focus-visible": {
          boxShadow: theme.shadows[3],

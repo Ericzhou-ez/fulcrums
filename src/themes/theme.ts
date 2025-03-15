@@ -2,6 +2,7 @@ import { createTheme, Theme } from "@mui/material";
 import { useEffect, useMemo } from "react";
 import { MuiInputBase } from "./components/input-base";
 import { MuiButton } from "./components/buttons";
+import { MuiAutocomplete } from "./components/autocomplete";
 
 export function useAppTheme(mode: "light" | "dark"): Theme {
    const theme = useMemo(() => {
@@ -35,6 +36,7 @@ export function useAppTheme(mode: "light" | "dark"): Theme {
          components: {
             MuiInputBase,
             MuiButton,
+            MuiAutocomplete,
          },
       });
    }, [mode]);

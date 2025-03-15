@@ -13,6 +13,7 @@ import {
    InputLabel,
    FormHelperText,
    Tooltip,
+   Autocomplete,
 } from "@mui/material";
 import { Exam, X } from "phosphor-react";
 import Nav from "../../components/core/nav";
@@ -34,6 +35,7 @@ import ExmapleProduct from "/public/demo/O1CN01pln4jM203FPjV7zaX_!!2214227246793
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
 import { MultiSelect } from "../../components/dashboard/multiSelect";
 import { typeOptions } from "../../components/dashboard/productFilter";
+import ProductandCompanyData from "../../data/products_companies.json";
 
 const TOS_SECTIONS = [
    { id: "product-input", label: "产品" },
@@ -54,12 +56,12 @@ const AddProductForm = () => {
    const [length, setLength] = useState("");
    const [width, setWidth] = useState("");
    const [height, setHeight] = useState("");
-   const [volume, setVolume] = useState(""); // used when volume mode is true
+   const [productVolume, setProductVolume] = useState(""); // used when volume mode is true
    const [dimensionUnit, setDimensionUnit] = useState("cm"); // 切换 cm <-> m; volume unit will be derived (cm³ or m³)
    const [productCatagory, setProductCatagory] = useState(""); // required
    const [isVolumeMode, setIsVolumeMode] = useState(false); // false = 分拆模式 (L/W/H), true = 体积模式
-   const [category, setCategory] = useState("");
    const [packing, setPacking] = useState("");
+   const [packingVolume, setPackingVolume] = useState("");
    const [packingLength, setPackingLength] = useState("");
    const [packingWidth, setPackingWidth] = useState("");
    const [packingHeight, setPackingHeight] = useState("");
@@ -69,10 +71,16 @@ const AddProductForm = () => {
    const [supplierAddress, setSupplierAddress] = useState("");
    const [supplierPhone, setSupplierPhone] = useState("");
    const [supplierEmail, setSupplierEmail] = useState("");
-   const [selectedClient, setSelectedClient] = useState("");
+   const [clientName, setClientName] = useState("");
    const clients = ["客户A", "客户B", "客户C"];
    const [additionalNotes, setAdditionalNotes] = useState("");
    const handleClear = (setter: (value: string) => void) => () => setter("");
+
+   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
+   const [selectedSupplier, setSelectedSupplier] = useState<string | null>(
+      null
+   );
+   const [selectedClient, setSelectedClient] = useState<string | null>(null);
 
    // default values
    const [forexRates, setForexRates] = useState({
@@ -147,7 +155,7 @@ const AddProductForm = () => {
       setLength("");
       setWidth("");
       setHeight("");
-      setVolume("");
+      setProductVolume("");
    };
 
    const togglePackingDimensionUnit = () => {
@@ -163,11 +171,50 @@ const AddProductForm = () => {
 
    const { isDark, isMdUp } = useThemeContext();
 
+   // get product autofill res
+   const getProductFromQuery = () => {
+      if (productName.length >= 3) {
+         const keys = Object.keys(ProductandCompanyData["search_by_product"]);
+         const res = keys.filter((p) => p.includes(productName));
+
+         return res.slice(0, 10);
+      }
+      return [];
+   };
+
+   const getSupplierFromQuery = () => {
+      if (supplierName.length >= 2) {
+         const keys = Object.keys(ProductandCompanyData["search_by_store"]);
+         const res = keys.filter((p) => p.includes(supplierName));
+
+         return res.slice(0, 10);
+      }
+      return [];
+   };
+
+   useEffect(() => {
+      if (selectedSupplier) {
+         const address =
+            ProductandCompanyData["search_by_store"][
+               selectedSupplier as keyof (typeof ProductandCompanyData)["search_by_store"]
+            ]["Address"];
+         const phoneNumber =
+            ProductandCompanyData["search_by_store"][
+               selectedSupplier as keyof (typeof ProductandCompanyData)["search_by_store"]
+            ]["Phone Number"];
+
+         setSupplierAddress(address);
+         setSupplierPhone(`${phoneNumber}`);
+      } else {
+         setSupplierAddress("");
+         setSupplierPhone("");
+      }
+   }, [selectedSupplier]);
+
    return (
       <React.Fragment>
          {/* -------------- 产品image -------------- */}
          <ProductImage
-            src={ProductDefaultImage}
             isMdUp={isMdUp}
             saved={saved}
             setSaved={setSaved}
@@ -200,25 +247,49 @@ const AddProductForm = () => {
                   产品信息
                </Typography>
 
-               <TextField
-                  fullWidth
-                  label="产品名称"
-                  value={productName}
-                  onChange={(e) => setProductName(e.target.value)}
-                  required
-                  InputProps={{
-                     endAdornment: productName && (
-                        <InputAdornment position="end">
-                           <IconButton onClick={handleClear(setProductName)}>
-                              <X size={20} />
-                           </IconButton>
-                        </InputAdornment>
-                     ),
+               <Autocomplete
+                  freeSolo
+                  options={getProductFromQuery()}
+                  value={selectedProduct}
+                  inputValue={productName}
+                  onInputChange={(event, newInputValue) =>
+                     setProductName(newInputValue)
+                  }
+                  onChange={(event, newValue) => {
+                     setSelectedProduct(newValue);
+                     setProductName(newValue || "");
                   }}
-                  sx={{ my: 2 }}
+                  clearOnEscape
+                  renderInput={(params) => (
+                     <TextField
+                        {...params}
+                        inputProps={{ ...params.inputProps, maxLength: 50 }}
+                        fullWidth
+                        label="产品名称"
+                        required
+                        InputProps={{
+                           ...params.InputProps,
+                           endAdornment: productName ? (
+                              <InputAdornment position="end">
+                                 <IconButton
+                                    onClick={(event) => {
+                                       event.stopPropagation();
+                                       setProductName("");
+                                       setSelectedProduct(null);
+                                    }}
+                                 >
+                                    <X size={20} />
+                                 </IconButton>
+                              </InputAdornment>
+                           ) : null,
+                        }}
+                        sx={{ my: 2 }}
+                     />
+                  )}
                />
                {/* 单价 - 数字类型, left adornment for currency, clear button on right if text exists */}
                <TextField
+                  inputProps={{ maxLength: 20 }}
                   fullWidth
                   label="单价"
                   type="number"
@@ -246,6 +317,7 @@ const AddProductForm = () => {
                />
                {/* 质量（重量） - 数字类型, right adornment for toggle; also include clear button before toggle if text exists */}
                <TextField
+                  inputProps={{ maxLength: 20 }}
                   fullWidth
                   label="重量"
                   type="number"
@@ -291,11 +363,12 @@ const AddProductForm = () => {
                            <ToggleRight size={22} weight="fill" />
                         </IconButton>
                         <TextField
+                           inputProps={{ maxLength: 20 }}
                            label="体积"
                            type="number"
                            size="small"
-                           value={volume}
-                           onChange={(e) => setVolume(e.target.value)}
+                           value={productVolume}
+                           onChange={(e) => setProductVolume(e.target.value)}
                            required
                         />
                         <IconButton
@@ -321,6 +394,7 @@ const AddProductForm = () => {
                            <ToggleLeft size={22} weight="fill" />
                         </IconButton>
                         <TextField
+                           inputProps={{ maxLength: 20 }}
                            label="长"
                            type="number"
                            size="small"
@@ -340,6 +414,7 @@ const AddProductForm = () => {
                            }}
                         />
                         <TextField
+                           inputProps={{ maxLength: 20 }}
                            label="宽"
                            type="number"
                            size="small"
@@ -357,6 +432,7 @@ const AddProductForm = () => {
                            }}
                         />
                         <TextField
+                           inputProps={{ maxLength: 20 }}
                            label="高"
                            type="number"
                            size="small"
@@ -412,6 +488,7 @@ const AddProductForm = () => {
 
                {/* 包装 */}
                <TextField
+                  inputProps={{ maxLength: 20 }}
                   fullWidth
                   label="包装"
                   type="number"
@@ -450,10 +527,13 @@ const AddProductForm = () => {
                         <ToggleLeft size={22} weight="fill" />
                      </IconButton>
                      <TextField
+                        inputProps={{ maxLength: 20 }}
                         label="包装体积"
                         type="number"
-                        value={packingLength || packingWidth || packingHeight}
-                        onChange={(e) => {}}
+                        value={packingVolume}
+                        onChange={(e) => {
+                           setPackingVolume(e.target.value);
+                        }}
                         required
                         size="small"
                      />
@@ -480,6 +560,7 @@ const AddProductForm = () => {
                         <ToggleLeft size={22} weight="fill" />
                      </IconButton>
                      <TextField
+                        inputProps={{ maxLength: 20 }}
                         label="长"
                         type="number"
                         size="small"
@@ -500,6 +581,7 @@ const AddProductForm = () => {
                      />
 
                      <TextField
+                        inputProps={{ maxLength: 20 }}
                         label="宽"
                         type="number"
                         size="small"
@@ -519,6 +601,7 @@ const AddProductForm = () => {
                         }}
                      />
                      <TextField
+                        inputProps={{ maxLength: 20 }}
                         label="高"
                         type="number"
                         size="small"
@@ -564,24 +647,49 @@ const AddProductForm = () => {
                >
                   供应商信息
                </Typography>
-               <TextField
-                  fullWidth
-                  label="供应商名称"
-                  value={supplierName}
-                  onChange={(e) => setSupplierName(e.target.value)}
-                  InputProps={{
-                     endAdornment: supplierName && (
-                        <InputAdornment position="end">
-                           <IconButton onClick={handleClear(setSupplierName)}>
-                              <X size={20} />
-                           </IconButton>
-                        </InputAdornment>
-                     ),
+               <Autocomplete
+                  freeSolo
+                  options={getSupplierFromQuery()}
+                  value={selectedSupplier}
+                  inputValue={supplierName}
+                  onInputChange={(event, newInputValue) =>
+                     setSupplierName(newInputValue)
+                  }
+                  onChange={(event, newValue) => {
+                     setSelectedSupplier(newValue);
+                     setSupplierName(newValue || "");
                   }}
-                  sx={{ my: 1 }}
+                  clearOnEscape
+                  renderInput={(params) => (
+                     <TextField
+                        {...params}
+                        fullWidth
+                        inputProps={{ ...params.inputProps, maxLength: 50 }}
+                        label="供应商名称"
+                        required
+                        InputProps={{
+                           ...params.InputProps,
+                           endAdornment: supplierName ? (
+                              <InputAdornment position="end">
+                                 <IconButton
+                                    onClick={(event) => {
+                                       event.stopPropagation();
+                                       setSupplierName("");
+                                       setSelectedSupplier(null);
+                                    }}
+                                 >
+                                    <X size={20} />
+                                 </IconButton>
+                              </InputAdornment>
+                           ) : null,
+                        }}
+                        sx={{ my: 1 }}
+                     />
+                  )}
                />
                <TextField
                   fullWidth
+                  inputProps={{ maxLength: 50 }}
                   label="地址"
                   size="small"
                   value={supplierAddress}
@@ -601,6 +709,7 @@ const AddProductForm = () => {
                />
                <Box sx={{ display: "flex", gap: 2, my: 1 }}>
                   <TextField
+                     inputProps={{ maxLength: 20 }}
                      fullWidth
                      label="电话号码"
                      size="small"
@@ -619,6 +728,7 @@ const AddProductForm = () => {
                      }}
                   />
                   <TextField
+                     inputProps={{ maxLength: 50 }}
                      fullWidth
                      label="电子邮件"
                      size="small"
@@ -655,40 +765,48 @@ const AddProductForm = () => {
                >
                   客户信息
                </Typography>
-               <Box
-                  sx={{
-                     display: "flex",
-                     alignItems: "center",
-                     gap: 2,
-                     my: 1,
+
+               <Autocomplete
+                  freeSolo
+                  options={clients}
+                  value={selectedClient}
+                  inputValue={clientName}
+                  onInputChange={(event, newInputValue) =>
+                     setClientName(newInputValue)
+                  }
+                  onChange={(event, newValue) => {
+                     setSelectedClient(newValue);
+                     setClientName(newValue || "");
                   }}
-               >
-                  <FormControl
-                     required
-                     sx={{
-                        minWidth: { xs: "calc(100vw - 100px)", md: "800px" },
-                     }}
-                  >
-                     <InputLabel id="client-select-label">选择客户</InputLabel>
-                     <Select
-                        labelId="client-select-label"
-                        value={selectedClient}
+                  clearOnEscape
+                  renderInput={(params) => (
+                     <TextField
+                        {...params}
+                        fullWidth
+                        inputProps={{ ...params.inputProps, maxLength: 50 }}
                         label="选择客户"
-                        onChange={(e) => setSelectedClient(e.target.value)}
-                     >
-                        {clients.map((client) => (
-                           <MenuItem key={client} value={client}>
-                              {client}
-                           </MenuItem>
-                        ))}
-                     </Select>
-                  </FormControl>
-                  <Tooltip title="添加客户">
-                     <button className="add-btn">
-                        <Plus size={20} fill="filled" />
-                     </button>
-                  </Tooltip>
-               </Box>
+                        required
+                        helperText="如果自动补全中没有该客户，请直接输入"
+                        InputProps={{
+                           ...params.InputProps,
+                           endAdornment: clientName ? (
+                              <InputAdornment position="end">
+                                 <IconButton
+                                    onClick={(event) => {
+                                       event.stopPropagation();
+                                       setClientName("");
+                                       setSelectedClient(null);
+                                    }}
+                                 >
+                                    <X size={20} />
+                                 </IconButton>
+                              </InputAdornment>
+                           ) : null,
+                        }}
+                        sx={{ my: 1 }}
+                     />
+                  )}
+               />
             </Box>
 
             {/* -------------- 附加信息 -------------- */}
@@ -730,6 +848,10 @@ const AddProductForm = () => {
                   sx={{ my: 1 }}
                />
             </Box>
+
+            <Button variant="contained" color="primary" fullWidth>
+               保存产品
+            </Button>
          </Box>
 
          <button
@@ -790,18 +912,37 @@ const AddProductPage = () => {
 export default AddProductPage;
 
 interface ProductImageProps {
-   src: string;
    alt: string;
    isMdUp: boolean;
    saved: boolean;
-   setSaved: React.Dispatch<React.SetStateAction<boolean>>
+   setSaved: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ProductImage: React.FC<ProductImageProps> = ({ src, alt, isMdUp, saved, setSaved }) => {
+const ProductImage: React.FC<ProductImageProps> = ({
+   alt,
+   isMdUp,
+   saved,
+   setSaved,
+}) => {
    const [isExpanded, setIsExpanded] = useState(false);
-
+   const [src, setSrc] = useState(ProductDefaultImage);
    const toggleExpand = () => setIsExpanded(!isExpanded);
    const toggleLike = () => setSaved(!saved);
+
+   // call useProductServices to upload file to firebase storage
+   // todo implemented
+   const handleImageChange = (event: any) => {
+      const file = event.target.files[0];
+
+      if (file) {
+         const tempUrl = URL.createObjectURL(file);
+         setSrc(tempUrl);
+      }
+   };
+
+   const handleButtonClick = () => {
+      document.getElementById("imageInput")?.click();
+   };
 
    return (
       <Box className="product-image-container">
@@ -817,7 +958,19 @@ const ProductImage: React.FC<ProductImageProps> = ({ src, alt, isMdUp, saved, se
          />
 
          <Box position="absolute" bottom={8} left={8}>
-            <button className="glassmorphism-btn">更换图片</button>
+            <button
+               className="glassmorphism-btn"
+               onClick={() => handleButtonClick()}
+            >
+               更换图片
+            </button>
+            <input
+               id="imageInput"
+               type="file"
+               accept="image/*"
+               style={{ display: "none" }}
+               onChange={(e) => handleImageChange(e)}
+            />
          </Box>
 
          <Box position="absolute" bottom={8} right={8}>
@@ -830,15 +983,18 @@ const ProductImage: React.FC<ProductImageProps> = ({ src, alt, isMdUp, saved, se
                   )}
                </IconButton>
             </Tooltip>
-            <Tooltip title="放大">
-               <IconButton onClick={toggleExpand}>
-                  {isExpanded ? (
+
+            <IconButton onClick={toggleExpand}>
+               {isExpanded ? (
+                  <Tooltip title="缩小">
                      <ArrowsIn size={24} />
-                  ) : (
+                  </Tooltip>
+               ) : (
+                  <Tooltip title="放大">
                      <ArrowsOut size={24} />
-                  )}
-               </IconButton>
-            </Tooltip>
+                  </Tooltip>
+               )}
+            </IconButton>
          </Box>
       </Box>
    );

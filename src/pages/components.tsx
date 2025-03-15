@@ -1,4 +1,11 @@
-import { Button, Typography, Box, Stack, Autocomplete, TextField } from "@mui/material";
+import {
+   Button,
+   Typography,
+   Box,
+   Stack,
+   Autocomplete,
+   TextField,
+} from "@mui/material";
 
 export default function Components() {
    const variants = ["text", "outlined", "contained"] as const;
@@ -23,7 +30,17 @@ export default function Components() {
          </Typography>
 
          <Autocomplete
-            options={["Option 1", "Option 2", "Option 3"]}
+            options={[
+               "Option 1",
+               "Option 2",
+               "Option 3",
+               "Option 4",
+               "Option 5",
+               "Option 6",
+               "Option 7",
+               "Option 8",
+               "Option 9",
+            ]}
             renderInput={(params) => (
                <TextField {...params} label="Autocomplete" />
             )}
