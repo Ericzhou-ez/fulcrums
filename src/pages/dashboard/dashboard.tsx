@@ -20,7 +20,6 @@ import { useThemeContext } from "../../contexts/themeContextProvider";
 
 interface DashboardProps {
    isModalOpen: boolean;
-
    toggleModal: () => void;
    navOpen: boolean;
    setNavOpen: any;

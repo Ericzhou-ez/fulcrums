@@ -17,6 +17,7 @@ import Loading from "./components/core/loading";
 import ScrollToTop from "./components/core/scrollToTop";
 import { Analytics } from "@vercel/analytics/react";
 import { ThemeContextProvider } from "./contexts/themeContextProvider";
+import { useAppTheme } from "./themes/theme";
 
 declare module "@mui/material/styles" {
    interface TypeBackground {
@@ -39,61 +40,7 @@ function App() {
       setIsModalOpen(!isModalOpen);
    };
 
-   const theme = useMemo(
-      () =>
-         createTheme({
-            palette: {
-               mode,
-               primary: {
-                  main: "#f57c31",
-               },
-               secondary: {
-                  main: "#f5bf46",
-               },
-               background: {
-                  default: mode === "light" ? "#ffffff" : "#121212",
-                  secondary: mode === "light" ? "#f7f7f7" : "#1e1e1e",
-               },
-               text: {
-                  primary: mode === "light" ? "#000000" : "#ffffff",
-                  secondary: mode === "light" ? "#555555" : "#cccccc",
-               },
-            },
-            typography: {
-               fontFamily: "Oxygen, Helvetica, Arial, sans-serif",
-            },
-         }),
-      [mode]
-   );
-
-   useEffect(() => {
-      // Sync all theme colors to CSS variables
-      const { primary, secondary, background, text } = theme.palette;
-      document.documentElement.style.setProperty(
-         "--primary-color",
-         primary.main
-      );
-      document.documentElement.style.setProperty(
-         "--secondary-color",
-         secondary.main
-      );
-      document.documentElement.style.setProperty(
-         "--background-color",
-         background.default
-      );
-      document.documentElement.style.setProperty(
-         "--background-secondary-color",
-         background.secondary
-      );
-      document.documentElement.style.setProperty(
-         "--text-primary-color",
-         text.primary
-      );
-      document.documentElement.style.setProperty(
-         "--text-secondary-color",
-         text.secondary
-      );
-   }, [theme]);
+   const theme = useAppTheme(mode);
 
    return (
       <ThemeProvider theme={theme}>
