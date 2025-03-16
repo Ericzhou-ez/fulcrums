@@ -1,9 +1,10 @@
 import { createContext, useContext, useEffect, useRef } from "react";
-import { AuthContextType, UserType } from "../types/types";
+import { AuthContextType, Product, UserType } from "../types/types";
 import { auth, db } from "../configs/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { getDoc, doc } from "firebase/firestore";
 import { useLocation } from "react-router-dom";
+import { getDocs, collection } from "firebase/firestore";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -22,8 +23,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
    user,
    loading,
 }) => {
-   const location = useLocation();
-
    useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
          if (currentUser) {
@@ -51,8 +50,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
                console.error("Failed to retrieve Firestore data: " + err)
             );
       }
-   }, [user?.uid]); // this is the point where later we want to retrive products on change
 
+      console.log(user);
+
+   }, [user?.uid]); 
 
    const signedIn = !!user;
 
@@ -73,20 +74,44 @@ export const useAuth = (): AuthContextType => {
    return authContext;
 };
 
-export async function fetchUserData(uid: string) {
+export async function fetchUserData(uid: string): Promise<UserType | null> {
    try {
-      const userRef = doc(db, "users", uid); //only creates the path
+      const userRef = doc(db, "users", uid);
       const userSnap = await getDoc(userRef);
 
-      if (userSnap) {
-         const userData = userSnap.data() as UserType;
-         return userData;
-      } else {
-         console.log("no such user");
+      if (!userSnap.exists()) {
+         console.warn("No such user document exists");
          return null;
       }
-   } catch (err) {
-      console.error(err);
+
+      const userData = userSnap.data() as UserType;
+      const [productsSnap, clientsSnap, suppliersSnap] = await Promise.all([
+         getDocs(collection(userRef, "products")),
+         getDocs(collection(userRef, "clients")),
+         getDocs(collection(userRef, "suppliers")),
+      ]);
+
+      const products = productsSnap.docs.reduce((acc, doc) => {
+         acc[doc.id] = { ...doc.data() };
+         return acc;
+      }, {} as { [key: string]: any });
+      const clients = clientsSnap.docs.reduce((acc, doc) => {
+         acc[doc.id] = { ...doc.data() };
+         return acc;
+      }, {} as { [key: string]: any });
+      const supplier = suppliersSnap.docs.reduce((acc, doc) => {
+         acc[doc.id] = { ...doc.data() };
+         return acc;
+      }, {} as { [key: string]: any });
+
+      return {
+         ...userData,
+         products,
+         clients,
+         supplier,
+      };
+   } catch (error) {
+      console.error("Error fetching user data and collections:", error);
       return null;
    }
 }

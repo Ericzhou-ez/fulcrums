@@ -14,6 +14,7 @@ import {
    FormHelperText,
    Tooltip,
    Autocomplete,
+   Alert,
 } from "@mui/material";
 import { Exam, X } from "phosphor-react";
 import Nav from "../../components/core/nav";
@@ -36,6 +37,9 @@ import { useUIStateContext } from "../../contexts/UIStateContextProvider";
 import { MultiSelect } from "../../components/dashboard/multiSelect";
 import { typeOptions } from "../../components/dashboard/productFilter";
 import ProductandCompanyData from "../../data/products_companies.json";
+import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
+import Loading from "../../components/core/loading";
+import { useNavigate } from "react-router";
 
 const TOS_SECTIONS = [
    { id: "product-input", label: "产品" },
@@ -46,6 +50,8 @@ const TOS_SECTIONS = [
 ];
 
 const AddProductForm = () => {
+   const navigate = useNavigate();
+   const [src, setSrc] = useState(ProductDefaultImage);
    const [saved, setSaved] = useState(false);
    const [productName, setProductName] = useState("");
    const [unitPrice, setUnitPrice] = useState("");
@@ -75,12 +81,100 @@ const AddProductForm = () => {
    const clients = ["客户A", "客户B", "客户C"];
    const [additionalNotes, setAdditionalNotes] = useState("");
    const handleClear = (setter: (value: string) => void) => () => setter("");
-
+   const [submittingForm, setSubmittingForm] = useState(false);
    const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
    const [selectedSupplier, setSelectedSupplier] = useState<string | null>(
       null
    );
    const [selectedClient, setSelectedClient] = useState<string | null>(null);
+   const [isFormComplete, setIsFormComplete] = useState<string | boolean>(
+      false
+   );
+   const { addedProduct, addProduct, loading } =
+      useProductSupplierClientContext();
+   const [buttonDisabled, setButtonDisabled] = useState(addedProduct);
+
+   async function getBase64FromBlobUrl(blobUrl: string) {
+      const blob = await fetch(blobUrl).then((res) => res.blob());
+      return new Promise((resolve, reject) => {
+         const reader = new FileReader();
+         reader.onload = () => {
+            const base64String = (reader.result as string).split(",")[1];
+            resolve(base64String);
+         };
+         reader.onerror = () => {
+            reject(new Error("Failed to read blob as base64"));
+         };
+
+         reader.readAsDataURL(blob);
+      });
+   }
+
+   async function handleAddProduct() {
+      setSubmittingForm(true);
+
+      if (isFormComplete !== true) {
+         return;
+      }
+
+      setButtonDisabled(true);
+
+      const base64String = await getBase64FromBlobUrl(src);
+      console.log("packing volume", packingVolume);
+      console.log("product volume", productVolume);
+
+      addProduct({
+         image: base64String,
+         name: productName,
+         unitPrice: unitPrice,
+         productDimension: {
+            volume: parseInt(productVolume),
+            unit: dimensionUnit,
+         },
+         mass: {
+            quantity: mass,
+            unit: massUnit,
+         },
+         packaging: packing,
+         packingVolume: {
+            volume: parseInt(packingVolume),
+            unit: packingDimensionUnit,
+         },
+         saved: saved,
+         updatedAt: new Date().toISOString(),
+         supplier: {
+            name: supplierName,
+            phone: supplierPhone,
+            address: supplierAddress,
+            email: supplierEmail,
+         },
+         additionalNotes: additionalNotes,
+         catagory: productCatagory,
+         client: clientName,
+      });
+   }
+
+   useEffect(() => {
+      const l = parseFloat(length);
+      const w = parseFloat(width);
+      const h = parseFloat(height);
+
+      if (l > 0 && w > 0 && h > 0) {
+         const volume = l * w * h;
+         setProductVolume(volume.toString());
+      }
+   }, [length, width, height, productVolume]);
+
+   useEffect(() => {
+      const pl = parseFloat(packingLength);
+      const pw = parseFloat(packingWidth);
+      const ph = parseFloat(packingHeight);
+
+      if (pl > 0 && pw > 0 && ph > 0) {
+         const pVolume = pl * pw * ph;
+         setPackingVolume(pVolume.toString());
+      }
+   }, [packingLength, packingWidth, packingHeight, packingVolume]);
 
    // default values
    const [forexRates, setForexRates] = useState({
@@ -211,16 +305,49 @@ const AddProductForm = () => {
       }
    }, [selectedSupplier]);
 
+   useEffect(() => {
+      const missing = [];
+
+      if (!productName) missing.push("产品名称");
+      if (!unitPrice) missing.push("单价");
+      if (!productVolume) missing.push("产品体积");
+      if (!mass) missing.push("产品质量");
+      if (!packing) missing.push("包装方式");
+      if (!productCatagory) missing.push("产品类别");
+      if (!packingVolume) missing.push("包装体积");
+      if (!supplierName) missing.push("供应商名称");
+      if (!clientName) missing.push("客户名称");
+
+      setIsFormComplete(missing.length ? "请填写" + missing.join(",") : true);
+   }, [
+      productName,
+      unitPrice,
+      productVolume,
+      mass,
+      packing,
+      productCatagory,
+      packingVolume,
+      supplierName,
+      clientName,
+   ]);
+
+   useEffect(() => {
+      if (isFormComplete === true && addedProduct === true) {
+         navigate("/dashboard/recent");
+      }
+   }, [isFormComplete, addedProduct, navigate]);
+
    return (
       <React.Fragment>
          {/* -------------- 产品image -------------- */}
          <ProductImage
+            src={src}
+            setSrc={setSrc}
             isMdUp={isMdUp}
             saved={saved}
             setSaved={setSaved}
             alt="product-image"
          />
-
          <Box
             sx={{
                display: "flex",
@@ -849,23 +976,51 @@ const AddProductForm = () => {
                />
             </Box>
 
-            <Button variant="contained" color="primary" fullWidth>
+            <Button
+               variant="contained"
+               color="primary"
+               fullWidth
+               onClick={() => handleAddProduct()}
+               disabled={buttonDisabled}
+            >
                保存产品
             </Button>
          </Box>
-
-         <button
-            className="glassmorphism-btn"
-            style={{ position: "fixed", top: "70px", right: "8px" }}
-         >
-            保存产品
-         </button>
-
+         {isFormComplete === true && (
+            <button
+               onClick={() => handleAddProduct()}
+               className="glassmorphism-btn"
+               disabled={buttonDisabled}
+               style={{
+                  position: "fixed",
+                  top: "70px",
+                  right: "8px",
+                  zIndex: "5500",
+               }}
+            >
+               保存产品
+            </button>
+         )}
          <FloatingTocNav
             sections={TOS_SECTIONS}
             defaultWidth="30"
             hoveredWidth="120"
          />
+
+         {loading && <Loading />}
+
+         {/* not only isFormComplete true but productAdded further needs to be true */}
+         {submittingForm && (
+            <Box
+               sx={{ position: "fixed", top: 0, zIndex: "5000", width: "100%" }}
+            >
+               {isFormComplete === true ? (
+                  addedProduct && <Alert severity="success">添加成功 :)</Alert>
+               ) : (
+                  <Alert severity="warning">{isFormComplete}</Alert>
+               )}
+            </Box>
+         )}
       </React.Fragment>
    );
 };
@@ -913,6 +1068,8 @@ export default AddProductPage;
 
 interface ProductImageProps {
    alt: string;
+   src: string;
+   setSrc: React.Dispatch<React.SetStateAction<string>>;
    isMdUp: boolean;
    saved: boolean;
    setSaved: React.Dispatch<React.SetStateAction<boolean>>;
@@ -923,9 +1080,10 @@ const ProductImage: React.FC<ProductImageProps> = ({
    isMdUp,
    saved,
    setSaved,
+   src,
+   setSrc,
 }) => {
    const [isExpanded, setIsExpanded] = useState(false);
-   const [src, setSrc] = useState(ProductDefaultImage);
    const toggleExpand = () => setIsExpanded(!isExpanded);
    const toggleLike = () => setSaved(!saved);
 

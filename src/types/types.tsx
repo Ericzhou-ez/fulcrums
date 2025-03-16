@@ -4,41 +4,38 @@ export type Mass = {
 };
 
 export type VolumetricDimensions = {
-   height: number;
-   length: number;
+   volume: number;
    unit: "m" | "cm" | "in" | "L";
-   width: number;
 };
 
 export type Product = {
    productId: string; //auto generate
-   image: string; //optional
-   name: string; // required
+   image: string; 
+   name: string; 
    unitPrice: number; // number only unit price already implies one unit
    productDimension: VolumetricDimensions;  // this is the CBM ********* 
    mass: Mass; // per unit
 
    packaging: string; // unit of items per box
-   packagingDimensions: VolumetricDimensions; // should be of the box | user should be allowed to input by l*w*h or just v
+   packingVolume: VolumetricDimensions; 
    saved: boolean;
    updatedAt: string;
 
    supplierName: string;
-   supplierId: string; // maps to supplier
+   supplierId: string; 
 
    additionalNotes: string;
-   catagory: string; //optional (will be dorp down)
-   purchaseVolume: number; //not req
+   catagory: string;
+   purchaseVolume: number; 
    salesVolume: number; // only needed later for quotation when client indicates how many they want
 };
 
 export type Supplier = {
    supplierId: string;
-   location: string;
    name: string;
    phone: string;
-   updatedAt: string;
-   products: { [key: string]: Product }; // key is product id
+   address: string;
+   email: string;
 };
 
 export type SupplierMapping = {
@@ -46,11 +43,8 @@ export type SupplierMapping = {
 };
 
 export type Clients = {
-   products: { [key: string]: Product }; //should have all details of the product  key is product id
-   phoneNumber: string;
-   address: string;
-   contactName: string; //联系人
-   additionalNotes: string;
+   name: string;
+   clientId: string;
 };
 
 export type UserType = {

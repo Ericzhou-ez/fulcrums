@@ -23,6 +23,7 @@ import Loading from "../components/core/loading";
 import { useThemeContext } from "../contexts/themeContextProvider";
 import AddProductPage from "../pages/dashboard/AddProductPage";
 import { UIStateContextProvider } from "../contexts/UIStateContextProvider";
+import { ProductSupplierClientContextProvider } from "../contexts/productSupplierClientContextProvider";
 
 export interface AppRoutesProps {
    isModalOpen: boolean;
@@ -67,91 +68,94 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                loading={loading}
                user={user}
             >
-               <Routes>
-                  <Route
-                     path="/signin"
-                     element={
-                        loading ? (
-                           <Loading />
-                        ) : signedIn ? (
-                           <Navigate to="/dashboard" />
-                        ) : (
-                           <SignInPage />
-                        )
-                     }
-                  />
+               <ProductSupplierClientContextProvider>
+                  <Routes>
+                     <Route
+                        path="/signin"
+                        element={
+                           loading ? (
+                              <Loading />
+                           ) : signedIn ? (
+                              <Navigate to="/dashboard" />
+                           ) : (
+                              <SignInPage />
+                           )
+                        }
+                     />
+                     <Route path="/components" element={<Components />} />
+                     <Route path="/" element={<Home />} />
+                     <Route path="/terms" element={<TermsOfServicePage />} />
+                     <Route path="/contact" element={<ContactPage />} />
+                     <Route path="/privacy" element={<PrivacyPolicyPage />} />
 
-                  <Route
-                     path="/dashboard"
-                     element={
-                        <PrivateRoute>
-                           <Dashboard />
-                        </PrivateRoute>
-                     }
-                  />
-                  <Route
-                     path="/dashboard/settings"
-                     element={
-                        <PrivateRoute>
-                           <SettingPage />
-                        </PrivateRoute>
-                     }
-                  />
-                  <Route
-                     path="/dashboard/quotation/internal"
-                     element={
-                        <PrivateRoute>
-                           <InternalQuotationPage />
-                        </PrivateRoute>
-                     }
-                  />
-                  <Route
-                     path="/dashboard/quotation/external"
-                     element={
-                        <PrivateRoute>
-                           <ExternalQuotationPage />
-                        </PrivateRoute>
-                     }
-                  />
-                  <Route
-                     path="/dashboard/add-product"
-                     element={
-                        <PrivateRoute>
-                           <AddProductPage />
-                        </PrivateRoute>
-                     }
-                  />
-                  <Route
-                     path="/dashboard/search"
-                     element={
-                        <PrivateRoute>
-                           <SearchPage />
-                        </PrivateRoute>
-                     }
-                  />
-                  <Route
-                     path="/dashboard/recent"
-                     element={
-                        <PrivateRoute>
-                           <RecentProductsPage />
-                        </PrivateRoute>
-                     }
-                  />
-                  <Route
-                     path="/dashboard/saved"
-                     element={
-                        <PrivateRoute>
-                           <SavedPage />
-                        </PrivateRoute>
-                     }
-                  />
-                  <Route path="/components" element={<Components />} />
-                  <Route path="/" element={<Home />} />
-                  <Route path="/terms" element={<TermsOfServicePage />} />
-                  <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/privacy" element={<PrivacyPolicyPage />} />
-                  <Route path="*" element={<NotFoundPage />} />
-               </Routes>
+                     <Route
+                        path="/dashboard"
+                        element={
+                           <PrivateRoute>
+                              <Dashboard />
+                           </PrivateRoute>
+                        }
+                     />
+                     <Route
+                        path="/dashboard/settings"
+                        element={
+                           <PrivateRoute>
+                              <SettingPage />
+                           </PrivateRoute>
+                        }
+                     />
+                     <Route
+                        path="/dashboard/quotation/internal"
+                        element={
+                           <PrivateRoute>
+                              <InternalQuotationPage />
+                           </PrivateRoute>
+                        }
+                     />
+                     <Route
+                        path="/dashboard/quotation/external"
+                        element={
+                           <PrivateRoute>
+                              <ExternalQuotationPage />
+                           </PrivateRoute>
+                        }
+                     />
+                     <Route
+                        path="/dashboard/add-product"
+                        element={
+                           <PrivateRoute>
+                              <AddProductPage />
+                           </PrivateRoute>
+                        }
+                     />
+                     <Route
+                        path="/dashboard/search"
+                        element={
+                           <PrivateRoute>
+                              <SearchPage />
+                           </PrivateRoute>
+                        }
+                     />
+                     <Route
+                        path="/dashboard/recent"
+                        element={
+                           <PrivateRoute>
+                              <RecentProductsPage />
+                           </PrivateRoute>
+                        }
+                     />
+                     <Route
+                        path="/dashboard/saved"
+                        element={
+                           <PrivateRoute>
+                              <SavedPage />
+                           </PrivateRoute>
+                        }
+                     />
+
+                     <Route path="*" element={<NotFoundPage />} />
+                  </Routes>
+               </ProductSupplierClientContextProvider>
             </AuthProvider>
          </UIStateContextProvider>
       </UserServiceProvider>

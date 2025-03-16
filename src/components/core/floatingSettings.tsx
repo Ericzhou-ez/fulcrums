@@ -48,7 +48,6 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
    //    onClose();
    // };
    const { logOut, user } = useUserServices();
-   console.log(user);
 
    return (
       <Menu
