@@ -1,19 +1,14 @@
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions/v2";
-import * as logger from "firebase-functions/logger";
 
 const db = admin.firestore();
 
 const createUserDoc = functions.https.onCall(
    async (req: functions.https.CallableRequest) => {
       const { data, auth } = req;
-      logger.log("createUserDoc called;   Data:" + data + "    Auth:" + auth);
 
       if (!auth) {
-         throw new functions.https.HttpsError(
-            "unauthenticated",
-            "unauthorized"
-         );
+         throw new functions.https.HttpsError("unauthenticated", "你没有权限");
       }
 
       const { photoUrl, name, email, uid, displayName } = data;
@@ -31,9 +26,6 @@ const createUserDoc = functions.https.onCall(
                   uid: uid,
                   createdAt: new Date().toISOString(),
                   role: "user",
-                  supplier: {},
-                  products: {},
-                  clients: {},
                },
                { merge: true }
             );

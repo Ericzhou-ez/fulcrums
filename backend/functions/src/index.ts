@@ -14,7 +14,8 @@ import * as admin from "firebase-admin";
 admin.initializeApp();
 
 import createUserDoc from "./services/users/createUser";
-export { createUserDoc };
+import { createProduct } from "./services/products/createProduct";
+export { createUserDoc, createProduct };
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
