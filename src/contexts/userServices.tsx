@@ -5,6 +5,7 @@ import {
    signInWithEmailAndPassword,
    signInWithPopup,
    createUserWithEmailAndPassword,
+   updateProfile,
 } from "firebase/auth";
 import { getDoc, doc, setDoc } from "firebase/firestore";
 import { auth, googleAuth, db } from "../configs/firebase";
@@ -127,6 +128,9 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
             email,
             password
          );
+
+         updateProfile(res.user, { displayName: name });
+         
          // create new collection in users
          await setNewUserDoc(res, name);
       } catch (err) {
@@ -160,7 +164,7 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
 
          console.log("creating user doc called");
          const { uid, email, displayName, photoURL } = res.user;
-         await createUserDoc({uid, email, displayName, photoURL, name});
+         await createUserDoc({ uid, email, displayName, photoURL, name });
          console.log("finish call");
 
          setSuccessMessage("");

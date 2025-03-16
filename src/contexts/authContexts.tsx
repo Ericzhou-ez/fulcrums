@@ -52,8 +52,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       }
 
       console.log(user);
-
-   }, [user?.uid]); 
+   }, [user?.uid]);
 
    const signedIn = !!user;
 
@@ -80,7 +79,7 @@ export async function fetchUserData(uid: string): Promise<UserType | null> {
       const userSnap = await getDoc(userRef);
 
       if (!userSnap.exists()) {
-         console.warn("No such user document exists");
+         console.error("No such user document exists");
          return null;
       }
 
@@ -104,12 +103,21 @@ export async function fetchUserData(uid: string): Promise<UserType | null> {
          return acc;
       }, {} as { [key: string]: any });
 
-      return {
-         ...userData,
-         products,
-         clients,
-         supplier,
-      };
+      // handles if supplier, client, and product collections are empty, which they are upon initalization
+      if (
+         Object.keys(products).length === 0 &&
+         Object.keys(clients).length === 0 &&
+         Object.keys(supplier).length === 0
+      ) {
+         return userData;
+      } else {
+         return {
+            ...userData,
+            products,
+            clients,
+            supplier,
+         };
+      }
    } catch (error) {
       console.error("Error fetching user data and collections:", error);
       return null;
