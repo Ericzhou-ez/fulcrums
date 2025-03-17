@@ -6,6 +6,19 @@
    background: linear-gradient(0deg, rgb(213, 88, 60) 0%, rgb(23, 1, 1) 70%);
 }
 
+.clipped-text {
+   background: url(/public/img/heroClippedText.png) center/cover;
+   -webkit-background-clip: text;
+   -webkit-text-fill-color: transparent;
+   aspect-ratio: 16/9;
+}
+
+.hero {
+   top: 180px;
+   z-index: 5;
+   min-height: 30vh;
+}
+
 .video-container {
    position: relative;
    display: flex;
@@ -46,15 +59,16 @@
 }
 
 .hero-title {
-   opacity: 0;
    transform: translateY(10px);
    animation: fadeIn 1s ease-in-out forwards;
    z-index: 50;
 }
-
+.hero-h2-description {
+   animation: fadeIn 1.5s ease-in-out forwards;
+}
 @keyframes fadeIn {
    0% {
-      opacity: 0;
+      opacity: 0.2;
       transform: translateY(10px);
    }
    100% {
@@ -63,15 +77,9 @@
    }
 }
 
-.clipped-text {
-   background: url(/public/img/heroClippedText.png) center/cover;
-   -webkit-background-clip: text;
-   -webkit-text-fill-color: transparent;
-}
-
 .cta-login {
    background-color: var(--background-secondary-color) !important;
-   padding: 10px 28px;
+   padding: 8px 28px;
    color: var(--text-secondary-color) !important;
    font-weight: 500;
    font-size: 1rem;
@@ -95,9 +103,6 @@
    border-radius: 50px !important;
    position: relative;
    overflow: hidden;
-}
-.hero-h2-description {
-   animation: fadeIn 1.5s ease-in-out forwards;
 }
 
 .cta-join-button-hero:hover {
@@ -204,15 +209,11 @@
    border-top-left-radius: 25px;
    border-top-right-radius: 25px;
    z-index: 100 !important;
+   aspect-ratio: 16 / 9;
 }
 
 .parallax {
    position: relative;
-}
-
-.hero {
-   top: 180px;
-   z-index: 5;
 }
 
 @media (width <= 600px) {
@@ -241,7 +242,7 @@
    }
    .cta-login {
       font-size: 0.8rem;
-      padding: 8.5px 22px !important;
+      padding: 8px 22px !important;
    }
    .cta-bottom-btn {
       font-size: 0.7rem !important;

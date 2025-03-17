@@ -1,5 +1,7 @@
-import { Stack, Typography } from "@mui/material";
+import { Stack, Typography, useTheme } from "@mui/material";
 import React, { useEffect, useState, useRef } from "react";
+import { useThemeContext } from "../../contexts/themeContextProvider";
+import { useMediaQuery } from "@mui/material";
 
 const demoVideo = [
    "https://github.githubassets.com/assets/code-1_desktop-7ab52aea3358.mp4",
@@ -7,13 +9,33 @@ const demoVideo = [
    "https://github.githubassets.com/assets/secure-1_desktop-5a462aa7c6a6.webp",
 ];
 
-interface HeroProps { 
-   activeIndex: number; 
+interface HeroProps {
+   activeIndex: number;
 }
 
 export default function Hero({ activeIndex = 0 }: HeroProps) {
+   const { isMdUp } = useThemeContext();
+   const theme = useTheme();
+   const isLg = useMediaQuery(theme.breakpoints.only("lg"));
+   const isMd = useMediaQuery(theme.breakpoints.only("md"));
+   const isSm = useMediaQuery(theme.breakpoints.only("sm"));
+   const isXs = useMediaQuery(theme.breakpoints.only("xs"));
+
+    let initialHeroHeight;
+    if (isLg) {
+       initialHeroHeight = 900;
+    } else if (isMd) {
+       initialHeroHeight = 540;
+    } else if (isSm) {
+       initialHeroHeight = 320;
+    } else if (isXs) {
+       initialHeroHeight = 300;
+    } else {
+       initialHeroHeight = 500;
+    }
+
    const [scrollProgress, setScrollProgress] = useState(0);
-   const [heroHeight, setHeroHeight] = useState(0);
+   const [heroHeight, setHeroHeight] = useState(initialHeroHeight);
    const heroRef = useRef<HTMLDivElement>(null);
    const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -40,7 +62,7 @@ export default function Hero({ activeIndex = 0 }: HeroProps) {
          } else {
             videoRef.current?.pause();
          }
-   };
+      };
 
       window.addEventListener("scroll", handleScroll);
       return () => window.removeEventListener("scroll", handleScroll);
@@ -160,8 +182,11 @@ export default function Hero({ activeIndex = 0 }: HeroProps) {
                            poster="/public/demo/demo-poster.png"
                         />
                      ) : (
-                        <img className="hero-demo-img" src={demoVideo[activeIndex]}
-                        alt="img" />
+                        <img
+                           className="hero-demo-img"
+                           src={demoVideo[activeIndex]}
+                           alt="img"
+                        />
                      )}
                   </div>
                </div>

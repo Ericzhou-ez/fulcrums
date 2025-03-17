@@ -8,9 +8,10 @@ import { Faqs } from "../../components/marketing/faqs";
 import FeatureSelector from "../../components/marketing/featureSelector";
 import FooterName from "../../assets/images/footerName.svg";
 import { useThemeContext } from "../../contexts/themeContextProvider";
-import { useMediaQuery } from "@mui/material";
+import { usePreloadImage } from "../../contexts/preloadAssests";
 
 const Home = () => {
+   usePreloadImage("/public/img/heroClippedText.png");
    const [footerHeight, setFooterHeight] = useState(0);
    const imgRef = useRef<HTMLImageElement | null>(null);
    const [activeIndex, setActiveIndex] = useState(1);
@@ -68,7 +69,7 @@ const Home = () => {
             <div className="home">
                <div className="star-container"></div>
                <Nav home={true} searchBar={false} />
-               <Hero activeIndex={activeIndex} />{" "}
+               <Hero activeIndex={activeIndex} />
             </div>
 
             <FeatureSelector
