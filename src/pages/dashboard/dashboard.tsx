@@ -52,7 +52,7 @@ const Dashboard = () => {
             searchBar={true}
          />
 
-         <DashboardOverview navOpen={navOpen} setNavOpen={setNavOpen} />
+         <DashboardOverview />
 
          {overlay && (
             <div
