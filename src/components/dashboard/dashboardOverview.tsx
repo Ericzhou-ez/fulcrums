@@ -9,12 +9,8 @@ import CardSlider from "./cardSlider";
 import Footer from "../core/footer";
 import { QuickStats10, Chart1 } from "../../components/dashboard/performance";
 import {Documentation, Help} from "./help";
-
-
-interface DashboardOverviewProps {
-   navOpen: boolean;
-   setNavOpen: any;
-}
+import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
+import { useEffect } from "react";
 
 const sampleData = [
    { name: "Jan", v1: 34, v2: 3000 },
@@ -31,9 +27,14 @@ const sampleData = [
    { name: "Dec", v1: 58, v2: 7700 },
 ];
 
-export default function DashboardOverview({ navOpen, setNavOpen }: DashboardOverviewProps) {
+export default function DashboardOverview() {
    const theme = useTheme();
    const isDarkMode = theme.palette.mode === "dark";
+   const {getProducts, products, errorMessages, loading} = useProductSupplierClientContext();
+
+   useEffect(() => {
+      getProducts();
+   }, []);
 
    return (
       <div className="dashboard-overview">
@@ -100,13 +101,11 @@ export default function DashboardOverview({ navOpen, setNavOpen }: DashboardOver
                      </Stack>
                   </Link>
 
-                  {/* <SimpleSlider /> */}
-
-                  <CardSlider isDarkMode={isDarkMode} isRecent={true} />
+                  <CardSlider isDarkMode={isDarkMode} isRecent={true} products={products} />
                </Box>
 
                {/* “保存” section */}
-               <Box sx={{ my: 2 }}>
+               {/* <Box sx={{ my: 2 }}>
                   <Link href="/saved">
                      <Stack
                         direction="row"
@@ -136,7 +135,7 @@ export default function DashboardOverview({ navOpen, setNavOpen }: DashboardOver
                   </Link>
 
                   <CardSlider isDarkMode={isDarkMode} isRecent={false} />
-               </Box>
+               </Box> */}
             </Stack>
 
             <div className="help-container">

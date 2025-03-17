@@ -16,10 +16,9 @@ import CancelLight from "../../assets/icons/x-light.svg";
 import CancelDark from "../../assets/icons/x-dark.svg";
 
 interface CardItem {
-   id: number;
-   title: string;
-   productId: string;
-   postedTime: string;
+   id: string;
+   name: string;
+   updatedAt: string;
 }
 
 interface CardProps {
@@ -28,7 +27,6 @@ interface CardProps {
 }
 
 export default function ProductCard({ item, isDarkMode }: CardProps) {
-   // Pick icons based on dark/light mode
    const editIcon = isDarkMode ? EditDark : EditLight;
    const heartIcon = isDarkMode ? HeartDark : HeartLight;
    const deleteIcon = isDarkMode ? CancelDark : CancelLight;
@@ -52,11 +50,15 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
             className="card-flex"
          >
             <div style={{ display: "flex", flexDirection: "column" }}>
-               <Typography variant="subtitle1" gutterBottom sx={{ fontSize: {xs: "1rem", sm: "1.2rem"}}}>
-                  {item.title}
+               <Typography
+                  variant="subtitle1"
+                  gutterBottom
+                  sx={{ fontSize: { xs: "1rem", sm: "1.2rem" } }}
+               >
+                  {item.name}
                </Typography>
                <Typography variant="caption" color="textSecondary">
-                  {item.postedTime}
+                  {item.updatedAt}
                </Typography>
             </div>
 

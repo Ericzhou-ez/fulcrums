@@ -15,10 +15,9 @@ import HeartLight from "../../assets/icons/heart-light.svg";
 import HeartDark from "../../assets/icons/heart-dark.svg";
 
 interface CardItem {
-   id: number;
-   title: string;
-   productId: string;
-   postedTime: string;
+   name: string;
+   id: string;
+   updatedAt: string;
    image: string;
 }
 
@@ -50,7 +49,7 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
          <CardMedia
             component="img"
             image={item.image}
-            alt={item.title}
+            alt={item.name}
             className="product-image"
             sx={{
                width: "100%",
@@ -68,7 +67,7 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
             }}
          >
             <Typography variant="h6" gutterBottom noWrap>
-               {item.title}
+               {item.name}
             </Typography>
 
             <div
@@ -79,7 +78,7 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
                }}
             >
                <Typography variant="caption" color="text.secondary">
-                  {item.postedTime}
+                  {item.updatedAt}
                </Typography>
 
                <Stack direction="row">

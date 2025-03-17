@@ -3,8 +3,6 @@ import { AuthContextType, Product, UserType } from "../types/types";
 import { auth, db } from "../configs/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { getDoc, doc } from "firebase/firestore";
-import { useLocation } from "react-router-dom";
-import { getDocs, collection } from "firebase/firestore";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -82,44 +80,9 @@ export async function fetchUserData(uid: string): Promise<UserType | null> {
          console.error("No such user document exists");
          return null;
       }
-
-      const userData = userSnap.data() as UserType;
-      const [productsSnap, clientsSnap, suppliersSnap] = await Promise.all([
-         getDocs(collection(userRef, "products")),
-         getDocs(collection(userRef, "clients")),
-         getDocs(collection(userRef, "suppliers")),
-      ]);
-
-      const products = productsSnap.docs.reduce((acc, doc) => {
-         acc[doc.id] = { ...doc.data() };
-         return acc;
-      }, {} as { [key: string]: any });
-      const clients = clientsSnap.docs.reduce((acc, doc) => {
-         acc[doc.id] = { ...doc.data() };
-         return acc;
-      }, {} as { [key: string]: any });
-      const supplier = suppliersSnap.docs.reduce((acc, doc) => {
-         acc[doc.id] = { ...doc.data() };
-         return acc;
-      }, {} as { [key: string]: any });
-
-      // handles if supplier, client, and product collections are empty, which they are upon initalization
-      if (
-         Object.keys(products).length === 0 &&
-         Object.keys(clients).length === 0 &&
-         Object.keys(supplier).length === 0
-      ) {
-         return userData;
-      } else {
-         return {
-            ...userData,
-            products,
-            clients,
-            supplier,
-         };
-      }
+      return userSnap.data() as UserType;
    } catch (error) {
-      console.error("Error fetching user data and collections:", error);
+      console.error("Error fetching user data:", error);
       return null;
    }
 }

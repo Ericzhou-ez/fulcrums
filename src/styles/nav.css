@@ -210,5 +210,5 @@ button:active {
    width: calc(100% - 240px) !important;
    right: 0 !important;
    transform: translateX(240px);
-   transition: all 0.3s ease-in-out;
+   transition: all 0.25s ease-in-out;
 }

@@ -49,15 +49,19 @@ export const createProduct = functions.https.onCall(
          const storagePath = `users/${uid}/products/${productId}`;
          const file = bucket.file(storagePath);
 
-         const buffer = Buffer.from(src, "base64"); 
+         const buffer = Buffer.from(src, "base64");
          await file.save(buffer, {
             contentType: "image/jpeg",
             metadata: {
-               firebaseStorageDownloadTokens: productId, 
+               firebaseStorageDownloadTokens: productId,
             },
          });
 
-         const publicUrl = `https://storage.googleapis.com/${bucket.name}/${storagePath}`;
+         const token = productId;
+         const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${
+            bucket.name
+         }/o/${encodeURIComponent(storagePath)}?alt=media&token=${token}`;
+
          await productRef.set(
             {
                productId,

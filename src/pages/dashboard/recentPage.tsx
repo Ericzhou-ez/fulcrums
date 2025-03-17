@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect } from "react";
-import { Typography, Box } from "@mui/material";
+import { Typography, Box, Alert } from "@mui/material";
 import ProductCard from "../../components/dashboard/minProductCard";
 import "../../styles/RecentProductPage.css";
 import Nav from "../../components/core/nav";
@@ -11,6 +11,8 @@ import ClockLight from "../../assets/icons/description-light.svg";
 import ClockDark from "../../assets/icons/description-dark.svg";
 import { useThemeContext } from "../../contexts/themeContextProvider";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
+import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
+import Loading from "../../components/core/loading";
 
 export interface RecentProductsPageProps {
    isModalOpen: boolean;
@@ -23,74 +25,16 @@ export interface RecentProductsPageProps {
    closeOverlay: () => void;
 }
 
-const mainContentStyles = (navOpen: boolean) => ({
-   marginLeft: {
-      xs: 0,
-      md: navOpen ? "240px" : "0px",
-   },
-   transition: "margin-left 0.3s ease",
-   padding: 2,
-});
-
 const RecentProductsPage = () => {
    const { isDark } = useThemeContext();
+   const {getProducts, products, errorMessages, loading} = useProductSupplierClientContext();
 
-   const productList = [
-      {
-         id: 1,
-         title: "财神蛇公仔毛绒玩公仔",
-         productId: "13355894839",
-         postedTime: "5分钟前",
-      },
-      {
-         id: 2,
-         title: "财神蛇公仔毛绒玩具",
-         productId: "13355894840",
-         postedTime: "5分钟前",
-      },
-      {
-         id: 3,
-         title: "财神蛇公仔毛绒玩具",
-         productId: "13355894841",
-         postedTime: "5分钟前",
-      },
-      {
-         id: 4,
-         title: "财神蛇公仔毛绒玩具",
-         productId: "13355894841",
-         postedTime: "5分钟前",
-      },
-      {
-         id: 5,
-         title: "财神蛇公仔毛绒玩具",
-         productId: "13355894841",
-         postedTime: "5分钟前",
-      },
-      {
-         id: 6,
-         title: "财神蛇公仔毛绒玩具",
-         productId: "13355894841",
-         postedTime: "5分钟前",
-      },
-      {
-         id: 7,
-         title: "财神蛇公仔毛绒玩具",
-         productId: "13355894841",
-         postedTime: "5分钟前",
-      },
-      {
-         id: 8,
-         title: "财神蛇公仔毛绒玩具",
-         productId: "13355894841",
-         postedTime: "5分钟前",
-      },
-      {
-         id: 9,
-         title: "财神蛇公仔毛绒玩具",
-         productId: "13355894841",
-         postedTime: "5分钟前",
-      },
-   ];
+   useEffect(() => {
+      getProducts();
+   }, []);
+
+   const productList = products;
+   console.log(productList);
 
    const clockIcon = isDark ? ClockDark : ClockLight;
 
@@ -103,6 +47,23 @@ const RecentProductsPage = () => {
 
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
+         {loading && <Loading />}
+
+         {errorMessages && (
+            <Box
+               sx={{
+                  position: "fixed",
+                  top: 0,
+                  zIndex: "5000",
+                  width: navOpen ? "calc(100% - 240px)" : "100%",
+               }}
+            >
+               {errorMessages ? (
+                  <Alert severity="error">{errorMessages}</Alert>
+               ) : null}
+            </Box>
+         )}
+
          <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
 
          <Nav home={false} searchBar={true} />
@@ -135,8 +96,8 @@ const RecentProductsPage = () => {
          <div className="gradient-divider"></div>
 
          <div className="cards-grid">
-            {productList.map((item) => (
-               <ProductCard key={item.id} item={item} isDarkMode={isDark} />
+            {Object.entries(productList).map(([id, product]) => (
+               <ProductCard key={id} item={product} isDarkMode={isDark} />
             ))}
          </div>
 

@@ -50,7 +50,7 @@ const TOS_SECTIONS = [
 ];
 
 const AddProductForm = () => {
-   const navigate = useNavigate();
+   const { navOpen } = useUIStateContext();
    const [src, setSrc] = useState(ProductDefaultImage);
    const [saved, setSaved] = useState(false);
    const [productName, setProductName] = useState("");
@@ -120,8 +120,7 @@ const AddProductForm = () => {
       setButtonDisabled(true);
 
       const base64String = await getBase64FromBlobUrl(src);
-      console.log("packing volume", packingVolume);
-      console.log("product volume", productVolume);
+      console.log(base64String);
 
       addProduct({
          image: base64String,
@@ -245,7 +244,6 @@ const AddProductForm = () => {
 
    const toggleVolumeMode = () => {
       setIsVolumeMode((prev) => !prev);
-      // Optionally clear individual dimension fields when switching mode
       setLength("");
       setWidth("");
       setHeight("");
@@ -267,7 +265,7 @@ const AddProductForm = () => {
 
    // get product autofill res
    const getProductFromQuery = () => {
-      if (productName.length >= 3) {
+      if (productName.length >= 2) {
          const keys = Object.keys(ProductandCompanyData["search_by_product"]);
          const res = keys.filter((p) => p.includes(productName));
 
@@ -317,8 +315,9 @@ const AddProductForm = () => {
       if (!packingVolume) missing.push("包装体积");
       if (!supplierName) missing.push("供应商名称");
       if (!clientName) missing.push("客户名称");
+      if (src === ProductDefaultImage) missing.push("产品图片");
 
-      setIsFormComplete(missing.length ? "请填写" + missing.join(",") : true);
+      setIsFormComplete(missing.length ? "请填写" + missing.join(", ") : true);
    }, [
       productName,
       unitPrice,
@@ -329,13 +328,52 @@ const AddProductForm = () => {
       packingVolume,
       supplierName,
       clientName,
+      src,
    ]);
 
    useEffect(() => {
       if (isFormComplete === true && addedProduct === true) {
-         navigate("/dashboard/recent");
+         setTimeout(() => {
+            resetPage();
+         }, 2000);
       }
-   }, [isFormComplete, addedProduct, navigate]);
+   }, [isFormComplete, addedProduct]);
+
+   const resetPage = () => {
+      setSrc(ProductDefaultImage);
+      setSaved(false);
+      setProductName("");
+      setUnitPrice("");
+      setCurrency("¥");
+      setMass("");
+      setMassUnit("g");
+      setLength("");
+      setWidth("");
+      setHeight("");
+      setProductVolume("");
+      setDimensionUnit("cm");
+      setProductCatagory("");
+      setIsVolumeMode(false);
+      setPacking("");
+      setPackingVolume("");
+      setPackingLength("");
+      setPackingWidth("");
+      setPackingHeight("");
+      setPackingDimensionUnit("cm");
+      setIsPackingVolumeMode(false);
+      setSupplierName("");
+      setSupplierAddress("");
+      setSupplierPhone("");
+      setSupplierEmail("");
+      setClientName("");
+      setSelectedProduct(null);
+      setSelectedSupplier(null);
+      setSelectedClient(null);
+      setAdditionalNotes("");
+      setIsFormComplete(false);
+      setButtonDisabled(false);
+      setSubmittingForm(false);
+   };
 
    return (
       <React.Fragment>
@@ -1012,12 +1050,22 @@ const AddProductForm = () => {
          {/* not only isFormComplete true but productAdded further needs to be true */}
          {submittingForm && (
             <Box
-               sx={{ position: "fixed", top: 0, zIndex: "5000", width: "100%" }}
+               sx={{
+                  position: "fixed",
+                  top: 0,
+                  zIndex: "5000",
+                  width: navOpen ? "calc(100% - 240px)" : "100%",
+               }}
             >
                {isFormComplete === true ? (
                   addedProduct && <Alert severity="success">添加成功 :)</Alert>
                ) : (
-                  <Alert severity="warning">{isFormComplete}</Alert>
+                  <Alert
+                     severity="warning"
+                     onClose={() => setSubmittingForm(false)}
+                  >
+                     {isFormComplete}
+                  </Alert>
                )}
             </Box>
          )}

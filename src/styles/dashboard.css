@@ -87,6 +87,12 @@ img {
    cursor: pointer;
 }
 
+.cta-data-input p {
+   font-size: 1.2rem;
+   color: var(--background-primary);
+   margin: 0;
+}
+
 .gradient-divider {
    background: linear-gradient(
       to right,
