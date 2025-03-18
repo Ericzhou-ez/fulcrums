@@ -316,7 +316,8 @@ export default function ContactMain() {
                      sx={{
                         fontWeight: "600",
                         fontSize: "1.4rem",
-                        width: "80%",
+                        width: { xs: "100%", md: "80%" },
+                        textAlign: { xs: "center", md: "left" },
                      }}
                      color="GrayText"
                   >
@@ -336,13 +337,18 @@ export default function ContactMain() {
                      的需求，了解定制定价方案，或者申请产品演示。
                   </Typography>
 
-                  <Button
-                     variant="contained"
-                     color="info"
-                     sx={{ width: "fit-content" }}
-                  >
-                     预约演示
-                  </Button>
+                  <a href="mailto:zhoueric882@gmail.com">
+                     <Button
+                        variant="contained"
+                        color="info"
+                        sx={{
+                           width: "fit-content",
+                           alignSelf: { xs: "center", lg: "flex-start" },
+                        }}
+                     >
+                        预约演示
+                     </Button>
+                  </a>
                </Box>
             </Grid>
             <Grid
@@ -364,7 +370,8 @@ export default function ContactMain() {
                      sx={{
                         fontWeight: "600",
                         fontSize: "1.4rem",
-                        width: "80%",
+                        width: { xs: "100%", md: "80%" },
+                        textAlign: { xs: "center", md: "left" },
                      }}
                      color="text.primary"
                   >
@@ -381,14 +388,19 @@ export default function ContactMain() {
                      探索Fulcrums企业版.
                   </Typography>
 
-                  <Button
-                     variant="contained"
-                     color="info"
-                     size="small"
-                     sx={{ width: "fit-content"}}
-                  >
-                     了解企业版
-                  </Button>
+                  <a href="mailto:zhoueric882@gmail.com">
+                     <Button
+                        variant="contained"
+                        color="info"
+                        size="small"
+                        sx={{
+                           width: "fit-content",
+                           alignSelf: { xs: "center", lg: "flex-start" },
+                        }}
+                     >
+                        了解企业版
+                     </Button>
+                  </a>
                </Box>
             </Grid>
          </Grid>
