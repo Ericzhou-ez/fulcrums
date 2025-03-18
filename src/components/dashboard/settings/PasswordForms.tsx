@@ -59,7 +59,7 @@ export function PasswordForm({isDark}: any) {
                   />
                </Stack>
                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Button sx={{ borderRadius: 10 }} variant="contained">
+                  <Button variant="contained" size="medium">
                      更新
                   </Button>
                </Box>

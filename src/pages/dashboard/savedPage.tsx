@@ -10,57 +10,24 @@ import SideNav from "../../components/dashboard/dashboardNav";
 import { useThemeContext } from "../../contexts/themeContextProvider";
 import { useEffect } from "react";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
+import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
 
 const SavedPage = () => {
    const { isDark } = useThemeContext();
+   const { getProducts, products, errorMessages, loading } =
+      useProductSupplierClientContext();
 
-   const productList = [
-      {
-         name: "财神蛇公仔毛绒玩公仔",
-         id: "13355894839",
-         updatedAt: "5分钟前",
-      },
-      {
-         name: "财神蛇公仔毛绒玩具",
-         id: "13355894840",
-         updatedAt: "5分钟前",
-      },
-      {
-         name: "财神蛇公仔毛绒玩具",
-         id: "13355894841",
-         updatedAt: "5分钟前",
-      },
-      {
-         name: "财神蛇公仔毛绒玩具",
-         id: "13355894841",
-         updatedAt: "5分钟前",
-      },
-      {
-         name: "财神蛇公仔毛绒玩具",
-         id: "13355894841",
-         updatedAt: "5分钟前",
-      },
-      {
-         name: "财神蛇公仔毛绒玩具",
-         id: "13355894841",
-         updatedAt: "5分钟前",
-      },
-      {
-         name: "财神蛇公仔毛绒玩具",
-         id: "13355894841",
-         updatedAt: "5分钟前",
-      },
-      {
-         name: "财神蛇公仔毛绒玩具",
-         id: "13355894841",
-         updatedAt: "5分钟前",
-      },
-      {
-         name: "财神蛇公仔毛绒玩具",
-         id: "13355894841",
-         updatedAt: "5分钟前",
-      },
-   ];
+   useEffect(() => {
+      getProducts();
+   }, []);
+
+   const filteredProducts  = Object.entries(products).filter(([id, product]) => {
+      if (product.saved === true) {
+         return product;
+      }
+   });
+
+   console.log(filteredProducts);
 
    const clockIcon = isDark ? ClockDark : ClockLight;
 
@@ -70,7 +37,7 @@ const SavedPage = () => {
 
    const { navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles } =
       useUIStateContext();
-      
+
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
          <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
@@ -105,8 +72,8 @@ const SavedPage = () => {
          <div className="gradient-divider" />
 
          <div className="cards-grid">
-            {productList.map((item) => (
-               <ProductCard key={item.id} item={item} isDarkMode={isDark} />
+            {filteredProducts.map(([id, product]) => (
+               <ProductCard key={id} item={product} isDarkMode={isDark} />
             ))}
          </div>
 

@@ -24,6 +24,7 @@ export default function ContactPage() {
    const { isDark } = useThemeContext();
    return (
       <React.Fragment>
+
          <Nav home={true} searchBar={false} />
 
          <div

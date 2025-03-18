@@ -9,25 +9,47 @@ export type VolumetricDimensions = {
 };
 
 export type Product = {
-   productId: string; //auto generate
-   image: string; 
-   name: string; 
-   unitPrice: number; // number only unit price already implies one unit
-   productDimension: VolumetricDimensions;  // this is the CBM ********* 
-   mass: Mass; // per unit
+   productId: string; 
+   image: string;
+   name: string;
+   unitPrice: number; 
+   productDimension: VolumetricDimensions; // this is the CBM *********
+   mass: Mass;
 
-   packaging: string; // unit of items per box
-   packingVolume: VolumetricDimensions; 
+   packaging: string;
+   packingVolume: VolumetricDimensions;
    saved: boolean;
    updatedAt: string;
 
-   supplierName: string;
-   supplierId: string; 
+   supplierName?: string; // to be made required later
+   supplierId?: string; // to be made required later
 
    additionalNotes: string;
    catagory: string;
-   purchaseVolume: number; 
-   salesVolume: number; // only needed later for quotation when client indicates how many they want
+   purchaseVolume?: number;
+   salesVolume?: number; 
+};
+
+export type ProductType = {
+   productId: string;
+   image: string;
+   name: string;
+   unitPrice: number;
+   productDimension: VolumetricDimensions; // this is the CBM *********
+   mass: Mass;
+
+   packaging: string;
+   packingVolume: VolumetricDimensions;
+   saved: boolean;
+   updatedAt: string;
+
+   supplierName?: string; // to be made required later
+   supplierId?: string; // to be made required later
+
+   additionalNotes: string;
+   catagory: string;
+   purchaseVolume?: number;
+   salesVolume?: number;
 };
 
 export type Supplier = {

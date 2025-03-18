@@ -34,7 +34,6 @@ const RecentProductsPage = () => {
    }, []);
 
    const productList = products;
-   console.log(productList);
 
    const clockIcon = isDark ? ClockDark : ClockLight;
 

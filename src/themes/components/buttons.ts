@@ -43,7 +43,7 @@ function getOutlinedVariantStyles(
 
 function getContainedVariantStyles(
    theme: Theme,
-   color: "primary" | "secondary" | "success" | "warning" | "info" | "error"
+   color: "primary" | "secondary" | "success" | "warning" | "info" | "error" 
 ) {
    const main = theme.palette[color].main;
    const dark = theme.palette[color].dark;
@@ -87,12 +87,12 @@ export const MuiButton: Partial<Components<Theme>["MuiButton"]> = {
    },
    styleOverrides: {
       root: {
-         borderRadius: "18px",
-         minHeight: "var(--Button-minHeight)", 
+         borderRadius: "24px",
+         minHeight: "var(--Button-minHeight)",
          minWidth: "unset",
          textTransform: "none",
          "&:focus-visible": {
-            outline: "2px solid", 
+            outline: "2px solid",
             outlineColor: (theme: Theme) => theme.palette.primary.main,
          },
       },
@@ -118,8 +118,7 @@ export const MuiButton: Partial<Components<Theme>["MuiButton"]> = {
          getOutlinedVariantStyles(theme, "warning"),
       outlinedError: ({ theme }) => getOutlinedVariantStyles(theme, "error"),
 
-      contained: {
-      },
+      contained: {},
       containedPrimary: ({ theme }) =>
          getContainedVariantStyles(theme, "primary"),
       containedSecondary: ({ theme }) =>
@@ -135,16 +134,19 @@ export const MuiButton: Partial<Components<Theme>["MuiButton"]> = {
          "--Button-minHeight": "32px",
          fontSize: "0.8125rem",
          lineHeight: "24px",
+         padding: "6px 22px",
       },
       sizeMedium: {
          "--Button-minHeight": "40px",
          fontSize: "0.875rem",
          lineHeight: "28px",
+         padding: "0 29px",
       },
       sizeLarge: {
          "--Button-minHeight": "48px",
          fontSize: "0.9375rem",
          lineHeight: "32px",
+         padding: "3px 25px",
       },
    },
 };

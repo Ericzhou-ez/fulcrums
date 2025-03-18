@@ -28,6 +28,7 @@ export type ProductSupplierClientContextType = {
    editedClient: boolean;
    deletedClient: boolean;
    loading: boolean;
+   productLoading: boolean;
    products: { [key: string]: any };
    suppliers: { [key: string]: any };
    clients: { [key: string]: any };
@@ -57,6 +58,7 @@ export const ProductSupplierClientContextProvider = ({
    const [editedClient, setEditedClient] = useState(false);
    const [deletedClient, setDeletedClient] = useState(false);
    const [loading, setLoading] = useState(false);
+   const [productLoading, setProductLoading] = useState(false);
    const [errorMessages, setErrorMessages] = useState<string>("");
 
    const [products, setProducts] = useState<{ [key: string]: any }>({});
@@ -123,7 +125,7 @@ export const ProductSupplierClientContextProvider = ({
 
    async function getProducts(): Promise<Object> {
       try {
-         setLoading(true);
+         setProductLoading(true);
 
          const productsSnap = await getDocs(
             collection(db, "users", uid ? uid : "", "products")
@@ -134,11 +136,11 @@ export const ProductSupplierClientContextProvider = ({
          }, {} as { [key: string]: any });
          
          setProducts(products);
-         setLoading(false);
+          setProductLoading(false);
          return products;
       } catch (error) {
          console.error("Error fetching products:", error);
-         setLoading(false);
+         setProductLoading(false);
          setErrorMessages("无法获取产品，请稍后再试");
          return {};
       }
@@ -205,6 +207,7 @@ export const ProductSupplierClientContextProvider = ({
             editedClient,
             deletedClient,
             loading,
+            productLoading,
             products,
             suppliers,
             clients,

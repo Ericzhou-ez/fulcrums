@@ -42,8 +42,8 @@ export default function ContactMain() {
                   borderColor: borderColor,
                   top: "-15px",
                   left: "-15px",
-                  borderLeft: "0.5px solid",
-                  borderTop: "0.5px solid",
+                  borderLeft: `0.5px solid ${borderColor}`,
+                  borderTop: `0.5px solid ${borderColor}`,
                   transform: "rotate(180deg)",
                }}
             ></div>
@@ -55,8 +55,8 @@ export default function ContactMain() {
                   borderColor: borderColor,
                   bottom: "-15px",
                   right: "-15px",
-                  borderRight: "0.5px solid",
-                  borderBottom: "0.5px solid",
+                  borderRight: `0.5px solid ${borderColor}`,
+                  borderBottom: `0.5px solid ${borderColor}`,
                   transform: "rotate(180deg)",
                }}
             ></div>
@@ -82,7 +82,7 @@ export default function ContactMain() {
             </Box>
          </div>
 
-         <Box mt={3}>
+         <Box mt={2}>
             <Grid container justifyContent="center" alignItems="stretch">
                <Grid item xs={12} md={4} sx={{ display: "flex" }}>
                   <Box
@@ -286,6 +286,112 @@ export default function ContactMain() {
                </Grid>
             </Grid>
          </Box>
+
+         <Grid
+            container
+            spacing={12}
+            mt={2}
+            sx={{
+               width: "100%",
+               maxWidth: "1400px",
+               mx: "auto",
+            }}
+         >
+            <Grid
+               item
+               xs={12}
+               lg={8}
+               sx={{
+                  border: `0.5px solid ${borderColor}`,
+                  padding: "30px 40px !important",
+               }}
+            >
+               <Box
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="flex-start"
+                  gap={4}
+               >
+                  <Typography
+                     sx={{
+                        fontWeight: "600",
+                        fontSize: "1.4rem",
+                        width: "80%",
+                     }}
+                     color="GrayText"
+                  >
+                     <Typography
+                        color="text.primary"
+                        sx={{
+                           fontWeight: "600",
+                           fontSize: "1.4rem",
+                           display: "inline",
+                        }}
+                     >
+                        不确定该选择哪个方案?{" "}
+                     </Typography>
+                     欢迎与我们讨论
+                     <span style={{ color: "#0071e3" }}>免费版</span>或
+                     <span style={{ color: "#ff7c00" }}>企业版</span>
+                     的需求，了解定制定价方案，或者申请产品演示。
+                  </Typography>
+
+                  <Button
+                     variant="contained"
+                     color="info"
+                     sx={{ width: "fit-content" }}
+                  >
+                     预约演示
+                  </Button>
+               </Box>
+            </Grid>
+            <Grid
+               item
+               xs={12}
+               lg={4}
+               sx={{
+                  padding: "30px 40px !important",
+                  border: `0.5px solid ${borderColor}`,
+               }}
+            >
+               <Box
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="flex-start"
+                  gap={3}
+               >
+                  <Typography
+                     sx={{
+                        fontWeight: "600",
+                        fontSize: "1.4rem",
+                        width: "80%",
+                     }}
+                     color="text.primary"
+                  >
+                     <Typography
+                        color="GrayText"
+                        sx={{
+                           fontWeight: "600",
+                           fontSize: "1.4rem",
+                           display: "inline",
+                        }}
+                     >
+                        通过互动产品导览，试用或个性化演示，
+                     </Typography>
+                     探索Fulcrums企业版.
+                  </Typography>
+
+                  <Button
+                     variant="contained"
+                     color="info"
+                     size="small"
+                     sx={{ width: "fit-content"}}
+                  >
+                     了解企业版
+                  </Button>
+               </Box>
+            </Grid>
+         </Grid>
       </Box>
    );
 }

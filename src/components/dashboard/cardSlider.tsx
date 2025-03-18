@@ -1,13 +1,7 @@
 import React from "react";
 import ProductCard from "./card";
-
-interface CardItem {
-   id: number;
-   title: string;
-   productId: string;
-   postedTime: string;
-   image: string;
-}
+import { ProductType } from "../../types/types";
+import { ProductSupplierClientContextProvider } from "../../contexts/productSupplierClientContextProvider";
 
 interface CardSliderProp {
    isDarkMode: boolean;
@@ -15,18 +9,35 @@ interface CardSliderProp {
    products: any;
 }
 
-const CardSlider: React.FC<CardSliderProp> = ({ isDarkMode, isRecent, products }) => {
+const CardSlider: React.FC<CardSliderProp> = ({
+   isDarkMode,
+   isRecent,
+   products,
+}) => {
+   const filteredProducts = isRecent
+      ? Object.entries(products)
+      : Object.entries(products).filter(
+           ([id, product]: [string, any]) => product.saved
+        );
 
    return (
-      <div className={Object.keys(products).length > 0 ? "card-slider" : "cta-data-input"}>
-         {products ? (
-            Object.entries(products).map(([id, product]: any) => (
+      <div
+         className={
+            filteredProducts.length > 0
+               ? "card-slider"
+               : "cta-data-input"
+         }
+      >
+         {filteredProducts.length > 0 ? (
+            filteredProducts.map(([id, product]: any) => (
                <div className="card-slider-item" key={id}>
                   <ProductCard item={product} isDarkMode={isDarkMode} />
                </div>
             ))
          ) : isRecent ? (
-            <p>「上传内容即可开始」</p>
+            <a href="/dashboard/add-product">
+               <p>「上传内容即可查看&#8599;」</p>
+            </a>
          ) : (
             <p>「保存项目以在此处查看」</p>
          )}

@@ -9,20 +9,11 @@ import {
    IconButton,
    Tooltip,
 } from "@mui/material";
-import EditLight from "../../assets/icons/edit-light.svg";
-import EditDark from "../../assets/icons/edit-dark.svg";
-import HeartLight from "../../assets/icons/heart-light.svg";
-import HeartDark from "../../assets/icons/heart-dark.svg";
-
-interface CardItem {
-   name: string;
-   id: string;
-   updatedAt: string;
-   image: string;
-}
+import HeartComponent from "./heart";
+import { ProductType } from "../../types/types";
 
 interface CardProps {
-   item: CardItem;
+   item: ProductType;
    isDarkMode: boolean;
 }
 
@@ -53,9 +44,12 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
             className="product-image"
             sx={{
                width: "100%",
-               height: 130,
+               height: 150,
+               backgroundPosition: "center",
                objectFit: "cover",
                boxShadow: "none",
+               borderBottomLeftRadius: 0,
+               borderBottomRightRadius: 0,
             }}
          />
 
@@ -83,21 +77,7 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
 
                <Stack direction="row">
                   <Tooltip title="收藏">
-                     <IconButton size="small">
-                        {isDarkMode ? (
-                           <img
-                              src={HeartDark}
-                              alt="o"
-                              className="product-icons"
-                           />
-                        ) : (
-                           <img
-                              src={HeartLight}
-                              alt="|"
-                              className="product-icons"
-                           />
-                        )}
-                     </IconButton>
+                     <HeartComponent saved={item.saved} />
                   </Tooltip>
                </Stack>
             </div>

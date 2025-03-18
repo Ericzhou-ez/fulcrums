@@ -16,10 +16,16 @@ export function useAppTheme(mode: "light" | "dark"): Theme {
                contrastText: "#fff",
             },
             secondary: {
-               light: "#ffe587",
-               main: "#f5bf46",
-               dark: "#de7101",
-               contrastText: "#000",
+               light: "#ff5e78",
+               main: "#ff2e63",
+               dark: "#c51162",
+               contrastText: "#fff",
+            },
+            info: {
+               light: "#042861",
+               main: "#061835",
+               dark: "#03000e",
+               contrastText: "#fff",
             },
             background: {
                default: mode === "light" ? "#ffffff" : "#121212",

@@ -30,7 +30,7 @@ const sampleData = [
 export default function DashboardOverview() {
    const theme = useTheme();
    const isDarkMode = theme.palette.mode === "dark";
-   const {getProducts, products, errorMessages, loading} = useProductSupplierClientContext();
+   const {getProducts, products, errorMessages} = useProductSupplierClientContext();
 
    useEffect(() => {
       getProducts();
@@ -73,7 +73,7 @@ export default function DashboardOverview() {
                <Chart1 />
 
                <Box sx={{ my: 2 }}>
-                  <Link href="/recent">
+                  <Link href="/dashboard/recent">
                      <Stack
                         direction="row"
                         spacing={1}
@@ -105,8 +105,8 @@ export default function DashboardOverview() {
                </Box>
 
                {/* “保存” section */}
-               {/* <Box sx={{ my: 2 }}>
-                  <Link href="/saved">
+               <Box sx={{ my: 2 }}>
+                  <Link href="/dashboard/saved">
                      <Stack
                         direction="row"
                         spacing={1}
@@ -134,8 +134,8 @@ export default function DashboardOverview() {
                      </Stack>
                   </Link>
 
-                  <CardSlider isDarkMode={isDarkMode} isRecent={false} />
-               </Box> */}
+                  <CardSlider isDarkMode={isDarkMode} isRecent={false} products={products} />
+               </Box>
             </Stack>
 
             <div className="help-container">
@@ -160,7 +160,7 @@ function SimpleSlider() {
             gap: 2,
             border: "1px solid red",
             p: 2,
-            // Hide scrollbar in Chrome/Firefox (optional):
+            // Hide scrollbar in Chrome/Firefox
             scrollbarWidth: "none", // Firefox
             "&::-webkit-scrollbar": {
                display: "none", // Chrome, Safari
