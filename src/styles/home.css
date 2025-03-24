@@ -7,7 +7,7 @@
 }
 
 .clipped-text {
-   background: url(/public/img/heroClippedText.png) center/cover;
+   background: url(/img/heroClippedText.png) center/cover;
    -webkit-background-clip: text;
    -webkit-text-fill-color: transparent;
    aspect-ratio: 16/9;
@@ -27,7 +27,7 @@
    overflow: hidden;
    border-top-left-radius: 30px;
    border-top-right-radius: 30px;
-   width: 90%;
+   width: 88%;
    max-width: 1300px;
    margin: 0 auto;
    background: rgba(208, 208, 208, 0.15);
