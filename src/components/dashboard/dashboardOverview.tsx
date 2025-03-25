@@ -33,7 +33,10 @@ export default function DashboardOverview() {
    const {getProducts, products, errorMessages} = useProductSupplierClientContext();
 
    useEffect(() => {
-      getProducts();
+      async function handleGetProduct() {
+         await getProducts();
+      }
+      handleGetProduct();
    }, []);
 
    return (

@@ -11,7 +11,7 @@ import Loader from "../core/loader";
 interface CardSliderProp {
    isDarkMode: boolean;
    isRecent: boolean;
-   products: Product;
+   products: { [key: string]: Product };
 }
 
 const CardSlider: React.FC<CardSliderProp> = ({
