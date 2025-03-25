@@ -27,12 +27,6 @@ export function useAppTheme(mode: "light" | "dark"): Theme {
                dark: "#03000e",
                contrastText: "#fff",
             },
-            success: {
-               light: "#faa77b",
-               main: "#de601d",
-               dark: "#2e0904",
-               contrastText: "#fff",
-            },
             background: {
                default: mode === "light" ? "#ffffff" : "#121212",
                secondary: mode === "light" ? "#f7f7f7" : "#1e1e1e",

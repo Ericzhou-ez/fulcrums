@@ -24,6 +24,12 @@ import { useThemeContext } from "../contexts/themeContextProvider";
 import AddProductPage from "../pages/dashboard/AddProductPage";
 import { UIStateContextProvider } from "../contexts/UIStateContextProvider";
 import { ProductSupplierClientContextProvider } from "../contexts/productSupplierClientContextProvider";
+import GlobalKeyListener, {
+   GlobalCommandListener,
+   GlobalHomeListener,
+   GlobalProfileListener,
+   GlobalThemeListener,
+} from "../components/core/eventListeners";
 
 export interface AppRoutesProps {
    isModalOpen: boolean;
@@ -69,6 +75,12 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                user={user}
             >
                <ProductSupplierClientContextProvider>
+                  <GlobalKeyListener />
+                  <GlobalCommandListener />
+                  <GlobalProfileListener />
+                  <GlobalHomeListener />
+                  <GlobalThemeListener />
+
                   <Routes>
                      <Route
                         path="/signin"

@@ -31,22 +31,8 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
    isOpen,
    anchorEl,
    onClose,
-   isSettingsOpen,
-   setIsSettingsOpen,
 }) => {
    const theme = useTheme();
-
-   // useEffect(() => {
-   //    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-   //       setUser(currentUser);
-   //    });
-   //    return () => unsubscribe();
-   // }, [auth]);
-
-   // const handleSignOut = async () => {
-   //    await signOut(auth);
-   //    onClose();
-   // };
    const { logOut, user } = useUserServices();
 
    return (

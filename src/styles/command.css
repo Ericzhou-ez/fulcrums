@@ -1,0 +1,19 @@
+.command {
+   position: fixed;
+   z-index: 2000 !important;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   border-radius: 20px !important;
+   box-shadow: 0 4px 17px rgba(0, 0, 0, 0.2) !important;
+}
+
+.command-overlay {
+   position: fixed;
+   height: 100dvh;
+   width: 100%;
+   z-index: 1900;
+   background-color: #3838383b;
+   backdrop-filter: blur(2px);
+   cursor: pointer;
+}
