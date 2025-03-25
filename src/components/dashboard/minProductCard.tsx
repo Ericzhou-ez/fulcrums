@@ -9,14 +9,22 @@ import {
 import CancelLight from "../../assets/icons/x-light.svg";
 import CancelDark from "../../assets/icons/x-dark.svg";
 import HeartComponent from "./heart";
+import { Product } from "../../types/types";
+import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
 
 interface CardProps {
-   item: any;
+   item: Product;
    isDarkMode: boolean;
 }
 
 export default function ProductCard({ item, isDarkMode }: CardProps) {
    const deleteIcon = isDarkMode ? CancelDark : CancelLight;
+
+   const { toggleSaveUnsaveProduct } = useProductSupplierClientContext();
+
+   async function toggleSave(productId: string) {
+      await toggleSaveUnsaveProduct(productId);
+   }
 
    return (
       <Card
@@ -42,7 +50,7 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
                   gutterBottom
                   sx={{ fontSize: { xs: "1rem", sm: "1.2rem" } }}
                >
-                  {item.name}
+                  {item.productChineseName}
                </Typography>
                <Typography variant="caption" color="textSecondary">
                   {item.updatedAt}
@@ -50,9 +58,9 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
             </div>
 
             <div style={{ display: "flex", marginBottom: "4px" }}>
-               <Tooltip title="收藏">
-                  <HeartComponent saved={item.saved} />
-               </Tooltip>
+               <div onClick={() => toggleSave(item.productId)}>
+                     <HeartComponent saved={item.saved} />
+               </div>
 
                <Tooltip title="删除">
                   <IconButton size="small">

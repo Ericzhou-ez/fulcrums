@@ -11,11 +11,15 @@
 // import * as logger from "firebase-functions/logger";
 // import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-admin.initializeApp();
+
+if (!admin.apps.length) {
+   admin.initializeApp();
+}
 
 import createUserDoc from "./services/users/createUser";
 import { createProduct } from "./services/products/createProduct";
-export { createUserDoc, createProduct };
+import { saveUnsavedProduct } from "./services/products/saveProduct";
+export { createUserDoc, createProduct, saveUnsavedProduct };
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript

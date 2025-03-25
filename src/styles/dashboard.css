@@ -74,13 +74,8 @@ img {
 .cta-data-input {
    display: flex;
    place-content: center;
-   background-color: var(--background-secondary-color);
-   background: linear-gradient(
-      156deg,
-      rgba(250, 212, 177, 0.78) 0%,
-      rgba(255, 119, 119, 0.78) 28%,
-      rgba(255, 229, 0, 0.78) 100%
-   );
+   background: #ffebc4;
+   background: radial-gradient(at right bottom, #ffebc4, #f4772f);
    padding: 80px 0;
    border-radius: 12px;
    box-shadow: 0 4px 17px rgba(0, 0, 0, 0.05);
@@ -118,13 +113,13 @@ img {
 }
 
 .help-container {
-  display: flex;
-  gap: 20px;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 20px 0;
-  flex-wrap: wrap;
-  width: 100%;
+   display: flex;
+   gap: 20px;
+   justify-content: space-between;
+   align-items: flex-start;
+   padding: 20px 0;
+   flex-wrap: wrap;
+   width: 100%;
 }
 
 .help-title {
@@ -132,60 +127,61 @@ img {
 }
 
 .help-card {
-  flex: 1 1 calc(50% - 10px); 
-  box-sizing: border-box;
-  border-radius: 28px;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  box-shadow: 0 4px 10px rgba(59, 59, 59, 0.1);
-  min-width: 200px; 
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+   flex: 1 1 calc(50% - 10px);
+   box-sizing: border-box;
+   border-radius: 28px;
+   padding: 24px;
+   display: flex;
+   flex-direction: column;
+   gap: 12px;
+   box-shadow: 0 4px 10px rgba(59, 59, 59, 0.1);
+   min-width: 200px;
+   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .help-card:hover {
-  transform: scale(1.005); 
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12); 
+   transform: scale(1.005);
+   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
 }
 
 @media (max-width: 600px) {
-  .help-container {
-    flex-direction: column;
-    width: 100%; 
-  }
-  .help-card {
-    flex: none; 
-    width: 100%; 
-  }
+   .help-container {
+      flex-direction: column;
+      width: 100%;
+   }
+   .help-card {
+      flex: none;
+      width: 100%;
+   }
 }
 
 .help-card > div:first-child {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding-bottom: 10px;
+   display: flex;
+   align-items: center;
+   gap: 5px;
+   padding-bottom: 10px;
 }
 
 .help-title {
-  margin: 0;
+   margin: 0;
 }
 
 .help-description {
-  color: #8c8c8c;
-  margin: 0;
+   color: #8c8c8c;
+   margin: 0;
 }
 
 .help-btn {
-  background-color: var(--text-primary-color);
-  color: var(--background-secondary-color);
-  border: none;
-  border-radius: 20px;
-  padding: 8px 16px;
-  cursor: pointer;
-  font-size: 14px; 
-  white-space: nowrap; 
-  width: fit-content; 
+   background-color: var(--text-primary-color);
+   color: var(--background-secondary-color);
+   border: none;
+   border-radius: 20px;
+   padding: 8px 16px;
+   cursor: pointer;
+   font-size: 14px;
+   white-space: nowrap;
+   width: fit-content;
 }
 
 .dashboard-card-display {

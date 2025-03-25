@@ -30,6 +30,7 @@
    background: rgba(194, 194, 194, 0.3);
    backdrop-filter: blur(50px);
    color: var(--text-primary-color);
+   z-index: 10;
 }
 
 .add-btn {

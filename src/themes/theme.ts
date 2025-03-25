@@ -16,7 +16,7 @@ export function useAppTheme(mode: "light" | "dark"): Theme {
                contrastText: "#fff",
             },
             secondary: {
-               light: "#ff5e78",
+               light: "#e65130",
                main: "#ff2e63",
                dark: "#c51162",
                contrastText: "#fff",
@@ -25,6 +25,12 @@ export function useAppTheme(mode: "light" | "dark"): Theme {
                light: "#042861",
                main: "#061835",
                dark: "#03000e",
+               contrastText: "#fff",
+            },
+            success: {
+               light: "#faa77b",
+               main: "#de601d",
+               dark: "#2e0904",
                contrastText: "#fff",
             },
             background: {

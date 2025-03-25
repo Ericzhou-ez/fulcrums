@@ -1,12 +1,17 @@
 import React from "react";
 import ProductCard from "./card";
-import { ProductType } from "../../types/types";
-import { ProductSupplierClientContextProvider } from "../../contexts/productSupplierClientContextProvider";
+import { Product, ProductType } from "../../types/types";
+import {
+   ProductSupplierClientContextProvider,
+   useProductSupplierClientContext,
+} from "../../contexts/productSupplierClientContextProvider";
+import { Stack, Typography } from "@mui/material";
+import Loader from "../core/loader";
 
 interface CardSliderProp {
    isDarkMode: boolean;
    isRecent: boolean;
-   products: any;
+   products: Product;
 }
 
 const CardSlider: React.FC<CardSliderProp> = ({
@@ -19,16 +24,27 @@ const CardSlider: React.FC<CardSliderProp> = ({
       : Object.entries(products).filter(
            ([id, product]: [string, any]) => product.saved
         );
+   const { productLoading } = useProductSupplierClientContext();
 
    return (
       <div
          className={
-            filteredProducts.length > 0
-               ? "card-slider"
-               : "cta-data-input"
+            filteredProducts.length > 0 ? "card-slider" : "cta-data-input"
          }
       >
-         {filteredProducts.length > 0 ? (
+         {productLoading ? (
+            <Stack
+               direction="row"
+               gap={1.5}
+               justifyContent="center"
+               alignItems="center"
+            >
+               <Typography variant="body2" textAlign="center">
+                  拼命加载中...
+               </Typography>
+               <Loader />
+            </Stack>
+         ) : filteredProducts.length > 0 ? (
             filteredProducts.map(([id, product]: any) => (
                <div className="card-slider-item" key={id}>
                   <ProductCard item={product} isDarkMode={isDarkMode} />

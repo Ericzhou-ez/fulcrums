@@ -3,7 +3,7 @@ import * as functions from "firebase-functions/v2";
 import { addClientInternal } from "../client/addClient";
 import { addSupplierInternal } from "../supplier/addSupplier";
 
-const db = admin.firestore();
+export const db = admin.firestore();
 const storage = admin.storage();
 
 // this also updates product if it already exists
@@ -18,11 +18,13 @@ export const createProduct = functions.https.onCall(
       const uid = auth.uid;
       const {
          image: src,
-         name: productName,
+         productChineseName: productChineseName,
+         productEnglishName: productEnglishName,
          unitPrice,
          productDimension: { volume: productVolume, unit: dimensionUnit },
          mass: { quantity: mass, unit: massUnit },
          packaging,
+         packingMass: { quantity: packingMass, unit: packingMassUnit },
          packingVolume: { volume: packingVolume, unit: packingDimensionUnit },
          saved,
          updatedAt,
@@ -66,16 +68,21 @@ export const createProduct = functions.https.onCall(
             {
                productId,
                image: publicUrl,
-               name: productName,
+               productChineseName: productChineseName,
+               productEnglishName: productEnglishName,
+               packingMass: {
+                  packingMass: packingMass,
+                  packingMassUnit: packingMassUnit,
+               },
                unitPrice,
                productDimension: {
-                  volume: parseInt(productVolume),
+                  volume: productVolume,
                   unit: dimensionUnit,
                },
                mass: { quantity: mass, unit: massUnit },
                packaging,
                packingVolume: {
-                  volume: parseInt(packingVolume),
+                  volume: packingVolume,
                   unit: packingDimensionUnit,
                },
                saved,
@@ -93,13 +100,18 @@ export const createProduct = functions.https.onCall(
             { merge: true } // merge with existing data
          );
 
-         await addClientInternal(clientName, uid);
+         await addClientInternal(
+            { clientName: clientName, productId: productId },
+            uid
+         );
+         
          await addSupplierInternal(
             {
                name: supplierName,
                phone: supplierPhone,
                address: supplierAddress,
                email: supplierEmail,
+               productId: productId,
             },
             uid
          );

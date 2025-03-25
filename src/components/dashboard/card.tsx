@@ -10,14 +10,22 @@ import {
    Tooltip,
 } from "@mui/material";
 import HeartComponent from "./heart";
-import { ProductType } from "../../types/types";
+import { Product } from "../../types/types";
+import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
 
 interface CardProps {
-   item: ProductType;
+   item: Product;
    isDarkMode: boolean;
 }
 
 export default function ProductCard({ item, isDarkMode }: CardProps) {
+
+   const { toggleSaveUnsaveProduct } = useProductSupplierClientContext();
+
+   async function toggleSave(productId: string) {
+      await toggleSaveUnsaveProduct(productId);
+   }
+
    return (
       <Card
          sx={{
@@ -40,7 +48,7 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
          <CardMedia
             component="img"
             image={item.image}
-            alt={item.name}
+            alt={item.productChineseName}
             className="product-image"
             sx={{
                width: "100%",
@@ -61,7 +69,7 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
             }}
          >
             <Typography variant="h6" gutterBottom noWrap>
-               {item.name}
+               {item.productChineseName}
             </Typography>
 
             <div
@@ -77,7 +85,9 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
 
                <Stack direction="row">
                   <Tooltip title="收藏">
-                     <HeartComponent saved={item.saved} />
+                     <div onClick={() => toggleSave(item.productId)}>
+                        <HeartComponent saved={item.saved} />
+                     </div>
                   </Tooltip>
                </Stack>
             </div>

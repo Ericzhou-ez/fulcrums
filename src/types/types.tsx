@@ -9,27 +9,36 @@ export type VolumetricDimensions = {
 };
 
 export type Product = {
-   productId: string; 
+   productId: string;
    image: string;
-   name: string;
-   unitPrice: number; 
-   productDimension: VolumetricDimensions; // this is the CBM *********
+   productChineseName: string;
+   productEnglishName: string;
+   unitPrice: number;
+
+   productDimension: VolumetricDimensions;
    mass: Mass;
 
-   packaging: string;
+   packaging: number;
    packingVolume: VolumetricDimensions;
+   packingMass: Mass;
+
    saved: boolean;
    updatedAt: string;
 
-   supplierName?: string; // to be made required later
-   supplierId?: string; // to be made required later
+   supplier: {
+      name: string;
+      phone: string;
+      address: string;
+      email: string;
+   };
 
    additionalNotes: string;
    catagory: string;
-   purchaseVolume?: number;
-   salesVolume?: number; 
-};
+   client: string;
 
+   purchaseVolume?: number;
+   salesVolume?: number;
+};
 export type ProductType = {
    productId: string;
    image: string;

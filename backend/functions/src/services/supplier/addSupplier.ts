@@ -8,6 +8,7 @@ export const addSupplierInternal = async (
       phone: string;
       address: string;
       email: string;
+      productId: string; 
    },
    uid: string
 ): Promise<string> => {
@@ -17,13 +18,31 @@ export const addSupplierInternal = async (
       .get();
 
    if (!querySnapshot.empty) {
-      // exists
-      return querySnapshot.docs[0].id;
+      // exists; updates product if
+      const existingSupplierDoc = querySnapshot.docs[0]; // requires unique supplier names 
+      const existingSupplierRef = existingSupplierDoc.ref;
+
+      await existingSupplierRef.update({
+         productIds: admin.firestore.FieldValue.arrayUnion(
+            supplierData.productId
+         ),
+      });
+
+      return existingSupplierDoc.id;
    } else {
-      // new supplier
+      // new supplier and product id 
       const newSupplierRef = suppliersRef.doc();
       const supplierId = newSupplierRef.id;
-      await newSupplierRef.set({ supplierId, ...supplierData });
+
+      await newSupplierRef.set({
+         supplierId,
+         name: supplierData.name,
+         phone: supplierData.phone,
+         address: supplierData.address,
+         email: supplierData.email,
+         productIds: [supplierData.productId],
+      });
+
       return supplierId;
    }
 };

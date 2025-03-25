@@ -18,6 +18,7 @@ export type ProductSupplierClientContextType = {
    getProducts: () => Promise<Object>;
    getClients: () => Promise<Object>;
    getSuppliers: () => Promise<Object>;
+   toggleSaveUnsaveProduct: (productId: string) => Promise<void>;
    addedProduct: boolean;
    editedProduct: boolean;
    deletedProduct: boolean;
@@ -64,11 +65,11 @@ export const ProductSupplierClientContextProvider = ({
    const [products, setProducts] = useState<{ [key: string]: any }>({});
    const [clients, setClients] = useState<{ [key: string]: any }>({});
    const [suppliers, setSuppliers] = useState<{ [key: string]: any }>({});
+   const functions = getFunctions();
 
    const addProduct = async (product: Product) => {
       try {
          setLoading(true);
-         const functions = getFunctions();
          const createProduct = httpsCallable(functions, "createProduct");
          const response: any = await createProduct(product);
 
@@ -134,9 +135,9 @@ export const ProductSupplierClientContextProvider = ({
             acc[doc.id] = doc.data();
             return acc;
          }, {} as { [key: string]: any });
-         
+
          setProducts(products);
-          setProductLoading(false);
+         setProductLoading(false);
          return products;
       } catch (error) {
          console.error("Error fetching products:", error);
@@ -155,8 +156,8 @@ export const ProductSupplierClientContextProvider = ({
             acc[doc.id] = doc.data();
             return acc;
          }, {} as { [key: string]: any });
-        
-         setClients(clients); 
+
+         setClients(clients);
          return clients;
       } catch (error) {
          console.error("Error fetching clients:", error);
@@ -173,12 +174,25 @@ export const ProductSupplierClientContextProvider = ({
             acc[doc.id] = doc.data();
             return acc;
          }, {} as { [key: string]: any });
-         
+
          setSuppliers(suppliers);
          return suppliers;
       } catch (error) {
          console.error("Error fetching suppliers:", error);
          return {};
+      }
+   }
+
+   async function toggleSaveUnsaveProduct(productId: string) {
+      try {
+         const saveUnsavedProduct = httpsCallable(
+            functions,
+            "saveUnsavedProduct"
+         );
+
+         await saveUnsavedProduct(productId);
+      } catch (err) {
+         console.warn(err);
       }
    }
 
@@ -196,7 +210,8 @@ export const ProductSupplierClientContextProvider = ({
             deleteClient,
             getProducts,
             getClients,
-            getSuppliers,  
+            getSuppliers,
+            toggleSaveUnsaveProduct,
             addedProduct,
             editedProduct,
             deletedProduct,

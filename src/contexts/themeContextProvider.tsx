@@ -8,6 +8,7 @@ interface ThemeContextType {
    toggleTheme: (newTheme: ThemeMode) => void;
    isDark: boolean;
    isMdUp: boolean;
+   isSmUp: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -39,12 +40,14 @@ export const ThemeContextProvider: React.FC<{
    };
 
    const isMdUp = useMediaQuery("(min-width:960px)");
+   const isSmUp = useMediaQuery("(min-width:600px)");
    const isDark = mode === "dark";
 
-
    return (
-      <ThemeContext.Provider value={{ mode, toggleTheme, isDark, isMdUp }}>
-        {children}
+      <ThemeContext.Provider
+         value={{ mode, toggleTheme, isDark, isMdUp, isSmUp }}
+      >
+         {children}
       </ThemeContext.Provider>
    );
 };

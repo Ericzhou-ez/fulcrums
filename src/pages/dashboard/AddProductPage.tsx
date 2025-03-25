@@ -53,7 +53,8 @@ const AddProductForm = () => {
    const { navOpen } = useUIStateContext();
    const [src, setSrc] = useState(ProductDefaultImage);
    const [saved, setSaved] = useState(false);
-   const [productName, setProductName] = useState("");
+   const [productChineseName, setProductChineseName] = useState("");
+   const [productEnglishName, setProductEnglishName] = useState("");
    const [unitPrice, setUnitPrice] = useState("");
    const [currency, setCurrency] = useState("¥"); // 切换：$, €, ¥
    const [mass, setMass] = useState("");
@@ -64,6 +65,8 @@ const AddProductForm = () => {
    const [height, setHeight] = useState("");
    const [productVolume, setProductVolume] = useState(""); // used when volume mode is true
    const [dimensionUnit, setDimensionUnit] = useState("cm"); // 切换 cm <-> m; volume unit will be derived (cm³ or m³)
+   const [packingMass, setPackingMass] = useState("");
+   const [packingMassUnit, setPackingMassUnit] = useState("g"); // 切换 kg <-> g
    const [productCatagory, setProductCatagory] = useState(""); // required
    const [isVolumeMode, setIsVolumeMode] = useState(false); // false = 分拆模式 (L/W/H), true = 体积模式
    const [packing, setPacking] = useState("");
@@ -78,7 +81,6 @@ const AddProductForm = () => {
    const [supplierPhone, setSupplierPhone] = useState("");
    const [supplierEmail, setSupplierEmail] = useState("");
    const [clientName, setClientName] = useState("");
-   const clients = ["客户A", "客户B", "客户C"];
    const [additionalNotes, setAdditionalNotes] = useState("");
    const handleClear = (setter: (value: string) => void) => () => setter("");
    const [submittingForm, setSubmittingForm] = useState(false);
@@ -93,6 +95,7 @@ const AddProductForm = () => {
    const { addedProduct, addProduct, loading } =
       useProductSupplierClientContext();
    const [buttonDisabled, setButtonDisabled] = useState(addedProduct);
+   const [autoFillClients, setAutoFillClients] = useState<string[]>();
 
    async function getBase64FromBlobUrl(blobUrl: string) {
       const blob = await fetch(blobUrl).then((res) => res.blob());
@@ -110,6 +113,22 @@ const AddProductForm = () => {
       });
    }
 
+   const { getClients, clients } = useProductSupplierClientContext();
+   useEffect(() => {
+      const fetchClients = async () => {
+         await getClients();
+         const clientArray: string[] = [];
+
+         Object.values(clients).forEach((c: any) => {
+            clientArray.push(c.name);
+         });
+
+         setAutoFillClients(clientArray);
+      };
+
+      fetchClients();
+   }, [productChineseName, supplierName]);
+
    async function handleAddProduct() {
       setSubmittingForm(true);
 
@@ -120,24 +139,28 @@ const AddProductForm = () => {
       setButtonDisabled(true);
 
       const base64String = await getBase64FromBlobUrl(src);
-      console.log(base64String);
 
       addProduct({
          image: base64String,
-         name: productName,
+         productChineseName: productChineseName,
+         productEnglishName: productEnglishName,
          unitPrice: unitPrice,
          productDimension: {
-            volume: parseInt(productVolume),
+            volume: parseFloat(productVolume) || 0,
             unit: dimensionUnit,
          },
          mass: {
-            quantity: mass,
-            unit: massUnit,
+            quantity: parseFloat(mass),
+         unit: massUnit,
          },
-         packaging: packing,
+         packaging: parseInt(packing),
          packingVolume: {
-            volume: parseInt(packingVolume),
+            volume: parseFloat(packingVolume),
             unit: packingDimensionUnit,
+         },
+         packingMass: {
+            quantity: parseFloat(packingMass),
+            unit: packingMassUnit,
          },
          saved: saved,
          updatedAt: new Date().toISOString(),
@@ -238,6 +261,10 @@ const AddProductForm = () => {
       setMassUnit((prev) => (prev === "kg" ? "g" : "kg"));
    };
 
+   const togglePackingUnit = () => {
+      setPackingMassUnit((prev) => (prev === "kg" ? "g" : "kg"));
+   };
+
    const toggleDimensionUnit = () => {
       setDimensionUnit((prev) => (prev === "cm" ? "m" : "cm"));
    };
@@ -265,9 +292,9 @@ const AddProductForm = () => {
 
    // get product autofill res
    const getProductFromQuery = () => {
-      if (productName.length >= 2) {
+      if (productChineseName.length > 0) {
          const keys = Object.keys(ProductandCompanyData["search_by_product"]);
-         const res = keys.filter((p) => p.includes(productName));
+         const res = keys.filter((p) => p.includes(productChineseName));
 
          return res.slice(0, 10);
       }
@@ -275,7 +302,7 @@ const AddProductForm = () => {
    };
 
    const getSupplierFromQuery = () => {
-      if (supplierName.length >= 2) {
+      if (supplierName.length > 0) {
          const keys = Object.keys(ProductandCompanyData["search_by_store"]);
          const res = keys.filter((p) => p.includes(supplierName));
 
@@ -306,26 +333,26 @@ const AddProductForm = () => {
    useEffect(() => {
       const missing = [];
 
-      if (!productName) missing.push("产品名称");
+      if (!productChineseName) missing.push("产品中文名");
+      if (!productEnglishName) missing.push("产品英文名");
       if (!unitPrice) missing.push("单价");
-      if (!productVolume) missing.push("产品体积");
-      if (!mass) missing.push("产品质量");
       if (!packing) missing.push("包装方式");
       if (!productCatagory) missing.push("产品类别");
       if (!packingVolume) missing.push("包装体积");
+      if (!packingMass) missing.push("包装重量");
       if (!supplierName) missing.push("供应商名称");
       if (!clientName) missing.push("客户名称");
       if (src === ProductDefaultImage) missing.push("产品图片");
 
       setIsFormComplete(missing.length ? "请填写" + missing.join(", ") : true);
    }, [
-      productName,
+      productChineseName,
+      productEnglishName,
       unitPrice,
       productVolume,
-      mass,
       packing,
       productCatagory,
-      packingVolume,
+      packingMass,
       supplierName,
       clientName,
       src,
@@ -342,7 +369,9 @@ const AddProductForm = () => {
    const resetPage = () => {
       setSrc(ProductDefaultImage);
       setSaved(false);
-      setProductName("");
+      setProductEnglishName("");
+      setProductChineseName("");
+      setPackingMass("");
       setUnitPrice("");
       setCurrency("¥");
       setMass("");
@@ -416,13 +445,13 @@ const AddProductForm = () => {
                   freeSolo
                   options={getProductFromQuery()}
                   value={selectedProduct}
-                  inputValue={productName}
+                  inputValue={productChineseName}
                   onInputChange={(event, newInputValue) =>
-                     setProductName(newInputValue)
+                     setProductChineseName(newInputValue)
                   }
                   onChange={(event, newValue) => {
                      setSelectedProduct(newValue);
-                     setProductName(newValue || "");
+                     setProductChineseName(newValue || "");
                   }}
                   clearOnEscape
                   renderInput={(params) => (
@@ -430,16 +459,16 @@ const AddProductForm = () => {
                         {...params}
                         inputProps={{ ...params.inputProps, maxLength: 50 }}
                         fullWidth
-                        label="产品名称"
+                        label="产品中文名"
                         required
                         InputProps={{
                            ...params.InputProps,
-                           endAdornment: productName ? (
+                           endAdornment: productChineseName ? (
                               <InputAdornment position="end">
                                  <IconButton
                                     onClick={(event) => {
                                        event.stopPropagation();
-                                       setProductName("");
+                                       setProductChineseName("");
                                        setSelectedProduct(null);
                                     }}
                                  >
@@ -452,6 +481,29 @@ const AddProductForm = () => {
                      />
                   )}
                />
+
+               <TextField
+                  fullWidth
+                  inputProps={{ maxLength: 50 }}
+                  label="产品英文名"
+                  required
+                  size="medium"
+                  value={productEnglishName}
+                  onChange={(e) => setProductEnglishName(e.target.value)}
+                  InputProps={{
+                     endAdornment: productEnglishName && (
+                        <InputAdornment position="end">
+                           <IconButton
+                              onClick={handleClear(setProductEnglishName)}
+                           >
+                              <X size={20} />
+                           </IconButton>
+                        </InputAdornment>
+                     ),
+                  }}
+                  sx={{ my: 2 }}
+               />
+
                {/* 单价 - 数字类型, left adornment for currency, clear button on right if text exists */}
                <TextField
                   inputProps={{ maxLength: 20 }}
@@ -480,7 +532,7 @@ const AddProductForm = () => {
                   }}
                   sx={{ my: 2 }}
                />
-               {/* 质量（重量） - 数字类型, right adornment for toggle; also include clear button before toggle if text exists */}
+               {/* 质量（重量) right adornment for toggle; also include clear button before toggle if text exists */}
                <TextField
                   inputProps={{ maxLength: 20 }}
                   fullWidth
@@ -489,7 +541,6 @@ const AddProductForm = () => {
                   size="small"
                   value={mass}
                   onChange={(e) => setMass(e.target.value)}
-                  required
                   InputProps={{
                      endAdornment: (
                         <InputAdornment position="end">
@@ -534,7 +585,6 @@ const AddProductForm = () => {
                            size="small"
                            value={productVolume}
                            onChange={(e) => setProductVolume(e.target.value)}
-                           required
                         />
                         <IconButton
                            onClick={toggleDimensionUnit}
@@ -565,7 +615,6 @@ const AddProductForm = () => {
                            size="small"
                            value={length}
                            onChange={(e) => setLength(e.target.value)}
-                           required
                            InputProps={{
                               startAdornment: length && (
                                  <InputAdornment position="start">
@@ -585,7 +634,6 @@ const AddProductForm = () => {
                            size="small"
                            value={width}
                            onChange={(e) => setWidth(e.target.value)}
-                           required
                            InputProps={{
                               startAdornment: width && (
                                  <InputAdornment position="start">
@@ -603,7 +651,6 @@ const AddProductForm = () => {
                            size="small"
                            value={height}
                            onChange={(e) => setHeight(e.target.value)}
-                           required
                            InputProps={{
                               startAdornment: height && (
                                  <InputAdornment position="start">
@@ -676,6 +723,31 @@ const AddProductForm = () => {
                      ),
                   }}
                   sx={{ my: 1 }}
+               />
+
+               <TextField
+                  inputProps={{ maxLength: 20 }}
+                  fullWidth
+                  label="包装重量"
+                  type="number"
+                  size="small"
+                  value={packingMass}
+                  onChange={(e) => setPackingMass(e.target.value)}
+                  InputProps={{
+                     endAdornment: (
+                        <InputAdornment position="end">
+                           {packingMass && (
+                              <IconButton onClick={handleClear(setPackingMass)}>
+                                 <X size={20} />
+                              </IconButton>
+                           )}
+                           <Button onClick={togglePackingUnit} size="small">
+                              {packingMassUnit}
+                           </Button>
+                        </InputAdornment>
+                     ),
+                  }}
+                  sx={{ my: 2 }}
                />
                {/* 包装尺寸 */}
                {isPackingVolumeMode ? (
@@ -933,7 +1005,7 @@ const AddProductForm = () => {
 
                <Autocomplete
                   freeSolo
-                  options={clients}
+                  options={autoFillClients || []}
                   value={selectedClient}
                   inputValue={clientName}
                   onInputChange={(event, newInputValue) =>
@@ -1033,7 +1105,7 @@ const AddProductForm = () => {
                   position: "fixed",
                   top: "70px",
                   right: "8px",
-                  zIndex: "5500",
+                  zIndex: "500",
                }}
             >
                保存产品
