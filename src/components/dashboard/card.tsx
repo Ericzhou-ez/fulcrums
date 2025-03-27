@@ -52,7 +52,7 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
             className="product-image"
             sx={{
                width: "100%",
-               height: 150,
+               height: {xs: 130, md: 140},
                backgroundPosition: "center",
                objectFit: "cover",
                boxShadow: "none",

@@ -78,7 +78,7 @@ export function GlobalHomeListener() {
 
    useEffect(() => {
       const handleKeyDown = (e: KeyboardEvent) => {
-         if (e.key.toLowerCase() === "h" && e.shiftKey) {
+         if (e.key.toLowerCase() === "b" && e.metaKey) {
             e.preventDefault();
 
             navigate("/dashboard");

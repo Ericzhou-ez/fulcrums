@@ -173,6 +173,7 @@ const AddProductForm = () => {
          additionalNotes: additionalNotes,
          catagory: productCatagory,
          client: clientName,
+         currency: currency,
       });
    }
 

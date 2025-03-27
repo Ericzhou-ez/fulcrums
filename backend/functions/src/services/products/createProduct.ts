@@ -37,7 +37,15 @@ export const createProduct = functions.https.onCall(
          additionalNotes,
          catagory: productCatagory,
          client: clientName,
+         currency: currency,
       } = data;
+
+      if (!productChineseName || !productEnglishName) {
+         throw new functions.https.HttpsError(
+            "invalid-argument",
+            "Not sufficient fields"
+         );
+      }
 
       try {
          const productRef = db
@@ -64,57 +72,58 @@ export const createProduct = functions.https.onCall(
             bucket.name
          }/o/${encodeURIComponent(storagePath)}?alt=media&token=${token}`;
 
-         await productRef.set(
-            {
-               productId,
-               image: publicUrl,
-               productChineseName: productChineseName,
-               productEnglishName: productEnglishName,
-               packingMass: {
-                  packingMass: packingMass,
-                  packingMassUnit: packingMassUnit,
+         await Promise.all([
+            productRef.set(
+               {
+                  productId,
+                  image: publicUrl,
+                  productChineseName: productChineseName,
+                  productEnglishName: productEnglishName,
+                  packingMass: {
+                     packingMass: packingMass,
+                     packingMassUnit: packingMassUnit,
+                  },
+                  unitPrice,
+                  productDimension: {
+                     volume: productVolume,
+                     unit: dimensionUnit,
+                  },
+                  mass: { quantity: mass, unit: massUnit },
+                  packaging,
+                  packingVolume: {
+                     volume: packingVolume,
+                     unit: packingDimensionUnit,
+                  },
+                  saved,
+                  updatedAt,
+                  supplier: {
+                     name: supplierName,
+                     phone: supplierPhone,
+                     address: supplierAddress,
+                     email: supplierEmail,
+                  },
+                  additionalNotes,
+                  catagory: productCatagory,
+                  client: clientName,
+                  currency: currency,
                },
-               unitPrice,
-               productDimension: {
-                  volume: productVolume,
-                  unit: dimensionUnit,
-               },
-               mass: { quantity: mass, unit: massUnit },
-               packaging,
-               packingVolume: {
-                  volume: packingVolume,
-                  unit: packingDimensionUnit,
-               },
-               saved,
-               updatedAt,
-               supplier: {
+               { merge: true } // merge with existing data (if there)
+            ),
+            addClientInternal(
+               { clientName: clientName, productId: productId },
+               uid
+            ),
+            addSupplierInternal(
+               {
                   name: supplierName,
                   phone: supplierPhone,
                   address: supplierAddress,
                   email: supplierEmail,
+                  productId: productId,
                },
-               additionalNotes,
-               catagory: productCatagory,
-               client: clientName,
-            },
-            { merge: true } // merge with existing data
-         );
-
-         await addClientInternal(
-            { clientName: clientName, productId: productId },
-            uid
-         );
-         
-         await addSupplierInternal(
-            {
-               name: supplierName,
-               phone: supplierPhone,
-               address: supplierAddress,
-               email: supplierEmail,
-               productId: productId,
-            },
-            uid
-         );
+               uid
+            ),
+         ]);
 
          return { success: true, productId, imageUrl: publicUrl };
       } catch (err) {
