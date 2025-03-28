@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, Stack, TextField, useMediaQuery, useTheme } from "@mui/material";
-import { MultiSelect } from "./multiSelect";
-import "../../styles/search.css";
+import { MultiSelect } from "../../core/multiSelect";
+import "../../../styles/search.css";
 
 export const typeOptions = [
    { label: "饰品", value: "Jewels" },

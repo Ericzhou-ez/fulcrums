@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import { X as XIcon, ArrowUpRight as ArrowUpRightIcon } from "phosphor-react";
 import { useTheme } from "@mui/material/styles";
-import data from "../../data/products_companies.json";
+import data from "../../../data/products_companies.json";
 
 interface ProductData {
    [key: string]: {

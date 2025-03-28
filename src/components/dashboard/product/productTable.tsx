@@ -26,12 +26,12 @@ import {
    PencilSimple as PencilSimpleIcon,
    Heart as HeartIcon,
 } from "phosphor-react";
-import { useThemeContext } from "../../contexts/themeContextProvider";
-import { Product } from "../../types/types";
-import { typeOptions } from "./productFilter";
+import { useThemeContext } from "../../../contexts/themeContextProvider";
+import { Product } from "../../../types/types";
+import { typeOptions } from "../search/productFilter";
 import HeartComponent from "./heart";
-import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
-import Loader from "../core/loader";
+import { useProductSupplierClientContext } from "../../../contexts/productSupplierClientContextProvider";
+import Loader from "../../core/loader";
 
 export function ProductTable({ productList }: { productList: Product[] }) {
    const { toggleSaveUnsaveProduct, productLoading } =
@@ -344,16 +344,19 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                                           textOverflow: "ellipsis",
                                        }}
                                     >
-                                       <Typography
-                                          variant="subtitle1"
-                                          fontSize={{
-                                             xs: "0.9rem",
-                                             md: "1.1rem",
-                                          }}
-                                          noWrap
-                                       >
-                                          {row.productChineseName}
-                                       </Typography>
+                                       <a href={`/product/${row.productId}`}>
+                                          <Typography
+                                             variant="subtitle1"
+                                             fontSize={{
+                                                xs: "0.9rem",
+                                                md: "1.1rem",
+                                             }}
+                                             noWrap
+                                             className="link"
+                                          >
+                                             {row.productChineseName}
+                                          </Typography>
+                                       </a>
                                        <Typography
                                           variant="body2"
                                           color="text.secondary"

@@ -1,13 +1,9 @@
 import React from "react";
 import {
-   Avatar,
    Box,
    Card,
    CardContent,
    CardHeader,
-   Chip,
-   Divider,
-   LinearProgress,
    Paper,
    Stack,
    Typography,
@@ -15,12 +11,9 @@ import {
    NoSsr,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
-import Icon1 from "../../assets/icons/SVG image 3.svg";
-import Icon2 from "../../assets/icons/SVG image 2.svg";
-import Icon3 from "../../assets/icons/SVG image.svg";
-import { Coins as CoinsIcon } from "phosphor-react";
-import { CurrencyDollar as CurrencyDollarIcon } from "phosphor-react";
-import { Folder as FolderIcon } from "phosphor-react";
+import Icon1 from "../../../assets/icons/SVG image 3.svg";
+import Icon2 from "../../../assets/icons/SVG image 2.svg";
+import Icon3 from "../../../assets/icons/SVG image.svg";
 import {
    Area,
    AreaChart,

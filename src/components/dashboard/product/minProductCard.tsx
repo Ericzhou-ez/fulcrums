@@ -6,11 +6,12 @@ import {
    IconButton,
    Tooltip,
 } from "@mui/material";
-import CancelLight from "../../assets/icons/x-light.svg";
-import CancelDark from "../../assets/icons/x-dark.svg";
+import CancelLight from "../../../assets/icons/x-light.svg"
+import CancelDark from "../../../assets/icons/x-dark.svg";
 import HeartComponent from "./heart";
-import { Product } from "../../types/types";
-import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
+import { Product } from "../../../types/types";
+import { useProductSupplierClientContext } from "../../../contexts/productSupplierClientContextProvider";
+import TimeAgoTypography from "./timeAgoTypography";
 
 interface CardProps {
    item: Product;
@@ -45,21 +46,22 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
             className="card-flex"
          >
             <div style={{ display: "flex", flexDirection: "column" }}>
-               <Typography
-                  variant="subtitle1"
-                  gutterBottom
-                  sx={{ fontSize: { xs: "1rem", sm: "1.2rem" } }}
-               >
-                  {item.productChineseName}
-               </Typography>
-               <Typography variant="caption" color="textSecondary">
-                  {item.updatedAt}
-               </Typography>
+               <a href={`/product/${item.productId}`}>
+                  <Typography
+                     variant="subtitle1"
+                     gutterBottom
+                     sx={{ fontSize: { xs: "1rem", sm: "1.2rem" } }}
+                     className="link"
+                  >
+                     {item.productChineseName}
+                  </Typography>
+               </a>
+               <TimeAgoTypography timestamp={item.updatedAt} />
             </div>
 
             <div style={{ display: "flex", marginBottom: "4px" }}>
                <div onClick={() => toggleSave(item.productId)}>
-                     <HeartComponent saved={item.saved} />
+                  <HeartComponent saved={item.saved} />
                </div>
 
                <Tooltip title="删除">

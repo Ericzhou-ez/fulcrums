@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Typography, Box, Alert, Button, Stack } from "@mui/material";
-import ProductCard from "../../components/dashboard/minProductCard";
+import ProductCard from "../../components/dashboard/product/minProductCard";
 import "../../styles/RecentProductPage.css";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
@@ -11,7 +11,7 @@ import { useThemeContext } from "../../contexts/themeContextProvider";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
 import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
 import Loading from "../../components/core/loading";
-import { ProductTable } from "../../components/dashboard/productTable";
+import { ProductTable } from "../../components/dashboard/product/productTable";
 import { SquaresFour, ListBullets } from "phosphor-react";
 import Loader from "../../components/core/loader";
 

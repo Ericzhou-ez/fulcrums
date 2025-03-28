@@ -14,7 +14,7 @@ import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import "../../styles/dashboard.css";
 import { Auth } from "firebase/auth";
-import DashboardOverview from "../../components/dashboard/dashboardOverview";
+import DashboardOverview from "../../components/dashboard/overview/dashboardOverview";
 import SideNav from "../../components/dashboard/dashboardNav";
 import { useThemeContext } from "../../contexts/themeContextProvider";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";

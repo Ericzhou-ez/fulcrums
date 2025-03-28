@@ -1,15 +1,15 @@
 import React from "react";
 import { Stack, Box, Typography, Button, Link } from "@mui/material";
 import { Theme, useTheme } from "@mui/material/styles";
-import DescriptionLight from "../../assets/icons/description-light.svg";
-import DescriptionDark from "../../assets/icons/description-dark.svg";
-import RecentLight from "../../assets/icons/recent-light.svg";
-import RecentDark from "../../assets/icons/recent-dark.svg";
-import CardSlider from "./cardSlider";
-import Footer from "../core/footer";
-import { QuickStats10, Chart1 } from "../../components/dashboard/performance";
-import {Documentation, Help} from "./help";
-import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
+import DescriptionLight from "../../../assets/icons/description-light.svg";
+import DescriptionDark from "../../../assets/icons/description-dark.svg";
+import RecentLight from "../../../assets/icons/recent-light.svg";
+import RecentDark from "../../../assets/icons/recent-dark.svg";
+import CardSlider from "../product/cardSlider";
+import Footer from "../../core/footer";
+import { QuickStats10, Chart1 } from "./performance";
+import { Documentation, Help } from "./help";
+import { useProductSupplierClientContext } from "../../../contexts/productSupplierClientContextProvider";
 import { useEffect } from "react";
 
 const sampleData = [
@@ -30,7 +30,8 @@ const sampleData = [
 export default function DashboardOverview() {
    const theme = useTheme();
    const isDarkMode = theme.palette.mode === "dark";
-   const {getProducts, products, errorMessages} = useProductSupplierClientContext();
+   const { getProducts, products, errorMessages } =
+      useProductSupplierClientContext();
 
    useEffect(() => {
       async function handleGetProduct() {
@@ -104,7 +105,11 @@ export default function DashboardOverview() {
                      </Stack>
                   </Link>
 
-                  <CardSlider isDarkMode={isDarkMode} isRecent={true} products={products} />
+                  <CardSlider
+                     isDarkMode={isDarkMode}
+                     isRecent={true}
+                     products={products}
+                  />
                </Box>
 
                {/* “保存” section */}
@@ -137,7 +142,11 @@ export default function DashboardOverview() {
                      </Stack>
                   </Link>
 
-                  <CardSlider isDarkMode={isDarkMode} isRecent={false} products={products} />
+                  <CardSlider
+                     isDarkMode={isDarkMode}
+                     isRecent={false}
+                     products={products}
+                  />
                </Box>
             </Stack>
 

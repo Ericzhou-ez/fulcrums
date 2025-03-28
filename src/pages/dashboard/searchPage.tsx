@@ -10,9 +10,9 @@ import {
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import SideNav from "../../components/dashboard/dashboardNav";
-import { CompanyCard } from "../../components/dashboard/companyCard";
-import { ProductFilters } from "../../components/dashboard/productFilter";
-import { ProductCard } from "../../components/dashboard/productSearchCard";
+import { CompanyCard } from "../../components/dashboard/search/companyCard";
+import { ProductFilters } from "../../components/dashboard/search/productFilter";
+import { ProductCard } from "../../components/dashboard/search/productSearchCard";
 import data from "../../data/products_companies.json";
 import InfoIcon from "../../assets/icons/iconly-glass-info.svg";
 import { useTheme } from "@mui/material/styles";

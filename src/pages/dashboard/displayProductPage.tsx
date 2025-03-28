@@ -6,36 +6,27 @@ import {
    IconButton,
    Button,
    Tooltip,
-   Autocomplete,
    Alert,
-   Stack
+   Stack,
+   InputAdornment,
 } from "@mui/material";
-import { Exam, X } from "phosphor-react";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import SideNav from "../../components/dashboard/dashboardNav";
 import "../../styles/Add-product.css";
 import FloatingTocNav from "../../components/core/FloatingTocNav";
 import { useThemeContext } from "../../contexts/themeContextProvider";
-import {
-   ToggleLeft,
-   ToggleRight,
-   ArrowsOut,
-   ArrowsIn,
-   Heart,
-   Plus,
-} from "phosphor-react";
+import { ArrowsOut, ArrowsIn, Heart } from "phosphor-react";
 import ProductDefaultImage from "../../assets/images/product-background.svg";
-import ExmapleProduct from "/public/demo/O1CN01pln4jM203FPjV7zaX_!!2214227246793-0-cib.220x220.jpg";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
-import { MultiSelect } from "../../components/dashboard/multiSelect";
-import { typeOptions } from "../../components/dashboard/productFilter";
-import ProductandCompanyData from "../../data/products_companies.json";
+import { MultiSelect } from "../../components/core/multiSelect";
+import { typeOptions } from "../../components/dashboard/search/productFilter";
 import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
 import Loading from "../../components/core/loading";
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 import Loader from "../../components/core/loader";
 import { Product } from "../../types/types";
+import TimeAgoTypography from "../../components/dashboard/product/timeAgoTypography";
 
 const TOS_SECTIONS = [
    { id: "product-input", label: "产品" },
@@ -46,6 +37,7 @@ const TOS_SECTIONS = [
 ];
 
 const AddProductForm = ({ p }: { p: Product }) => {
+   console.log(p);
    const { isMdUp } = useThemeContext();
    const { navOpen } = useUIStateContext();
    const [src, setSrc] = useState(p.image);
@@ -62,6 +54,9 @@ const AddProductForm = ({ p }: { p: Product }) => {
    const [massUnit, setMassUnit] = useState(p.mass.unit);
    const [productVolume, setProductVolume] = useState(
       p.productDimension.volume
+   );
+   const [productVolumeUnit, setProductVolumeUnit] = useState(
+      p.productDimension.unit
    );
    const [dimensionUnit, setDimensionUnit] = useState(p.productDimension.unit);
    const [packingMass, setPackingMass] = useState(p.packingMass.packingMass);
@@ -175,6 +170,8 @@ const AddProductForm = ({ p }: { p: Product }) => {
          productChineseName === p?.productChineseName &&
          productEnglishName === p?.productEnglishName &&
          unitPrice === p?.unitPrice &&
+         mass === p?.mass?.quantity &&
+         productVolume === p?.productDimension?.volume &&
          packing === p?.packaging &&
          productCatagory === p?.catagory &&
          packingVolume === p?.packingVolume?.volume &&
@@ -196,6 +193,8 @@ const AddProductForm = ({ p }: { p: Product }) => {
       productEnglishName,
       unitPrice,
       packing,
+      mass,
+      productVolume,
       productCatagory,
       packingMass,
       packingVolume,
@@ -229,6 +228,7 @@ const AddProductForm = ({ p }: { p: Product }) => {
             isMdUp={isMdUp}
             saved={saved}
             setSaved={setSaved}
+            time={p.updatedAt}
             alt="product-image"
          />
          <Box
@@ -246,16 +246,20 @@ const AddProductForm = ({ p }: { p: Product }) => {
                className="input-group"
                sx={{ py: { xs: 2, md: 3 } }}
             >
-               <Typography
-                  variant="h6"
-                  className="form-header"
-                  sx={{
-                     fontSize: { xs: "1.2rem", md: "1.8rem" },
-                     fontWeight: 500,
-                  }}
-               >
-                  产品信息
-               </Typography>
+               <Stack direction="row" gap={2} justifyContent="space-between" alignItems="center">
+                  <Typography
+                     variant="h6"
+                     className="form-header"
+                     sx={{
+                        fontSize: { xs: "1.2rem", md: "1.8rem" },
+                        fontWeight: 500,
+                     }}
+                  >
+                     产品信息
+                  </Typography>
+
+                  <TimeAgoTypography timestamp={p?.updatedAt} />
+               </Stack>
 
                <TextField
                   inputProps={{ maxLength: 50 }}
@@ -288,6 +292,15 @@ const AddProductForm = ({ p }: { p: Product }) => {
                   required
                   size="small"
                   sx={{ my: 2 }}
+                  InputProps={{
+                     startAdornment: (
+                        <InputAdornment position="start">
+                           <IconButton color="primary">
+                              <Typography>{currency}</Typography>
+                           </IconButton>
+                        </InputAdornment>
+                     ),
+                  }}
                />
 
                <TextField
@@ -299,6 +312,15 @@ const AddProductForm = ({ p }: { p: Product }) => {
                   value={mass}
                   onChange={(e) => setMass(parseFloat(e.target.value))}
                   sx={{ my: 2 }}
+                  InputProps={{
+                     endAdornment: (
+                        <InputAdornment position="start">
+                           <IconButton color="primary">
+                              <Typography>{massUnit}</Typography>
+                           </IconButton>
+                        </InputAdornment>
+                     ),
+                  }}
                />
 
                <Box
@@ -320,6 +342,17 @@ const AddProductForm = ({ p }: { p: Product }) => {
                         setProductVolume(parseFloat(e.target.value))
                      }
                      sx={{ my: 2 }}
+                     InputProps={{
+                        endAdornment: (
+                           <InputAdornment position="start">
+                              <IconButton color="primary">
+                                 <Typography>
+                                    {productVolumeUnit + "³"}
+                                 </Typography>
+                              </IconButton>
+                           </InputAdornment>
+                        ),
+                     }}
                   />
 
                   <MultiSelect
@@ -359,6 +392,15 @@ const AddProductForm = ({ p }: { p: Product }) => {
                   required
                   size="small"
                   sx={{ my: 1 }}
+                  InputProps={{
+                     endAdornment: (
+                        <InputAdornment position="start">
+                           <IconButton color="primary">
+                              <Typography>件/箱</Typography>
+                           </IconButton>
+                        </InputAdornment>
+                     ),
+                  }}
                />
 
                <TextField
@@ -370,6 +412,15 @@ const AddProductForm = ({ p }: { p: Product }) => {
                   value={packingMass}
                   onChange={(e) => setPackingMass(parseFloat(e.target.value))}
                   sx={{ my: 2 }}
+                  InputProps={{
+                     endAdornment: (
+                        <InputAdornment position="start">
+                           <IconButton color="primary">
+                              <Typography>{packingMassUnit}</Typography>
+                           </IconButton>
+                        </InputAdornment>
+                     ),
+                  }}
                />
 
                <TextField
@@ -384,6 +435,17 @@ const AddProductForm = ({ p }: { p: Product }) => {
                   required
                   size="small"
                   sx={{ my: 2 }}
+                  InputProps={{
+                     endAdornment: (
+                        <InputAdornment position="start">
+                           <IconButton color="primary">
+                              <Typography>
+                                 {packingDimensionUnit + "³"}
+                              </Typography>
+                           </IconButton>
+                        </InputAdornment>
+                     ),
+                  }}
                />
             </Box>
 
@@ -514,11 +576,7 @@ const AddProductForm = ({ p }: { p: Product }) => {
                >
                   更新产品
                </Button>
-               <Button
-                  variant="contained"
-                  color="error"
-                  fullWidth
-               >
+               <Button variant="contained" color="error" fullWidth>
                   删除产品
                </Button>
             </Stack>
@@ -668,6 +726,7 @@ interface ProductImageProps {
    isMdUp: boolean;
    saved: boolean;
    setSaved: React.Dispatch<React.SetStateAction<boolean>>;
+   time: string;
 }
 
 const ProductImage: React.FC<ProductImageProps> = ({
@@ -677,14 +736,14 @@ const ProductImage: React.FC<ProductImageProps> = ({
    setSaved,
    src,
    setSrc,
+   time,
 }) => {
    const [isExpanded, setIsExpanded] = useState(false);
    const toggleExpand = () => setIsExpanded(!isExpanded);
    const toggleLike = () => setSaved(!saved);
-   const {isDark} = useThemeContext();
+   const { isDark } = useThemeContext();
 
    // call useProductServices to upload file to firebase storage
-   // todo implemented
    const handleImageChange = (event: any) => {
       const file = event.target.files[0];
 
@@ -720,17 +779,17 @@ const ProductImage: React.FC<ProductImageProps> = ({
                   bottom: 0,
                   left: 0,
                   width: "100%",
-                  height: "100px", 
-                  background: `linear-gradient(to top, ${
-                     isDark ? "rgba(18,18,18,1)" : "rgba(256,256,256,1)"
-                  }, transparent)`,
-                  pointerEvents: "none", 
+                  height: "100px",
+                  background: isDark
+                     ? "linear-gradient(to top, rgba(18,18,18,1) 0%, rgba(18,18,18,0.05) 80%, transparent 90%)"
+                     : "linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0.05) 80%, transparent 90%)",
+                  pointerEvents: "none",
                   transition: "background 0.3s ease",
                }}
             />
          </Box>
 
-         <Box position="absolute" bottom={8} left={8}>
+         <Stack position="absolute" bottom={8} left={8}>
             <button
                className="glassmorphism-btn"
                onClick={() => handleButtonClick()}
@@ -744,7 +803,7 @@ const ProductImage: React.FC<ProductImageProps> = ({
                style={{ display: "none" }}
                onChange={(e) => handleImageChange(e)}
             />
-         </Box>
+         </Stack>
 
          <Box position="absolute" bottom={8} right={8}>
             <Tooltip title="保存">

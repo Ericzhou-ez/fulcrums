@@ -43,6 +43,7 @@ export type Product = {
    salesVolume?: number;
    currency: string;
 };
+
 export type ProductType = {
    productId: string;
    image: string;

@@ -34,8 +34,8 @@ import {
 import ProductDefaultImage from "../../assets/images/product-background.svg";
 import ExmapleProduct from "/public/demo/O1CN01pln4jM203FPjV7zaX_!!2214227246793-0-cib.220x220.jpg";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
-import { MultiSelect } from "../../components/dashboard/multiSelect";
-import { typeOptions } from "../../components/dashboard/productFilter";
+import { MultiSelect } from "../../components/core/multiSelect";
+import { typeOptions } from "../../components/dashboard/search/productFilter";
 import ProductandCompanyData from "../../data/products_companies.json";
 import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
 import Loading from "../../components/core/loading";
@@ -151,7 +151,7 @@ const AddProductForm = () => {
          },
          mass: {
             quantity: parseFloat(mass),
-         unit: massUnit,
+            unit: massUnit,
          },
          packaging: parseInt(packing),
          packingVolume: {

@@ -4,10 +4,9 @@ import CardContent from "@mui/material/CardContent";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
-import Link from "@mui/material/Link";
 import { X as XIcon, ArrowUpRight as ArrowUpRightIcon } from "phosphor-react";
 import { useTheme } from "@mui/material/styles";
-import data from "../../data/products_companies.json";
+import data from "../../../data/products_companies.json";
 
 interface Product {
    id: string;

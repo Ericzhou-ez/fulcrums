@@ -1,12 +1,12 @@
 import React from "react";
 import ProductCard from "./card";
-import { Product, ProductType } from "../../types/types";
+import { Product, ProductType } from "../../../types/types";
 import {
    ProductSupplierClientContextProvider,
    useProductSupplierClientContext,
-} from "../../contexts/productSupplierClientContextProvider";
+} from "../../../contexts/productSupplierClientContextProvider";
 import { Stack, Typography } from "@mui/material";
-import Loader from "../core/loader";
+import Loader from "../../core/loader";
 
 interface CardSliderProp {
    isDarkMode: boolean;
