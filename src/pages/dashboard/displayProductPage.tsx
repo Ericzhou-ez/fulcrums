@@ -37,7 +37,6 @@ const TOS_SECTIONS = [
 ];
 
 const AddProductForm = ({ p }: { p: Product }) => {
-   console.log(p);
    const { isMdUp } = useThemeContext();
    const { navOpen } = useUIStateContext();
    const [src, setSrc] = useState(p.image);
@@ -83,9 +82,9 @@ const AddProductForm = ({ p }: { p: Product }) => {
    const [isFormComplete, setIsFormComplete] = useState<string | boolean>(
       false
    );
-   const { addedProduct, addProduct, loading } =
+   const { editedProduct, editProduct, loading } =
       useProductSupplierClientContext();
-   const [buttonDisabled, setButtonDisabled] = useState(addedProduct);
+   const [buttonDisabled, setButtonDisabled] = useState(editedProduct);
 
    async function getBase64FromBlobUrl(blobUrl: string) {
       const blob = await fetch(blobUrl).then((res) => res.blob());
@@ -104,7 +103,7 @@ const AddProductForm = ({ p }: { p: Product }) => {
       });
    }
 
-   async function handleAddProduct() {
+   async function handleEditProduct() {
       setSubmittingForm(true);
 
       if (isFormComplete !== true) {
@@ -113,9 +112,13 @@ const AddProductForm = ({ p }: { p: Product }) => {
 
       setButtonDisabled(true);
 
-      const base64String = await getBase64FromBlobUrl(src);
+      const imageChanged = src.startsWith("blob:"); // blob means newly uploaded
 
-      addProduct({
+      const base64String = imageChanged
+         ? await getBase64FromBlobUrl(src)
+         : "none";
+
+      await editProduct({
          image: base64String,
          productChineseName: productChineseName,
          productEnglishName: productEnglishName,
@@ -149,6 +152,7 @@ const AddProductForm = ({ p }: { p: Product }) => {
          catagory: productCatagory,
          client: clientName,
          currency: currency,
+         productId: p.productId,
       });
    }
 
@@ -205,19 +209,12 @@ const AddProductForm = ({ p }: { p: Product }) => {
    ]);
 
    useEffect(() => {
-      if (isFormComplete === true && addedProduct === true) {
+      if (isFormComplete === true && editedProduct === true) {
          setTimeout(() => {
-            resetPage();
+            setButtonDisabled(true);
          }, 2000);
       }
-   }, [isFormComplete, addedProduct]);
-
-   const resetPage = () => {
-      // logic to fetch newly updated product should be same as curr
-      setIsFormComplete(false);
-      setButtonDisabled(false);
-      setSubmittingForm(false);
-   };
+   }, [isFormComplete, editedProduct]);
 
    return (
       <React.Fragment>
@@ -246,7 +243,12 @@ const AddProductForm = ({ p }: { p: Product }) => {
                className="input-group"
                sx={{ py: { xs: 2, md: 3 } }}
             >
-               <Stack direction="row" gap={2} justifyContent="space-between" alignItems="center">
+               <Stack
+                  direction="row"
+                  gap={2}
+                  justifyContent="space-between"
+                  alignItems="center"
+               >
                   <Typography
                      variant="h6"
                      className="form-header"
@@ -571,7 +573,7 @@ const AddProductForm = ({ p }: { p: Product }) => {
                   variant="contained"
                   color="primary"
                   fullWidth
-                  onClick={() => handleAddProduct()}
+                  onClick={() => handleEditProduct()}
                   disabled={buttonDisabled}
                >
                   更新产品
@@ -583,7 +585,7 @@ const AddProductForm = ({ p }: { p: Product }) => {
          </Box>
          {isFormComplete === true && (
             <button
-               onClick={() => handleAddProduct()}
+               onClick={() => handleEditProduct()}
                className="glassmorphism-btn"
                disabled={buttonDisabled}
                style={{
@@ -604,7 +606,7 @@ const AddProductForm = ({ p }: { p: Product }) => {
 
          {loading && <Loading />}
 
-         {/* not only isFormComplete true but productAdded further needs to be true */}
+         {/* not only isFormComplete true but editedProduct further needs to be true */}
          {submittingForm && (
             <Box
                sx={{
@@ -615,7 +617,7 @@ const AddProductForm = ({ p }: { p: Product }) => {
                }}
             >
                {isFormComplete === true ? (
-                  addedProduct && <Alert severity="success">添加成功 :)</Alert>
+                  editedProduct && <Alert severity="success">更改成功 :)</Alert>
                ) : (
                   <Alert
                      severity="warning"

@@ -224,9 +224,9 @@ export default function CommandPalette() {
                position: "sticky",
                zIndex: 2100,
                opacity: 1,
-               bgcolor: "var(--background-color)",
                top: 0,
-               my: 1,
+               backgroundColor: "var(--background-color)",
+               pt: 1,
                "& .MuiOutlinedInput-notchedOutline": {
                   borderLeft: "none",
                   borderTop: "none",
@@ -244,7 +244,7 @@ export default function CommandPalette() {
          />
          <List>
             {filteredGroups.length === 0 ? (
-               <Typography variant="body2" align="center">
+               <Typography variant="body1" fontWeight={500} align="center" py={2}>
                   没有找到结果。
                </Typography>
             ) : (

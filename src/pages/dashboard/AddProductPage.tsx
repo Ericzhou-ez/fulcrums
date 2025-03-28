@@ -140,7 +140,7 @@ const AddProductForm = () => {
 
       const base64String = await getBase64FromBlobUrl(src);
 
-      addProduct({
+      await addProduct({
          image: base64String,
          productChineseName: productChineseName,
          productEnglishName: productEnglishName,

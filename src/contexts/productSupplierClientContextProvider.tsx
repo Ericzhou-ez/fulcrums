@@ -83,8 +83,19 @@ export const ProductSupplierClientContextProvider = ({
    };
 
    const editProduct = async (product: any) => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setEditedProduct(true);
+      try {
+         const editProduct = httpsCallable(functions, "editProduct");
+         const response: any = await editProduct(product);
+
+         if (response.data.success) {
+            setLoading(false);
+            setEditedProduct(true);
+         }
+      } catch (err) {
+         console.error(err);
+         setEditedProduct(false);
+         setLoading(false);
+      }
    };
 
    const deleteProduct = async (productId: string) => {

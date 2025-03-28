@@ -1,5 +1,5 @@
-import { db } from "./createProduct";
 import * as functions from "firebase-functions/v2";
+import { db } from "../../utils";
 
 export const saveUnsavedProduct = functions.https.onCall(
    async (req: functions.https.CallableRequest) => {

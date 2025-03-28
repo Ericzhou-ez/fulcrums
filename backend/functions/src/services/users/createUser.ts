@@ -1,7 +1,5 @@
-import * as admin from "firebase-admin";
 import * as functions from "firebase-functions/v2";
-
-const db = admin.firestore();
+import { db } from "../../utils";
 
 const createUserDoc = functions.https.onCall(
    async (req: functions.https.CallableRequest) => {

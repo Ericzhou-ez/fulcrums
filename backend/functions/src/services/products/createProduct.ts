@@ -1,10 +1,7 @@
-import * as admin from "firebase-admin";
 import * as functions from "firebase-functions/v2";
 import { addClientInternal } from "../client/addClient";
 import { addSupplierInternal } from "../supplier/addSupplier";
-
-export const db = admin.firestore();
-const storage = admin.storage();
+import { db, storage } from "../../utils";
 
 // this also updates product if it already exists
 export const createProduct = functions.https.onCall(

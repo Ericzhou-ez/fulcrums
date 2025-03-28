@@ -1,6 +1,5 @@
 import * as admin from "firebase-admin";
-
-const db = admin.firestore();
+import { db } from "../../utils";
 
 export const addSupplierInternal = async (
    supplierData: {

@@ -150,7 +150,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                指南
             </MenuItem>
          </a>
-         <a href="/help">
+         <a href="/contact">
             <MenuItem
                sx={{
                   py: 1.2,
