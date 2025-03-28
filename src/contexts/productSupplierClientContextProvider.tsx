@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
-import { Product } from "../types/types";
+import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { Product, Supplier } from "../types/types";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "../configs/firebase";
@@ -47,8 +47,6 @@ export const ProductSupplierClientContextProvider = ({
 }) => {
    const { user } = useAuth();
    const uid = user?.uid;
-
-   // completion states
    const [addedProduct, setAddedProduct] = useState(false);
    const [editedProduct, setEditedProduct] = useState(false);
    const [deletedProduct, setDeletedProduct] = useState(false);
@@ -59,12 +57,12 @@ export const ProductSupplierClientContextProvider = ({
    const [editedClient, setEditedClient] = useState(false);
    const [deletedClient, setDeletedClient] = useState(false);
    const [loading, setLoading] = useState(false);
-   const [productLoading, setProductLoading] = useState(false);
+   const [productLoading, setProductLoading] = useState(true);
    const [errorMessages, setErrorMessages] = useState<string>("");
 
-   const [products, setProducts] = useState<{ [key: string]: any }>({});
-   const [clients, setClients] = useState<{ [key: string]: any }>({});
-   const [suppliers, setSuppliers] = useState<{ [key: string]: any }>({});
+   const [products, setProducts] = useState<{ [key: string]: Product }>({});
+   const [clients, setClients] = useState<{ [key: string]: ClientTypes }>({});
+   const [suppliers, setSuppliers] = useState<{ [key: string]: Supplier }>({});
    const functions = getFunctions();
 
    const addProduct = async (product: Product) => {
@@ -125,9 +123,9 @@ export const ProductSupplierClientContextProvider = ({
    };
 
    async function getProducts(): Promise<Object> {
-      try {
-         setProductLoading(true);
+      setProductLoading(true);
 
+      try {
          const productsSnap = await getDocs(
             collection(db, "users", uid ? uid : "", "products")
          );

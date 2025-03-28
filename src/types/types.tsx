@@ -20,7 +20,10 @@ export type Product = {
 
    packaging: number;
    packingVolume: VolumetricDimensions;
-   packingMass: Mass;
+   packingMass: {
+      packingMass: number;
+      packingMassUnit: string;
+   }
 
    saved: boolean;
    updatedAt: string;
@@ -38,6 +41,7 @@ export type Product = {
 
    purchaseVolume?: number;
    salesVolume?: number;
+   currency: string;
 };
 export type ProductType = {
    productId: string;

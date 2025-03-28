@@ -30,6 +30,7 @@ import GlobalKeyListener, {
    GlobalProfileListener,
    GlobalThemeListener,
 } from "../components/core/eventListeners";
+import DisplayProductPage from "../pages/dashboard/displayProductPage";
 
 export interface AppRoutesProps {
    isModalOpen: boolean;
@@ -100,6 +101,14 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                      <Route path="/contact" element={<ContactPage />} />
                      <Route path="/privacy" element={<PrivacyPolicyPage />} />
 
+                     <Route
+                        path="/product/:productId"
+                        element={
+                           <PrivateRoute>
+                              <DisplayProductPage />
+                           </PrivateRoute>
+                        }
+                     />
                      <Route
                         path="/dashboard"
                         element={
