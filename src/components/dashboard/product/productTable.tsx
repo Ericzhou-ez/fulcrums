@@ -34,7 +34,7 @@ import { useProductSupplierClientContext } from "../../../contexts/productSuppli
 import Loader from "../../core/loader";
 
 export function ProductTable({ productList }: { productList: Product[] }) {
-   const { toggleSaveUnsaveProduct, productLoading } =
+   const { toggleSaveUnsaveProduct, productLoading, deleteProducts } =
       useProductSupplierClientContext();
    async function toggleSave(productId: string) {
       await toggleSaveUnsaveProduct(productId);
@@ -50,7 +50,6 @@ export function ProductTable({ productList }: { productList: Product[] }) {
    }, [productList]);
 
    const [selected, setSelected] = React.useState<Set<string>>(new Set());
-
    const [page, setPage] = React.useState(0);
    const [rowsPerPage, setRowsPerPage] = React.useState(20);
 
@@ -70,13 +69,13 @@ export function ProductTable({ productList }: { productList: Product[] }) {
          data = data.filter((item) => item.catagory === category);
       }
 
-      // to be actually sorted by date
       data.sort((a, b) => {
-         if (sortOrder === "desc") {
-            return b.productId.localeCompare(a.productId);
-         } else {
-            return a.productId.localeCompare(b.productId);
-         }
+         const dateA = new Date(a.updatedAt).getTime();
+         const dateB = new Date(b.updatedAt).getTime();
+
+         return sortOrder === "desc"
+            ? dateB - dateA // latest first
+            : dateA - dateB; // oldest first
       });
 
       return data;
@@ -127,9 +126,11 @@ export function ProductTable({ productList }: { productList: Product[] }) {
       displayedProducts.every((p) => selected.has(p.productId));
    const areSomeSelected = selected.size > 0 && !areAllSelected;
 
-   const handleDeleteSelected = () => {
-      setProducts((prev) => prev.filter((p) => !selected.has(p.productId)));
+   const handleDeleteSelected = async () => {
+      const idsToDelete = Array.from(selected);
+      await deleteProducts(idsToDelete);
 
+      setProducts((prev) => prev.filter((p) => !selected.has(p.productId)));
       setSelected(new Set());
    };
 

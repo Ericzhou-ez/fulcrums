@@ -19,11 +19,13 @@ const CardSlider: React.FC<CardSliderProp> = ({
    isRecent,
    products,
 }) => {
-   const filteredProducts = isRecent
-      ? Object.entries(products)
-      : Object.entries(products).filter(
-           ([id, product]: [string, any]) => product.saved
-        );
+   const filteredProducts = Object.entries(products)
+      .filter(([id, product]: [string, any]) => isRecent || product.saved)
+      .sort(
+         ([, a]: [string, any], [, b]: [string, any]) =>
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
+
    const { productLoading } = useProductSupplierClientContext();
 
    return (

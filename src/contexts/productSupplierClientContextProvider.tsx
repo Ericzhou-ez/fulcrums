@@ -14,7 +14,7 @@ import { useAuth } from "./authContexts";
 export type ProductSupplierClientContextType = {
    addProduct: (product: any) => Promise<void>;
    editProduct: (product: any) => Promise<void>;
-   deleteProducts: (productId: [string]) => Promise<void>;
+   deleteProducts: (productId: string[]) => Promise<void>;
    addSupplier: (supplier: any) => Promise<void>;
    editSupplier: (supplier: any) => Promise<void>;
    deleteSupplier: (supplierId: string) => Promise<void>;
@@ -104,7 +104,7 @@ export const ProductSupplierClientContextProvider = ({
       }
    };
 
-   const deleteProducts = async (productId: [string]) => {
+   const deleteProducts = async (productId: string[]) => {
       try {
          setLoading(true);
 

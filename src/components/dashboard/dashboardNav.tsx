@@ -126,13 +126,6 @@ const navItems: NavGroupType[] = [
       ],
       href: "",
    },
-   {
-      key: "clients",
-      title: "客户",
-      icon: "Users",
-      items: [],
-      href: "/dashboard/clients",
-   },
 ];
 
 function LinkBox({
@@ -293,18 +286,26 @@ function NavGroup({ group }: { group: NavGroupType }) {
                sx={{
                   pl: 3,
                   mt: 1,
-                  borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
+                  display: "flex",
                }}
             >
-               <Stack
-                  component="ul"
-                  spacing={1.5}
-                  sx={{ listStyle: "none", m: 0, p: 0 }}
+               <Box
+                  sx={{
+                     borderLeft: (theme) =>
+                        `2px solid ${theme.palette.divider}`,
+                     pl: 2.5, 
+                  }}
                >
-                  {items.map((sub) => (
-                     <NavSubItem sub={sub} key={sub.key} />
-                  ))}
-               </Stack>
+                  <Stack
+                     component="ul"
+                     spacing={1.5}
+                     sx={{ listStyle: "none", m: 0, p: 0 }}
+                  >
+                     {items.map((sub) => (
+                        <NavSubItem sub={sub} key={sub.key} />
+                     ))}
+                  </Stack>
+               </Box>
             </Box>
          )}
       </Box>
@@ -334,7 +335,7 @@ function NavSubItem({
                }),
             }}
          >
-            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+            <Typography variant="body2" sx={{ fontWeight: 500, cursor: "pointer" }}>
                {sub.title}
             </Typography>
             {sub.external && (

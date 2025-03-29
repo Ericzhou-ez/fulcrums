@@ -17,6 +17,7 @@ import data from "../../data/products_companies.json";
 import InfoIcon from "../../assets/icons/iconly-glass-info.svg";
 import { useTheme } from "@mui/material/styles";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
+import Suggestions from "../../components/dashboard/core/suggestion";
 
 interface Company {
    id: string;
@@ -229,6 +230,16 @@ const SearchPage = () => {
          </Stack>
 
          <FooterDisclaimer />
+
+         <div style={{ padding: "0 16px" }}>
+            <Suggestions
+               suggestions={[
+                  { title: "最近的产品", link: "/dashboard/recent" },
+                  { title: "保存的产品", link: "/dashboard/saved" },
+                  { title: "添加新产品", link: "/dashboard/add-product" },
+               ]}
+            />
+         </div>
 
          {overlay && (
             <div

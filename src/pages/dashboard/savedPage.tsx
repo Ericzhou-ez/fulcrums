@@ -14,6 +14,7 @@ import Loading from "../../components/core/loading";
 import { ProductTable } from "../../components/dashboard/product/productTable";
 import { SquaresFour, ListBullets } from "phosphor-react";
 import Loader from "../../components/core/loader";
+import Suggestions from "../../components/dashboard/core/suggestion";
 
 const SavedPage = () => {
    const { isDark, isSmUp, isMdUp } = useThemeContext();
@@ -150,6 +151,14 @@ const SavedPage = () => {
                productList={savedProducts.map(([id, product]) => product)}
             />
          )}
+
+         <Suggestions
+            suggestions={[
+               { title: "最近的产品", link: "/dashboard/recent" },
+               { title: "添加新产品", link: "/dashboard/add-product" },
+               { title: "客户报价", link: "/dashboard/quotation/external" },
+            ]}
+         />
 
          {overlay && (
             <div

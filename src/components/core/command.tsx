@@ -77,7 +77,7 @@ const commandGroups: CommandGroupData[] = [
          {
             label: "总览",
             icon: <House size={20} weight="duotone" />,
-            shortcut: "⇧H",
+            shortcut: "⇧B",
             link: "https://fulcrums.ca/dashboard",
          },
          {

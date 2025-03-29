@@ -14,6 +14,7 @@ import Loading from "../../components/core/loading";
 import { ProductTable } from "../../components/dashboard/product/productTable";
 import { SquaresFour, ListBullets } from "phosphor-react";
 import Loader from "../../components/core/loader";
+import Suggestions from "../../components/dashboard/core/suggestion";
 
 const RecentProductsPage = () => {
    const { isDark, isMdUp, isSmUp } = useThemeContext();
@@ -28,7 +29,6 @@ const RecentProductsPage = () => {
    }, []);
 
    const productList = products;
-   const clockIcon = isDark ? ClockDark : ClockLight;
 
    useEffect(() => {
       document.title = "Fulcrums | 最近";
@@ -159,6 +159,14 @@ const RecentProductsPage = () => {
          ) : (
             <ProductTable productList={Object.values(productList)} />
          )}
+
+         <Suggestions
+            suggestions={[
+               { title: "保存的产品", link: "/dashboard/saved" },
+               { title: "添加新产品", link: "/dashboard/add-product" },
+               { title: "客户报价", link: "/dashboard/quotation/external" },
+            ]}
+         />
 
          {overlay && (
             <div
