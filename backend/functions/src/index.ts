@@ -20,9 +20,9 @@ import createUserDoc from "./services/users/createUser";
 import { createProduct } from "./services/products/createProduct";
 import { saveUnsavedProduct } from "./services/products/saveProduct";
 import { editProduct } from "./services/products/editProduct";
-import { deleteProduct } from "./services/products/deleteProduct";
+import { deleteProducts } from "./services/products/deleteProduct";
 
-export { createUserDoc, createProduct, saveUnsavedProduct, editProduct, deleteProduct };
+export { createUserDoc, createProduct, saveUnsavedProduct, editProduct, deleteProducts };
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript

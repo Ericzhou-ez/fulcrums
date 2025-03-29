@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import React, {
+   createContext,
+   useContext,
+   useState,
+   ReactNode,
+   useEffect,
+} from "react";
 import { Product, Supplier } from "../types/types";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { getDocs, collection } from "firebase/firestore";
@@ -8,7 +14,7 @@ import { useAuth } from "./authContexts";
 export type ProductSupplierClientContextType = {
    addProduct: (product: any) => Promise<void>;
    editProduct: (product: any) => Promise<void>;
-   deleteProduct: (productId: string) => Promise<void>;
+   deleteProducts: (productId: [string]) => Promise<void>;
    addSupplier: (supplier: any) => Promise<void>;
    editSupplier: (supplier: any) => Promise<void>;
    deleteSupplier: (supplierId: string) => Promise<void>;
@@ -98,9 +104,23 @@ export const ProductSupplierClientContextProvider = ({
       }
    };
 
-   const deleteProduct = async (productId: string) => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setDeletedProduct(true);
+   const deleteProducts = async (productId: [string]) => {
+      try {
+         setLoading(true);
+
+         const deleteProducts = httpsCallable(functions, "deleteProducts");
+         const response: any = await deleteProducts({
+            productIds: productId,
+         });
+
+         if (response.data.success) {
+            setLoading(false);
+            setDeletedProduct(true);
+         }
+      } catch (err) {
+         console.error("error in deletion", err);
+         setLoading(false);
+      }
    };
 
    const addSupplier = async (supplier: any) => {
@@ -210,7 +230,7 @@ export const ProductSupplierClientContextProvider = ({
          value={{
             addProduct,
             editProduct,
-            deleteProduct,
+            deleteProducts,
             addSupplier,
             editSupplier,
             deleteSupplier,

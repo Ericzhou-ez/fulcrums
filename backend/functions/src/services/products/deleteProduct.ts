@@ -3,9 +3,9 @@ import * as functions from "firebase-functions/v2";
 import { db } from "../../utils";
 import { deleteImageByUrl } from "./handleDeletePhoto";
 
-export const deleteProduct = functions.https.onCall(
+export const deleteProducts = functions.https.onCall(
    async (req: functions.https.CallableRequest) => {
-      const { productId } = req.data;
+      const { productIds } = req.data;
       const auth = req.auth;
 
       if (!auth) {
@@ -13,57 +13,81 @@ export const deleteProduct = functions.https.onCall(
       }
 
       const uid = auth.uid;
-      const productRef = db
-         .collection("users")
-         .doc(uid)
-         .collection("products")
-         .doc(productId);
 
-      const productSnap = await productRef.get();
-
-      if (!productSnap.exists) {
-         throw new functions.https.HttpsError("not-found", "产品不存在");
+      if (!Array.isArray(productIds) || productIds.length === 0) {
+         throw new functions.https.HttpsError(
+            "invalid-argument",
+            "必须提供一个有效的产品 ID array"
+         );
       }
 
-      const productData = productSnap.data();
+      const results = await Promise.allSettled(
+         productIds.map(async (productId) => {
+            const productRef = db
+               .collection("users")
+               .doc(uid)
+               .collection("products")
+               .doc(productId);
 
-      try {
-         // delete image
-         if (productData?.image) {
-            await deleteImageByUrl(productData.image);
-         }
+            const productSnap = await productRef.get();
 
-         // delete doc
-         await productRef.delete();
+            if (!productSnap.exists) {
+               throw new functions.https.HttpsError(
+                  "not-found",
+                  `产品 ${productId} 不存在`
+               );
+            }
 
-         // remove from client and supplier arrays
-         await Promise.all([
-            removeProductFromClient(uid, productData.client, productId),
-            removeProductFromSupplier(
-               uid,
-               productData.supplier.name,
-               productId
-            ),
-         ]);
+            const productData = productSnap.data();
 
-         return { success: true };
-      } catch (err) {
-         console.error("删除产品失败:", err);
-         throw new functions.https.HttpsError("internal", "删除产品时发生错误");
-      }
+            // delete existing image
+            if (productData?.image) {
+               await deleteImageByUrl(productData.image);
+            }
+
+            // delete doc
+            await productRef.delete();
+
+            // remove product id from client and supplier product arrays
+            await Promise.all([
+               removeProductFromClient(uid, productData.clientId, productId),
+               removeProductFromSupplier(
+                  uid,
+                  productData.supplier.supplierId,
+                  productId
+               ),
+            ]);
+         })
+      );
+
+      const summary = results.map((res, idx) => ({
+         productId: productIds[idx],
+         status: res.status,
+         reason:
+            res.status === "rejected"
+               ? (res as PromiseRejectedResult).reason.message
+               : null,
+      }));
+
+      return {
+         success: true,
+         summary,
+      };
    }
 );
 
 const removeProductFromClient = async (
    uid: string,
-   clientName: string,
+   clientId: string,
    productId: string
 ) => {
+   if (!clientId) return console.warn("Missing client ID");
    const clientRef = db
       .collection("users")
       .doc(uid)
       .collection("clients")
-      .doc(clientName);
+      .doc(clientId);
+
    await clientRef.update({
       products: admin.firestore.FieldValue.arrayRemove(productId),
    });
@@ -71,14 +95,16 @@ const removeProductFromClient = async (
 
 const removeProductFromSupplier = async (
    uid: string,
-   supplierName: string,
+   supplierId: string,
    productId: string
 ) => {
+   if (!supplierId) return console.warn("Missing supplier ID");
    const supplierRef = db
       .collection("users")
       .doc(uid)
       .collection("suppliers")
-      .doc(supplierName);
+      .doc(supplierId);
+
    await supplierRef.update({
       products: admin.firestore.FieldValue.arrayRemove(productId),
    });

@@ -69,58 +69,60 @@ export const createProduct = functions.https.onCall(
             bucket.name
          }/o/${encodeURIComponent(storagePath)}?alt=media&token=${token}`;
 
-         await Promise.all([
-            productRef.set(
-               {
-                  productId,
-                  image: publicUrl,
-                  productChineseName: productChineseName,
-                  productEnglishName: productEnglishName,
-                  packingMass: {
-                     packingMass: packingMass,
-                     packingMassUnit: packingMassUnit,
-                  },
-                  unitPrice,
-                  productDimension: {
-                     volume: productVolume,
-                     unit: dimensionUnit,
-                  },
-                  mass: { quantity: mass, unit: massUnit },
-                  packaging,
-                  packingVolume: {
-                     volume: packingVolume,
-                     unit: packingDimensionUnit,
-                  },
-                  saved,
-                  updatedAt,
-                  supplier: {
-                     name: supplierName,
-                     phone: supplierPhone,
-                     address: supplierAddress,
-                     email: supplierEmail,
-                  },
-                  additionalNotes,
-                  catagory: productCatagory,
-                  client: clientName,
-                  currency: currency,
+         const clientId = await addClientInternal(
+            { clientName: clientName, productId },
+            uid
+         );
+
+         const supplierId = await addSupplierInternal(
+            {
+               name: supplierName,
+               phone: supplierPhone,
+               address: supplierAddress,
+               email: supplierEmail,
+               productId,
+            },
+            uid
+         );
+
+         await productRef.set(
+            {
+               productId,
+               image: publicUrl,
+               productChineseName,
+               productEnglishName,
+               packingMass: {
+                  packingMass,
+                  packingMassUnit,
                },
-               { merge: true } // merge with existing data (if there)
-            ),
-            addClientInternal(
-               { clientName: clientName, productId: productId },
-               uid
-            ),
-            addSupplierInternal(
-               {
+               unitPrice,
+               productDimension: {
+                  volume: productVolume,
+                  unit: dimensionUnit,
+               },
+               mass: { quantity: mass, unit: massUnit },
+               packaging,
+               packingVolume: {
+                  volume: packingVolume,
+                  unit: packingDimensionUnit,
+               },
+               saved,
+               updatedAt,
+               supplier: {
                   name: supplierName,
                   phone: supplierPhone,
                   address: supplierAddress,
                   email: supplierEmail,
-                  productId: productId,
+                  supplierId, 
                },
-               uid
-            ),
-         ]);
+               additionalNotes,
+               catagory: productCatagory,
+               client: clientName,
+               clientId, 
+               currency,
+            },
+            { merge: true }
+         );
 
          return { success: true, productId, imageUrl: publicUrl };
       } catch (err) {

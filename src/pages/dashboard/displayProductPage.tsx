@@ -23,7 +23,7 @@ import { MultiSelect } from "../../components/core/multiSelect";
 import { typeOptions } from "../../components/dashboard/search/productFilter";
 import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
 import Loading from "../../components/core/loading";
-import { useParams } from "react-router";
+import { Navigate, useNavigate, useParams } from "react-router";
 import Loader from "../../components/core/loader";
 import { Product } from "../../types/types";
 import TimeAgoTypography from "../../components/dashboard/product/timeAgoTypography";
@@ -37,6 +37,7 @@ const TOS_SECTIONS = [
 ];
 
 const AddProductForm = ({ p }: { p: Product }) => {
+   const navigate = useNavigate();
    const { isMdUp } = useThemeContext();
    const { navOpen } = useUIStateContext();
    const [src, setSrc] = useState(p.image);
@@ -82,8 +83,13 @@ const AddProductForm = ({ p }: { p: Product }) => {
    const [isFormComplete, setIsFormComplete] = useState<string | boolean>(
       false
    );
-   const { editedProduct, editProduct, loading } =
-      useProductSupplierClientContext();
+   const {
+      editedProduct,
+      editProduct,
+      loading,
+      deleteProducts,
+      deletedProduct,
+   } = useProductSupplierClientContext();
    const [buttonDisabled, setButtonDisabled] = useState(editedProduct);
 
    async function getBase64FromBlobUrl(blobUrl: string) {
@@ -155,6 +161,17 @@ const AddProductForm = ({ p }: { p: Product }) => {
          productId: p.productId,
       });
    }
+
+   async function handleProductDeletion() {
+      await deleteProducts([p.productId]);
+      return;
+   }
+
+   useEffect(() => {
+      if (deletedProduct) {
+         navigate(-1);
+      }
+   }, [deletedProduct, navigate]);
 
    useEffect(() => {
       const missing = [];
@@ -578,7 +595,12 @@ const AddProductForm = ({ p }: { p: Product }) => {
                >
                   更新产品
                </Button>
-               <Button variant="contained" color="error" fullWidth>
+               <Button
+                  variant="contained"
+                  color="error"
+                  fullWidth
+                  onClick={() => handleProductDeletion()}
+               >
                   删除产品
                </Button>
             </Stack>

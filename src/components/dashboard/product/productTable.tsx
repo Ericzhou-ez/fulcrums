@@ -399,9 +399,11 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                                        {priceString}
                                     </Typography>
                                     <Stack direction="row">
-                                       <IconButton>
-                                          <PencilSimpleIcon />
-                                       </IconButton>
+                                       <a href={`/product/${row.productId}`}>
+                                          <IconButton>
+                                             <PencilSimpleIcon />
+                                          </IconButton>
+                                       </a>
                                        <div
                                           onClick={() =>
                                              toggleSave(row.productId)
