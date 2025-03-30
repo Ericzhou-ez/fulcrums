@@ -58,7 +58,7 @@
    }
    .nav-logo p {
       font-size: 1.1rem !important;
-   }
+   }  
    .cta-btn-join-nav {
       padding: 6px 15px;
       background-color: var(--background-color) !important;
@@ -71,7 +71,7 @@
 }
 
 .cta-btn-join-nav {
-      padding: 9px 20px;
+      padding: 7px 20px;
       background-color: var(--background-color) !important;
       color: var(--text-secondary-color) !important;
       font-weight: 500;

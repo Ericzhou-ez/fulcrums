@@ -21,7 +21,7 @@ const Suggestions: React.FC<SuggestionsProps> = ({ suggestions }) => {
          sx={{
             my: 3,
             borderRadius: "20px",
-            padding: 2,
+            padding: 0.5,
             boxShadow: "0 4px 17px rgba(0, 0, 0, 0.1)",
             bgcolor: isDark ? "#111111" : "#fef6ed",
          }}
@@ -30,9 +30,13 @@ const Suggestions: React.FC<SuggestionsProps> = ({ suggestions }) => {
             <Typography
                variant="h6"
                color="text.secondary"
-               fontSize="0.94rem"
-               gutterBottom
                fontWeight={400}
+               sx={{
+                  fontSize: {
+                     xs: "0.8rem !important",
+                     sm: "0.9rem !important",
+                  },
+               }}
             >
                正在寻找其它页面？
             </Typography>
@@ -49,9 +53,12 @@ const Suggestions: React.FC<SuggestionsProps> = ({ suggestions }) => {
                         padding: "2.5px 0 !important",
                         justifyContent: "flex-start",
                         textTransform: "none",
-                        color: "#FF964F !important",
+                        color: "#ff7800 !important",
                         fontWeight: "600 !important",
-                        fontSize: "1.1rem !important",
+                        fontSize: {
+                           xs: "0.95rem !important",
+                           sm: "1.1rem !important",
+                        },
                         "&:hover": { textDecoration: "underline !important" },
                      }}
                   >

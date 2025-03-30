@@ -14,25 +14,24 @@ interface HeroProps {
 }
 
 export default function Hero({ activeIndex = 0 }: HeroProps) {
-   const { isMdUp } = useThemeContext();
    const theme = useTheme();
    const isLg = useMediaQuery(theme.breakpoints.only("lg"));
    const isMd = useMediaQuery(theme.breakpoints.only("md"));
    const isSm = useMediaQuery(theme.breakpoints.only("sm"));
    const isXs = useMediaQuery(theme.breakpoints.only("xs"));
 
-    let initialHeroHeight;
-    if (isLg) {
-       initialHeroHeight = 900;
-    } else if (isMd) {
-       initialHeroHeight = 540;
-    } else if (isSm) {
-       initialHeroHeight = 320;
-    } else if (isXs) {
-       initialHeroHeight = 300;
-    } else {
-       initialHeroHeight = 500;
-    }
+   let initialHeroHeight;
+   if (isLg) {
+      initialHeroHeight = 900;
+   } else if (isMd) {
+      initialHeroHeight = 540;
+   } else if (isSm) {
+      initialHeroHeight = 320;
+   } else if (isXs) {
+      initialHeroHeight = 300;
+   } else {
+      initialHeroHeight = 500;
+   }
 
    const [scrollProgress, setScrollProgress] = useState(0);
    const [heroHeight, setHeroHeight] = useState(initialHeroHeight);
@@ -52,19 +51,34 @@ export default function Hero({ activeIndex = 0 }: HeroProps) {
    }, []);
 
    useEffect(() => {
-      const handleScroll = () => {
-         const scrollY = window.scrollY;
-         const progress = Math.min(scrollY / heroHeight, 1);
-         setScrollProgress(progress);
+      let ticking = false;
+      const lastScroll = { progress: 0 };
 
-         if (progress > 0.5) {
-            videoRef.current?.play();
-         } else {
-            videoRef.current?.pause();
+      const handleScroll = () => {
+         if (!ticking) {
+            requestAnimationFrame(() => {
+               const scrollY = window.scrollY;
+               const progress = Math.min(scrollY / heroHeight, 1);
+
+               if (Math.abs(progress - lastScroll.progress) > 0.005) {
+                  lastScroll.progress = progress;
+                  setScrollProgress(progress);
+               }
+
+               if (progress > 0.5) {
+                  videoRef.current?.play();
+               } else {
+                  videoRef.current?.pause();
+               }
+
+               ticking = false;
+            });
+
+            ticking = true;
          }
       };
 
-      window.addEventListener("scroll", handleScroll);
+      window.addEventListener("scroll", handleScroll, { passive: true });
       return () => window.removeEventListener("scroll", handleScroll);
    }, [heroHeight]);
 
@@ -108,7 +122,7 @@ export default function Hero({ activeIndex = 0 }: HeroProps) {
                      marginBottom: "20px",
                      letterSpacing: "0.08rem",
                   }}
-                  className="hero-title"
+                  className="hero-title hero-title-animate"
                >
                   从报价到<span style={{ whiteSpace: "nowrap" }}>报关</span>
                   <br />
@@ -147,15 +161,14 @@ export default function Hero({ activeIndex = 0 }: HeroProps) {
                      marginBottom: { xs: "40px", md: "100px" },
                   }}
                >
-                  <div className="animated-border">
-                     <a href="/">
-                        <button className="cta-join-button-hero">
-                           理解更多
-                        </button>
-                     </a>
-                  </div>
                   <a href="/signin">
                      <button className="cta-login">登录</button>
+                  </a>
+
+                  <a href="/">
+                     <button className="cta-join-button-hero">
+                        理解更多<span className="arrow">→</span>
+                     </button>
                   </a>
                </Stack>
             </div>

@@ -23,7 +23,7 @@ export type Product = {
    packingMass: {
       packingMass: number;
       packingMassUnit: string;
-   }
+   };
 
    saved: boolean;
    updatedAt: string;
@@ -33,11 +33,13 @@ export type Product = {
       phone: string;
       address: string;
       email: string;
+      supplierId: string;
    };
 
    additionalNotes: string;
    catagory: string;
    client: string;
+   clientId: string;
 
    purchaseVolume?: number;
    salesVolume?: number;

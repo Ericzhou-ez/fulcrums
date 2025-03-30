@@ -9,6 +9,7 @@ import {
    Alert,
    Stack,
    InputAdornment,
+   FormHelperText,
 } from "@mui/material";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
@@ -348,7 +349,6 @@ const AddProductForm = ({ p }: { p: Product }) => {
                      justifyContent: "space-between",
                      alignItems: "center",
                   }}
-                  gap={2}
                >
                   <TextField
                      fullWidth
@@ -373,14 +373,23 @@ const AddProductForm = ({ p }: { p: Product }) => {
                         ),
                      }}
                   />
+               </Box>
 
+               <Stack
+                  gap={1}
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+               >
                   <MultiSelect
                      label="类别"
                      options={typeOptions}
                      value={productCatagory}
                      onChange={(value: string) => setProductCatagory(value)}
                   />
-               </Box>
+
+                  <FormHelperText>产品ID: {p.productId}</FormHelperText>
+               </Stack>
             </Box>
 
             {/* -------------- 包装信息 -------------- */}
@@ -525,6 +534,10 @@ const AddProductForm = ({ p }: { p: Product }) => {
                      disabled
                   />
                </Box>
+
+               <FormHelperText>
+                  供应商ID: {p.supplier.supplierId}
+               </FormHelperText>
             </Box>
 
             {/* -------------- 客户信息 -------------- */}
@@ -554,6 +567,8 @@ const AddProductForm = ({ p }: { p: Product }) => {
                   disabled
                   sx={{ my: 1 }}
                />
+
+               <FormHelperText>客户ID: {p.clientId}</FormHelperText>
             </Box>
 
             {/* -------------- 附加信息 -------------- */}

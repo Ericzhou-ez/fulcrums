@@ -1233,6 +1233,7 @@ const ProductImage: React.FC<ProductImageProps> = ({
                width: "100%",
                height: isExpanded ? "100%" : isMdUp ? "350px" : "200px",
                transition: "height 0.3s ease",
+               paddingTop: "60px",
             }}
          />
 

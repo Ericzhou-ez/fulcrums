@@ -13,7 +13,7 @@ import Cosmic from "../../assets/images/home-cosmic.svg";
 import { useThemeContext } from "../../contexts/themeContextProvider";
 
 export default function BottomCTA() {
-   const {isDark} = useThemeContext();
+   const { isDark } = useThemeContext();
 
    return (
       <Box>
@@ -74,7 +74,7 @@ export default function BottomCTA() {
                </Box>
 
                <Stack
-                  spacing={3}
+                  spacing={2}
                   sx={{
                      flex: "0 1 auto",
                      position: "relative",
@@ -111,9 +111,8 @@ export default function BottomCTA() {
                      <Typography
                         sx={{
                            color: "#ddd",
-                           paddingTop: "30px",
+                           paddingTop: "10px",
                            fontSize: {
-                              xs: "0.9rem",
                               sm: "1rem",
                               md: "1.1rem",
                               lg: "1.2rem",
@@ -124,16 +123,13 @@ export default function BottomCTA() {
                         都能为您简化流程, 节省时间.
                      </Typography>
                   </Stack>
-                  <div>
-                     <Button
-                        href="/dashboard"
-                        target="_blank"
-                        variant="contained"
-                        className="cta-bottom-btn"
-                     >
-                        尝试
-                     </Button>
-                  </div>
+                  <Box pt={2}>
+                     <a href="/signin">
+                        <button className="cta-join-button-hero override">
+                           尝试 Fulcrums
+                        </button>
+                     </a>
+                  </Box>
                </Stack>
 
                {/* Right side image content */}
