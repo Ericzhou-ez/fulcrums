@@ -806,7 +806,7 @@ const ProductImage: React.FC<ProductImageProps> = ({
                style={{
                   width: "100%",
                   transition: "all 0.3s ease-in-out",
-                  height: isExpanded ? "100%" : isMdUp ? "380px" : "200px",
+                  height: isExpanded ? "100%" : isMdUp ? "380px" : "280px",
                   objectFit: "cover",
                   display: "block",
                }}
