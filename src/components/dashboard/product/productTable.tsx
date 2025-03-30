@@ -128,10 +128,11 @@ export function ProductTable({ productList }: { productList: Product[] }) {
 
    const handleDeleteSelected = async () => {
       const idsToDelete = Array.from(selected);
-      await deleteProducts(idsToDelete);
-
+      
       setProducts((prev) => prev.filter((p) => !selected.has(p.productId)));
       setSelected(new Set());
+
+      await deleteProducts(idsToDelete);
    };
 
    const handleChangePage = (event: unknown, newPage: number) => {

@@ -51,6 +51,8 @@ const TOS_SECTIONS = [
 
 const AddProductForm = () => {
    const { navOpen } = useUIStateContext();
+   const { isMdUp } = useThemeContext();
+
    const [src, setSrc] = useState(ProductDefaultImage);
    const [saved, setSaved] = useState(false);
    const [productChineseName, setProductChineseName] = useState("");
@@ -185,8 +187,6 @@ const AddProductForm = () => {
       if (l > 0 && w > 0 && h > 0) {
          const volume = l * w * h;
          setProductVolume(volume.toString());
-      } else {
-         setProductVolume("");
       }
    }, [length, width, height, productVolume]);
 
@@ -198,9 +198,7 @@ const AddProductForm = () => {
       if (pl > 0 && pw > 0 && ph > 0) {
          const pVolume = pl * pw * ph;
          setPackingVolume(pVolume.toString());
-      } else {
-         setPackingVolume("");
-      }
+      } 
    }, [packingLength, packingWidth, packingHeight, packingVolume]);
 
    // default values
@@ -292,8 +290,6 @@ const AddProductForm = () => {
       setPackingWidth("");
       setPackingHeight("");
    };
-
-   const { isDark, isMdUp } = useThemeContext();
 
    // get product autofill res
    const getProductFromQuery = () => {
@@ -1248,7 +1244,7 @@ const ProductImage: React.FC<ProductImageProps> = ({
             className="product-image"
             style={{
                width: "100%",
-               height: isExpanded ? "100%" : isMdUp ? "350px" : "200px",
+               height: isExpanded ? "100%" : isMdUp ? "380px" : "280px",
                transition: "height 0.3s ease",
                paddingTop: "60px",
             }}

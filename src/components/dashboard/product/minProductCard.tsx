@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
    Card,
    CardContent,
@@ -20,6 +20,7 @@ interface CardProps {
 
 export default function ProductCard({ item, isDarkMode }: CardProps) {
    const deleteIcon = isDarkMode ? CancelDark : CancelLight;
+   const [visible, setVisible] = useState(true);
 
    const { toggleSaveUnsaveProduct, deleteProducts, deletedProduct } = useProductSupplierClientContext();
 
@@ -28,6 +29,7 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
    }
 
    async function handleProductDeletion() {
+      setVisible(false);
       await deleteProducts([item.productId]);
       return;
    }
@@ -35,7 +37,7 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
    return (
       <Card
          sx={{
-            display: deletedProduct ? "none" : "flex",
+            display: !visible ? "none" : "flex",
             flexDirection: "column",
             boxSizing: "border-box",
             borderRadius: "20px",
