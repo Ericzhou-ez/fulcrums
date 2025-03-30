@@ -90,10 +90,7 @@ export type UserType = {
    name: string | null;
    email: string | null;
    photo: string | null;
-   products: { [key: string]: Product } | null; //产品
-   clients: { [key: string]: Clients } | null; //客户
    role: string | "user";
-   supplier: SupplierMapping | null; //供应商
    uid: string | null;
 };
 

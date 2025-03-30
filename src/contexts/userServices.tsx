@@ -129,8 +129,17 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
             password
          );
 
-         updateProfile(res.user, { displayName: name });
-         
+         setUser({
+            createdAt: "placeholder",
+            name: name,
+            photo: "placeholder",
+            email: email,
+            role: "user",
+            uid: "placeholder",
+         });
+
+         updateProfile(res.user, { displayName: name }); // for inital auth obj
+
          // create new collection in users
          await setNewUserDoc(res, name);
       } catch (err) {

@@ -2,6 +2,7 @@ import { Stack, Typography, useTheme } from "@mui/material";
 import React, { useEffect, useState, useRef } from "react";
 import { useThemeContext } from "../../contexts/themeContextProvider";
 import { useMediaQuery } from "@mui/material";
+import { useLocation } from "react-router-dom";
 
 const demoVideo = [
    "https://github.githubassets.com/assets/code-1_desktop-7ab52aea3358.mp4",
@@ -14,6 +15,7 @@ interface HeroProps {
 }
 
 export default function Hero({ activeIndex = 0 }: HeroProps) {
+   const location = useLocation();
    const theme = useTheme();
    const isLg = useMediaQuery(theme.breakpoints.only("lg"));
    const isMd = useMediaQuery(theme.breakpoints.only("md"));
@@ -174,12 +176,12 @@ export default function Hero({ activeIndex = 0 }: HeroProps) {
             </div>
 
             <div className="hero-video-wrapper">
-               <div className="video-glow"></div>
+               <div className="video-glow" key={location.pathname}></div>
 
                <div
                   className="video-container"
                   style={{
-                     transform: `scale(${1 + scrollProgress * 0.1})`,
+                     transform: `scale(${1 + scrollProgress * 0.08})`,
                   }}
                >
                   <div className="video-inner">

@@ -185,6 +185,8 @@ const AddProductForm = () => {
       if (l > 0 && w > 0 && h > 0) {
          const volume = l * w * h;
          setProductVolume(volume.toString());
+      } else {
+         setProductVolume("");
       }
    }, [length, width, height, productVolume]);
 
@@ -196,6 +198,8 @@ const AddProductForm = () => {
       if (pl > 0 && pw > 0 && ph > 0) {
          const pVolume = pl * pw * ph;
          setPackingVolume(pVolume.toString());
+      } else {
+         setPackingVolume("");
       }
    }, [packingLength, packingWidth, packingHeight, packingVolume]);
 
@@ -339,24 +343,37 @@ const AddProductForm = () => {
       if (!unitPrice) missing.push("单价");
       if (!packing) missing.push("包装方式");
       if (!productCatagory) missing.push("产品类别");
-      if (!packingVolume) missing.push("包装体积");
       if (!packingMass) missing.push("包装重量");
       if (!supplierName) missing.push("供应商名称");
       if (!clientName) missing.push("客户名称");
       if (src === ProductDefaultImage) missing.push("产品图片");
+
+      if (isPackingVolumeMode) {
+         // user is in '单一体积' mode:
+         if (!packingVolume) missing.push("包装体积");
+      } else {
+         // user is in '长 x 宽 x 高' mode:
+         if (!packingLength || !packingWidth || !packingHeight) {
+            missing.push("包装尺寸(长宽高)");
+         }
+      }
 
       setIsFormComplete(missing.length ? "请填写" + missing.join(", ") : true);
    }, [
       productChineseName,
       productEnglishName,
       unitPrice,
-      productVolume,
       packing,
       productCatagory,
       packingMass,
       supplierName,
       clientName,
       src,
+      packingVolume,
+      packingLength,
+      packingWidth,
+      packingHeight,
+      isPackingVolumeMode,
    ]);
 
    useEffect(() => {
@@ -485,7 +502,7 @@ const AddProductForm = () => {
 
                <TextField
                   fullWidth
-                  inputProps={{ maxLength: 50 }}
+                  inputProps={{ maxLength: 150 }}
                   label="产品英文名"
                   required
                   size="medium"
