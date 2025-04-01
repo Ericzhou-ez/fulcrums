@@ -212,23 +212,22 @@
 }
 
 .hero-video-wrapper {
-  z-index: 10;
-  position: relative;
-  will-change: opacity transform;
-  animation: videofade-in 0.8s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+   z-index: 10;
+   position: relative;
+   will-change: opacity transform;
+   animation: videofade-in 0.8s cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 
 @keyframes videofade-in {
-  0% {
-    opacity: 0.1;
-    transform: translate(0, 20%) scale(0.6);
-  }
-  100% {
-    opacity: 1;
-    transform: translate(0, 0) scale(1);
-  }
+   0% {
+      opacity: 0.1;
+      transform: translate(0, 10%) scale(0.6);
+   }
+   100% {
+      opacity: 1;
+      transform: translate(0, 0) scale(1);
+   }
 }
-
 
 .video-inner {
    overflow: hidden;
@@ -272,12 +271,11 @@
    .home {
       padding-top: 180px;
    }
-
    .hero-video-wrapper {
+      position: inherit;
       z-index: 10;
-      transform: translateX(7vw);
+      transform: translateX(7vw) !important;
    }
-
    .video-container {
       width: 120%;
    }
