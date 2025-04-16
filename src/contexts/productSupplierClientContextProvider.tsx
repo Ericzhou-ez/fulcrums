@@ -5,9 +5,9 @@ import React, {
    ReactNode,
    useEffect,
 } from "react";
-import { Product, Supplier } from "../types/types";
+import { Product, ProductType, Supplier } from "../types/types";
 import { getFunctions, httpsCallable } from "firebase/functions";
-import { getDocs, collection } from "firebase/firestore";
+import { getDocs, collection, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../configs/firebase";
 import { useAuth } from "./authContexts";
 
@@ -21,7 +21,6 @@ export type ProductSupplierClientContextType = {
    addClient: (client: any) => Promise<void>;
    editClient: (client: any) => Promise<void>;
    deleteClient: (clientId: string) => Promise<void>;
-   getProducts: () => Promise<Object>;
    getClients: () => Promise<Object>;
    getSuppliers: () => Promise<Object>;
    toggleSaveUnsaveProduct: (productId: string) => Promise<void>;
@@ -35,7 +34,6 @@ export type ProductSupplierClientContextType = {
    editedClient: boolean;
    deletedClient: boolean;
    loading: boolean;
-   productLoading: boolean;
    products: { [key: string]: any };
    suppliers: { [key: string]: any };
    clients: { [key: string]: any };
@@ -63,13 +61,42 @@ export const ProductSupplierClientContextProvider = ({
    const [editedClient, setEditedClient] = useState(false);
    const [deletedClient, setDeletedClient] = useState(false);
    const [loading, setLoading] = useState(false);
-   const [productLoading, setProductLoading] = useState(true);
    const [errorMessages, setErrorMessages] = useState<string>("");
 
-   const [products, setProducts] = useState<{ [key: string]: Product }>({});
+   const [products, setProducts] = useState<{ [key: string]: ProductType }>({});
    const [clients, setClients] = useState<{ [key: string]: ClientTypes }>({});
    const [suppliers, setSuppliers] = useState<{ [key: string]: Supplier }>({});
    const functions = getFunctions();
+
+   // listen to firestore product change
+   useEffect(() => {
+      if (!user?.uid) {
+         console.error("User not authenticated");
+         return;
+      }
+
+      const unsub = onSnapshot(
+         collection(db, "users", user.uid, "products"),
+         (snapshot) => {
+            let products: { [key: string]: ProductType } = {};
+
+            snapshot.forEach((doc) => {
+               const product = doc.data() as ProductType;
+               products[product.productId] = product;
+            });
+
+            setProducts(products);
+         },
+         (error) => {
+            console.error("Firestore listener error:", error);
+            setErrorMessages("监听产品更新时发生错误");
+         }
+      );
+
+      return () => {
+         unsub();
+      };
+   }, [user?.uid]);
 
    const addProduct = async (product: Product) => {
       try {
@@ -153,28 +180,28 @@ export const ProductSupplierClientContextProvider = ({
       setDeletedClient(true);
    };
 
-   async function getProducts(): Promise<Object> {
-      setProductLoading(true);
+   // old
+   // async function getProducts(): Promise<Object> {
+   //    setProductLoading(true);
+   //    try {
+   //       const productsSnap = await getDocs(
+   //          collection(db, "users", uid ? uid : "", "products")
+   //       );
+   //       const products = productsSnap.docs.reduce((acc, doc) => {
+   //          acc[doc.id] = doc.data();
+   //          return acc;
+   //       }, {} as { [key: string]: any });
 
-      try {
-         const productsSnap = await getDocs(
-            collection(db, "users", uid ? uid : "", "products")
-         );
-         const products = productsSnap.docs.reduce((acc, doc) => {
-            acc[doc.id] = doc.data();
-            return acc;
-         }, {} as { [key: string]: any });
-
-         setProducts(products);
-         setProductLoading(false);
-         return products;
-      } catch (error) {
-         console.error("Error fetching products:", error);
-         setProductLoading(false);
-         setErrorMessages("无法获取产品，请稍后再试");
-         return {};
-      }
-   }
+   //       setProducts(products);
+   //       setProductLoading(false);
+   //       return products;
+   //    } catch (error) {
+   //       setProductLoading(false);
+   //       console.error("Error fetching products:", error);
+   //       setErrorMessages("无法获取产品，请稍后再试");
+   //       return {};
+   //    }
+   // }
 
    async function getClients(): Promise<Object> {
       try {
@@ -237,7 +264,6 @@ export const ProductSupplierClientContextProvider = ({
             addClient,
             editClient,
             deleteClient,
-            getProducts,
             getClients,
             getSuppliers,
             toggleSaveUnsaveProduct,
@@ -251,7 +277,6 @@ export const ProductSupplierClientContextProvider = ({
             editedClient,
             deletedClient,
             loading,
-            productLoading,
             products,
             suppliers,
             clients,

@@ -18,15 +18,8 @@ import Suggestions from "../../components/dashboard/core/suggestion";
 
 const RecentProductsPage = () => {
    const { isDark, isMdUp, isSmUp } = useThemeContext();
-   const { getProducts, products, errorMessages, loading, productLoading } =
+   const { products, errorMessages, loading } =
       useProductSupplierClientContext();
-
-   useEffect(() => {
-      async function handleGetProduct() {
-         await getProducts();
-      }
-      handleGetProduct();
-   }, []);
 
    const productList = products;
 
@@ -138,7 +131,7 @@ const RecentProductsPage = () => {
 
          {viewMode === "grid" ? (
             <div className="cards-grid">
-               {productLoading ? (
+               {products.length === 0 ? (
                   <Stack
                      direction="row"
                      gap={1.5}

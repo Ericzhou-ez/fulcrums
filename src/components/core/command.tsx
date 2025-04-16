@@ -77,7 +77,7 @@ const commandGroups: CommandGroupData[] = [
          {
             label: "总览",
             icon: <House size={20} weight="duotone" />,
-            shortcut: "⇧B",
+            shortcut: "⌘B",
             link: "https://fulcrums.ca/dashboard",
          },
          {
@@ -152,7 +152,7 @@ const commandGroups: CommandGroupData[] = [
             label: "更换外观",
             icon: <Swap size={20} weight="duotone" />,
             link: "",
-            shortcut: "⇧T",
+            shortcut: "⇧esc",
          },
          {
             label: "联系Fulcrums",

@@ -30,15 +30,8 @@ const sampleData = [
 export default function DashboardOverview() {
    const theme = useTheme();
    const isDarkMode = theme.palette.mode === "dark";
-   const { getProducts, products, errorMessages } =
+   const { products } =
       useProductSupplierClientContext();
-
-   useEffect(() => {
-      async function handleGetProduct() {
-         await getProducts();
-      }
-      handleGetProduct();
-   }, []);
 
    return (
       <div className="dashboard-overview">

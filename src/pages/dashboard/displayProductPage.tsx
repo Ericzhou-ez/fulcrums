@@ -669,27 +669,19 @@ const AddProductForm = ({ p }: { p: Product }) => {
    );
 };
 
-const AddProductPage = () => {
+const displayProductPage = () => {
    const params = useParams();
    const { productId } = params;
    const { navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles } =
       useUIStateContext();
 
-   const { getProducts, productLoading, products } =
-      useProductSupplierClientContext();
+   const { products } = useProductSupplierClientContext();
 
    useEffect(() => {
-      async function handleGetProduct() {
-         await getProducts();
-      }
-      handleGetProduct();
+      document.title = "Fulcrums | 产品";
    }, []);
 
-   useEffect(() => {
-      document.title = "Fulcrums | 添加产品";
-   }, []);
-
-   if (productLoading || !productId || !products[productId]) {
+   if (!productId || !products[productId]) {
       return (
          <Box sx={{ ...mainContentStyles(navOpen), padding: "0 !important" }}>
             <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
@@ -756,7 +748,7 @@ const AddProductPage = () => {
    );
 };
 
-export default AddProductPage;
+export default displayProductPage;
 
 interface ProductImageProps {
    alt: string;
