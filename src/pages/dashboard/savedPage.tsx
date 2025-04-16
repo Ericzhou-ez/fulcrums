@@ -18,12 +18,8 @@ import Suggestions from "../../components/dashboard/core/suggestion";
 
 const SavedPage = () => {
    const { isDark, isSmUp, isMdUp } = useThemeContext();
-   const { getProducts, products, errorMessages, loading, productLoading } =
+   const { products, errorMessages } =
       useProductSupplierClientContext();
-
-   useEffect(() => {
-      getProducts();
-   }, []);
 
    // Filter for saved products
    const savedProducts = Object.entries(products).filter(
@@ -40,7 +36,6 @@ const SavedPage = () => {
 
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
-         {loading && <Loading />}
 
          {errorMessages && (
             <Box
@@ -128,7 +123,7 @@ const SavedPage = () => {
 
          <div className="gradient-divider" />
 
-         {productLoading ? (
+         {products.length === 0 ? (
             <Stack
                direction="row"
                gap={1.5}
