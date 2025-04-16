@@ -75,7 +75,10 @@ export const ProductSupplierClientContextProvider = ({
 
    // listen to firestore product change
    useEffect(() => {
-      if (!user) return;
+      if (!user) {
+         setServiceLoading(false);
+         return;
+      }
 
       if (!user?.uid) {
          console.error("User not authenticated");
