@@ -26,27 +26,13 @@ const CardSlider: React.FC<CardSliderProp> = ({
             new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
       );
 
-   const { productLoading } = useProductSupplierClientContext();
-
    return (
       <div
          className={
             filteredProducts.length > 0 ? "card-slider" : "cta-data-input"
          }
       >
-         {productLoading ? (
-            <Stack
-               direction="row"
-               gap={1.5}
-               justifyContent="center"
-               alignItems="center"
-            >
-               <Typography variant="body2" textAlign="center">
-                  拼命加载中...
-               </Typography>
-               <Loader />
-            </Stack>
-         ) : filteredProducts.length > 0 ? (
+         {filteredProducts.length > 0 ? (
             filteredProducts.map(([id, product]: any) => (
                <div className="card-slider-item" key={id}>
                   <ProductCard item={product} isDarkMode={isDarkMode} />

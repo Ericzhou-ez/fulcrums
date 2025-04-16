@@ -34,7 +34,7 @@ import { useProductSupplierClientContext } from "../../../contexts/productSuppli
 import Loader from "../../core/loader";
 
 export function ProductTable({ productList }: { productList: Product[] }) {
-   const { toggleSaveUnsaveProduct, productLoading, deleteProducts } =
+   const { toggleSaveUnsaveProduct, deleteProducts } =
       useProductSupplierClientContext();
    async function toggleSave(productId: string) {
       await toggleSaveUnsaveProduct(productId);
@@ -128,7 +128,7 @@ export function ProductTable({ productList }: { productList: Product[] }) {
 
    const handleDeleteSelected = async () => {
       const idsToDelete = Array.from(selected);
-      
+
       setProducts((prev) => prev.filter((p) => !selected.has(p.productId)));
       setSelected(new Set());
 
@@ -424,35 +424,12 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                         );
                      })}
 
-                     {productLoading
-                        ? ""
-                        : displayedProducts.length === 0 && (
-                             <TableRow>
-                                <TableCell colSpan={6}>
-                                   <Typography
-                                      variant="body2"
-                                      textAlign="center"
-                                   >
-                                      没有找到相关产品
-                                   </Typography>
-                                </TableCell>
-                             </TableRow>
-                          )}
-
-                     {productLoading && (
+                     {displayedProducts.length === 0 && (
                         <TableRow>
                            <TableCell colSpan={6}>
-                              <Stack
-                                 direction="row"
-                                 gap={1.5}
-                                 justifyContent="center"
-                                 alignItems="center"
-                              >
-                                 <Typography variant="body2" textAlign="center">
-                                    拼命加载中...
-                                 </Typography>
-                                 <Loader />
-                              </Stack>
+                              <Typography variant="body2" textAlign="center">
+                                 没有找到相关产品
+                              </Typography>
                            </TableCell>
                         </TableRow>
                      )}

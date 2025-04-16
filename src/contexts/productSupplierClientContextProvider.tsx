@@ -180,29 +180,6 @@ export const ProductSupplierClientContextProvider = ({
       setDeletedClient(true);
    };
 
-   // old
-   // async function getProducts(): Promise<Object> {
-   //    setProductLoading(true);
-   //    try {
-   //       const productsSnap = await getDocs(
-   //          collection(db, "users", uid ? uid : "", "products")
-   //       );
-   //       const products = productsSnap.docs.reduce((acc, doc) => {
-   //          acc[doc.id] = doc.data();
-   //          return acc;
-   //       }, {} as { [key: string]: any });
-
-   //       setProducts(products);
-   //       setProductLoading(false);
-   //       return products;
-   //    } catch (error) {
-   //       setProductLoading(false);
-   //       console.error("Error fetching products:", error);
-   //       setErrorMessages("无法获取产品，请稍后再试");
-   //       return {};
-   //    }
-   // }
-
    async function getClients(): Promise<Object> {
       try {
          const clientsSnap = await getDocs(
