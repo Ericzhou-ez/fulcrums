@@ -89,7 +89,16 @@ export const ProductSupplierClientContextProvider = ({
          },
          (error) => {
             console.error("Firestore listener error:", error);
-            setErrorMessages("监听产品更新时发生错误");
+
+            let message = "产品加载失败，请稍后再试";
+
+            if (error.code === "permission-denied") {
+               message = "权限不足，无法访问产品数据";
+            } else if (error.code === "unavailable") {
+               message = "网络错误，请尝试重新连接";
+            }
+
+            setErrorMessages(message);
          }
       );
 
