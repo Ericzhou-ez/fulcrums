@@ -18,7 +18,7 @@ import Suggestions from "../../components/dashboard/core/suggestion";
 
 const SavedPage = () => {
    const { isDark, isSmUp, isMdUp } = useThemeContext();
-   const { products, errorMessages, loading } =
+   const { products, errorMessages } =
       useProductSupplierClientContext();
 
    // Filter for saved products
@@ -36,7 +36,6 @@ const SavedPage = () => {
 
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
-         {loading && <Loading />}
 
          {errorMessages && (
             <Box

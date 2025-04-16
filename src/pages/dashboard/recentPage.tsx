@@ -18,7 +18,7 @@ import Suggestions from "../../components/dashboard/core/suggestion";
 
 const RecentProductsPage = () => {
    const { isDark, isMdUp, isSmUp } = useThemeContext();
-   const { products, errorMessages, loading } =
+   const { products, errorMessages } =
       useProductSupplierClientContext();
 
    const productList = products;
@@ -37,7 +37,6 @@ const RecentProductsPage = () => {
 
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
-         {loading && <Loading />}
 
          {errorMessages && (
             <Box

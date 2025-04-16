@@ -10,6 +10,7 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 import { getDocs, collection, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../configs/firebase";
 import { useAuth } from "./authContexts";
+import { useNavigate } from "react-router";
 
 export type ProductSupplierClientContextType = {
    addProduct: (product: any) => Promise<void>;
@@ -33,7 +34,7 @@ export type ProductSupplierClientContextType = {
    addedClient: boolean;
    editedClient: boolean;
    deletedClient: boolean;
-   loading: boolean;
+   serviceLoading: boolean;
    products: { [key: string]: any };
    suppliers: { [key: string]: any };
    clients: { [key: string]: any };
@@ -46,8 +47,12 @@ const ProductSupplierClientContext = createContext<
 
 export const ProductSupplierClientContextProvider = ({
    children,
+   serviceLoading,
+   setServiceLoading,
 }: {
    children: ReactNode;
+   serviceLoading: boolean;
+   setServiceLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
    const { user } = useAuth();
    const uid = user?.uid;
@@ -60,16 +65,18 @@ export const ProductSupplierClientContextProvider = ({
    const [addedClient, setAddedClient] = useState(false);
    const [editedClient, setEditedClient] = useState(false);
    const [deletedClient, setDeletedClient] = useState(false);
-   const [loading, setLoading] = useState(false);
    const [errorMessages, setErrorMessages] = useState<string>("");
 
    const [products, setProducts] = useState<{ [key: string]: ProductType }>({});
    const [clients, setClients] = useState<{ [key: string]: ClientTypes }>({});
    const [suppliers, setSuppliers] = useState<{ [key: string]: Supplier }>({});
    const functions = getFunctions();
+   const navigate = useNavigate();
 
    // listen to firestore product change
    useEffect(() => {
+      if (!user) return;
+
       if (!user?.uid) {
          console.error("User not authenticated");
          return;
@@ -86,19 +93,32 @@ export const ProductSupplierClientContextProvider = ({
             });
 
             setProducts(products);
+            setServiceLoading(false);
          },
          (error) => {
             console.error("Firestore listener error:", error);
 
-            let message = "产品加载失败，请稍后再试";
-
-            if (error.code === "permission-denied") {
-               message = "权限不足，无法访问产品数据";
-            } else if (error.code === "unavailable") {
-               message = "网络错误，请尝试重新连接";
+            let message = "";
+            switch (error.code) {
+               case "permission-denied":
+                  message = "权限不足，无法访问产品数据";
+                  break;
+               case "unavailable":
+                  message = "网络错误，请尝试重新连接";
+                  break;
+               case "resource-exhausted":
+                  message = "服务器繁忙，请稍后再试";
+                  break;
+               default:
+                  message = "产品加载失败，请稍后再试";
             }
 
             setErrorMessages(message);
+            setServiceLoading(false);
+
+            setTimeout(() => {
+               setErrorMessages("");
+            }, 5000);
          }
       );
 
@@ -109,17 +129,17 @@ export const ProductSupplierClientContextProvider = ({
 
    const addProduct = async (product: Product) => {
       try {
-         setLoading(true);
+         setServiceLoading(true);
          const createProduct = httpsCallable(functions, "createProduct");
          const response: any = await createProduct(product);
 
          if (response.data.success) {
-            setLoading(false);
+            setServiceLoading(false);
             setAddedProduct(true);
          }
       } catch (err) {
          console.error("Error calling createProduct function: ", err);
-         setLoading(false);
+         setServiceLoading(false);
          setAddedProduct(false);
       }
    };
@@ -130,19 +150,19 @@ export const ProductSupplierClientContextProvider = ({
          const response: any = await editProduct(product);
 
          if (response.data.success) {
-            setLoading(false);
+            setServiceLoading(false);
             setEditedProduct(true);
          }
       } catch (err) {
          console.error(err);
          setEditedProduct(false);
-         setLoading(false);
+         setServiceLoading(false);
       }
    };
 
    const deleteProducts = async (productId: string[]) => {
       try {
-         setLoading(true);
+         setServiceLoading(true);
 
          const deleteProducts = httpsCallable(functions, "deleteProducts");
          const response: any = await deleteProducts({
@@ -150,12 +170,14 @@ export const ProductSupplierClientContextProvider = ({
          });
 
          if (response.data.success) {
-            setLoading(false);
+            setServiceLoading(false);
             setDeletedProduct(true);
+            navigate(-1);
          }
       } catch (err) {
          console.error("error in deletion", err);
-         setLoading(false);
+         setServiceLoading(false);
+         
       }
    };
 
@@ -262,7 +284,7 @@ export const ProductSupplierClientContextProvider = ({
             addedClient,
             editedClient,
             deletedClient,
-            loading,
+            serviceLoading,
             products,
             suppliers,
             clients,

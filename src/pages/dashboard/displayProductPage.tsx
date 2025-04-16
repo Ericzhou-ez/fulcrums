@@ -87,7 +87,7 @@ const AddProductForm = ({ p }: { p: Product }) => {
    const {
       editedProduct,
       editProduct,
-      loading,
+      serviceLoading,
       deleteProducts,
       deletedProduct,
    } = useProductSupplierClientContext();
@@ -167,12 +167,6 @@ const AddProductForm = ({ p }: { p: Product }) => {
       await deleteProducts([p.productId]);
       return;
    }
-
-   useEffect(() => {
-      if (deletedProduct) {
-         navigate(-1);
-      }
-   }, [deletedProduct, navigate]);
 
    useEffect(() => {
       const missing = [];
@@ -641,7 +635,7 @@ const AddProductForm = ({ p }: { p: Product }) => {
             hoveredWidth="120"
          />
 
-         {loading && <Loading />}
+         {serviceLoading && <Loading />}
 
          {/* not only isFormComplete true but editedProduct further needs to be true */}
          {submittingForm && (

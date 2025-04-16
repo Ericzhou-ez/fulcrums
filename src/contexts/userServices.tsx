@@ -27,7 +27,7 @@ interface UserContextProps {
    ) => Promise<void>;
    logOut: () => Promise<void>;
    user: UserType | null;
-   loading: boolean;
+   serviceLoading: boolean;
    errorMessage: string;
    setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
    successMessage: string;
@@ -36,9 +36,9 @@ interface UserContextProps {
 interface UserServiceProps {
    children: React.ReactNode;
    setUser: React.Dispatch<React.SetStateAction<UserType | null>>;
-   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+   setServiceLoading: React.Dispatch<React.SetStateAction<boolean>>;
    user: UserType | null;
-   loading: boolean;
+   serviceLoading: boolean;
    errorMessage: string;
    successMessage: string;
    setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
@@ -51,8 +51,8 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
    children,
    setUser,
    user,
-   setLoading,
-   loading,
+   setServiceLoading,
+   serviceLoading,
    errorMessage,
    setErrorMessage,
    successMessage,
@@ -60,7 +60,7 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
 }) => {
    async function signInWithGoogle() {
       try {
-         setLoading(true);
+         setServiceLoading(true);
          const res = await signInWithPopup(auth, googleAuth);
          await setNewUserDoc(res, "");
          // if exists loaded by auth context
@@ -68,7 +68,7 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
          setErrorMessage("无法使用Google登录.");
          console.error(err);
       } finally {
-         setLoading(false);
+         setServiceLoading(false);
       }
    }
 
@@ -78,7 +78,7 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
       setError: React.Dispatch<React.SetStateAction<boolean>>
    ) {
       try {
-         setLoading(true);
+         setServiceLoading(true);
          if (!email || !/\S+@\S+\.\S+/.test(email)) {
             throw new Error("请输入有效的邮箱地址.");
          }
@@ -95,7 +95,7 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
          );
          setError(true);
       } finally {
-         setLoading(false);
+         setServiceLoading(false);
       }
    }
 
@@ -107,7 +107,7 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
       setError: React.Dispatch<React.SetStateAction<boolean>>
    ) {
       try {
-         setLoading(true);
+         setServiceLoading(true);
          if (!email || !/\S+@\S+\.\S+/.test(email)) {
             throw new Error("请输入有效的邮箱地址.");
          }
@@ -147,19 +147,19 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
          setErrorMessage(err instanceof Error ? err.message : "注册失败");
          setError(true);
       } finally {
-         setLoading(false);
+         setServiceLoading(false);
       }
    }
 
    async function logOut() {
       try {
-         setLoading(true);
+         setServiceLoading(true);
          await signOut(auth);
          setUser(null);
       } catch (error) {
          console.error("Logout Error:", error);
       } finally {
-         setLoading(false);
+         setServiceLoading(false);
       }
    }
 
@@ -192,7 +192,7 @@ export const UserServiceProvider: React.FC<UserServiceProps> = ({
             signUpWithEmail,
             logOut,
             user,
-            loading,
+            serviceLoading,
             successMessage,
             errorMessage,
             setErrorMessage,

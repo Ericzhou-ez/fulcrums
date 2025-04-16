@@ -94,7 +94,7 @@ const AddProductForm = () => {
    const [isFormComplete, setIsFormComplete] = useState<string | boolean>(
       false
    );
-   const { addedProduct, addProduct, loading } =
+   const { addedProduct, addProduct } =
       useProductSupplierClientContext();
    const [buttonDisabled, setButtonDisabled] = useState(addedProduct);
    const [autoFillClients, setAutoFillClients] = useState<string[]>();
@@ -1130,8 +1130,6 @@ const AddProductForm = () => {
             defaultWidth="30"
             hoveredWidth="120"
          />
-
-         {loading && <Loading />}
 
          {/* not only isFormComplete true but productAdded further needs to be true */}
          {submittingForm && (

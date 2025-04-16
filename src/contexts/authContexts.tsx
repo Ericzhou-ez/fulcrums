@@ -30,14 +30,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
                email: currentUser?.email,
                photo: currentUser?.photoURL,
             } as UserType);
-            setLoading(false);
          } else {
             setUser(null);
-            setLoading(false);
          }
+
+         setLoading(false);
       });
 
-      return () => unsubscribe();
+      return () => {
+         unsubscribe();
+      };
    }, []);
 
    useEffect(() => {
