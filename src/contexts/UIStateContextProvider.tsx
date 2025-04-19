@@ -7,6 +7,7 @@ import React, {
    useEffect,
 } from "react";
 import { useMediaQuery, useTheme } from "@mui/material";
+import { m } from "react-router/dist/development/fog-of-war-Cm1iXIp7";
 
 interface UIStateContextProps {
    isModalOpen: boolean;
@@ -16,6 +17,10 @@ interface UIStateContextProps {
    setOverlay: React.Dispatch<React.SetStateAction<boolean>>;
    closeOverlay: () => void;
    mainContentStyles: (navOpen: boolean) => object;
+   navStyle: string;
+   setNavStyle: React.Dispatch<
+      React.SetStateAction<"blend-in" | "discrete" | "evident">
+   >;
 }
 
 const UIStateContext = createContext<UIStateContextProps | undefined>(
@@ -34,6 +39,14 @@ export const UIStateContextProvider: React.FC<UIStateContextProviderProps> = ({
    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
    const [navOpen, setNavOpen] = useState<boolean>(isMdUp);
    const [overlay, setOverlay] = useState<boolean>(!isMdUp);
+   const [navStyle, setNavStyle] = useState<
+      "blend-in" | "evident" | "discrete"
+   >(() => {
+      const saved = localStorage.getItem("nav-style");
+      return saved === "blend-in" || saved === "evident" || saved === "discrete"
+         ? saved
+         : "blend-in";
+   });
 
    const closeOverlay = () => {
       setOverlay(false);
@@ -58,8 +71,10 @@ export const UIStateContextProvider: React.FC<UIStateContextProviderProps> = ({
          setOverlay,
          closeOverlay,
          mainContentStyles,
+         navStyle,
+         setNavStyle,
       }),
-      [isModalOpen, navOpen, overlay]
+      [isModalOpen, navOpen, overlay, mainContentStyles, navStyle]
    );
 
    return (

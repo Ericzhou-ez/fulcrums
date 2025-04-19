@@ -28,6 +28,7 @@ const Nav: React.FC<NavProps> = ({ home, searchBar }) => {
    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
    const { user, signedIn } = useAuth();
+   const { navStyle } = useUIStateContext();
 
    useEffect(() => {
       if (!isMdUp) {
@@ -41,7 +42,7 @@ const Nav: React.FC<NavProps> = ({ home, searchBar }) => {
 
    return (
       <>
-         <Box
+         <div
             className={
                isMdUp
                   ? `${home ? "nav" : "nav-dash"} ${
@@ -49,6 +50,13 @@ const Nav: React.FC<NavProps> = ({ home, searchBar }) => {
                     }`
                   : `${home ? "nav" : "nav-dash"}`
             }
+            style={{
+               background: home
+                  ? undefined
+                  : isDark
+                  ? "rgba(1, 0, 1, 0.8)"
+                  : "rgba(250, 250, 250, 0.8)"
+            }}
          >
             {/* Menu Icon */}
             <div
@@ -132,7 +140,7 @@ const Nav: React.FC<NavProps> = ({ home, searchBar }) => {
                   </a>
                </div>
             )}
-         </Box>
+         </div>
       </>
    );
 };
