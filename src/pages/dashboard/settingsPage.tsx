@@ -23,7 +23,7 @@ const SettingPage = () => {
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
          <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
 
-         <Nav home={false} searchBar={false} />
+         <Nav home={false} searchBar={true} />
 
          <div className="title-recent">
             <Typography

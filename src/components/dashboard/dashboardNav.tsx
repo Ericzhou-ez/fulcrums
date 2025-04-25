@@ -7,7 +7,6 @@ import {
    useTheme,
    IconButton,
    Link,
-   useMediaQuery,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import {
@@ -25,9 +24,10 @@ import {
    Cube,
    FileArrowUp,
    CaretDoubleLeft,
-   MagnifyingGlass
+   MagnifyingGlass,
 } from "phosphor-react";
 import Logo from "../../assets/images/logo.svg";
+import { useUIStateContext } from "../../contexts/UIStateContextProvider";
 
 const iconMap: Record<string, React.ComponentType<any>> = {
    House,
@@ -173,8 +173,21 @@ interface SideNavProps {
 export default function SideNav({ navOpen, setNavOpen }: SideNavProps) {
    const theme = useTheme();
    const isDark = theme.palette.mode === "dark";
-   const bgColor = isDark ? theme.palette.grey[900] : theme.palette.grey[50];
    const textColor = isDark ? theme.palette.grey[100] : theme.palette.grey[800];
+   const { navStyle } = useUIStateContext();
+   let bgColor;
+
+   switch (navStyle) {
+      case "evident":
+         bgColor = "#121621";
+         break;
+      case "blend-in":
+         bgColor = isDark ? "#121212" : "#fff";
+         break;
+      case "discrete":
+         bgColor = isDark ? theme.palette.grey[900] : theme.palette.grey[50];
+         break;
+   }
 
    return (
       <div
@@ -194,7 +207,6 @@ export default function SideNav({ navOpen, setNavOpen }: SideNavProps) {
                left: 0,
                overflowY: "auto",
                backgroundColor: bgColor,
-               color: textColor,
                borderRight: `1px solid ${
                   isDark ? theme.palette.grey[800] : theme.palette.grey[300]
                }`,
@@ -203,6 +215,7 @@ export default function SideNav({ navOpen, setNavOpen }: SideNavProps) {
                p: 2,
                zIndex: 1400,
                boxShadow: "0 0 10px rgba(0, 0, 0, 0.03)",
+               color: navStyle === "evident" ? "#fff" : textColor,
             }}
          >
             <Box
@@ -210,19 +223,23 @@ export default function SideNav({ navOpen, setNavOpen }: SideNavProps) {
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  mb: 2,
+                  mb: 4,
+                  mt: 1.5,
                }}
             >
                <Link href="/dashboard" style={{ cursor: "pointer" }}>
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                     <img src={Logo} alt="Logo" />
-                     <Typography variant="h6" fontWeight="bold">
+                  <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "center" }}>
+                     <img src={Logo} alt="Logo" width="40" height="40" />
+                     <Typography variant="h5" fontWeight="bold">
                         Fulcrums
                      </Typography>
                   </Box>
                </Link>
                <IconButton onClick={() => setNavOpen(!navOpen)}>
-                  <CaretDoubleLeft size={20} />
+                  <CaretDoubleLeft
+                     size={20}
+                     color={navStyle === "evident" || isDark ? "#fff" : "#000"}
+                  />
                </IconButton>
             </Box>
 
@@ -293,7 +310,7 @@ function NavGroup({ group }: { group: NavGroupType }) {
                   sx={{
                      borderLeft: (theme) =>
                         `2px solid ${theme.palette.divider}`,
-                     pl: 2.5, 
+                     pl: 2.5,
                   }}
                >
                   <Stack
@@ -335,7 +352,10 @@ function NavSubItem({
                }),
             }}
          >
-            <Typography variant="body2" sx={{ fontWeight: 500, cursor: "pointer" }}>
+            <Typography
+               variant="body2"
+               sx={{ fontWeight: 500, cursor: "pointer" }}
+            >
                {sub.title}
             </Typography>
             {sub.external && (
