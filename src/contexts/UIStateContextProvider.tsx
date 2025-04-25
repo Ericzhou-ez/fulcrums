@@ -4,10 +4,8 @@ import React, {
    useMemo,
    useState,
    ReactNode,
-   useEffect,
 } from "react";
 import { useMediaQuery, useTheme } from "@mui/material";
-import { m } from "react-router/dist/development/fog-of-war-Cm1iXIp7";
 
 interface UIStateContextProps {
    isModalOpen: boolean;
