@@ -27,13 +27,13 @@ import {
    Heart as HeartIcon,
 } from "phosphor-react";
 import { useThemeContext } from "../../../contexts/themeContextProvider";
-import { Product } from "../../../types/types";
+import { Product, ProductType } from "../../../types/types";
 import { typeOptions } from "../search/productFilter";
 import HeartComponent from "./heart";
 import { useProductSupplierClientContext } from "../../../contexts/productSupplierClientContextProvider";
 import Loader from "../../core/loader";
 
-export function ProductTable({ productList }: { productList: Product[] }) {
+export function ProductTable({ productList }: { productList: ProductType[] }) {
    const { toggleSaveUnsaveProduct, deleteProducts } =
       useProductSupplierClientContext();
    async function toggleSave(productId: string) {

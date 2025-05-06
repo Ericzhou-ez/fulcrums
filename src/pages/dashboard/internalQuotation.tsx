@@ -6,6 +6,7 @@ import SideNav from "../../components/dashboard/dashboardNav";
 import "../../styles/quotation.css";
 import { useEffect } from "react";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
+import { BuildInternalProductPDF } from "../../lib/InteralProductsPDFBuilder";
 
 const InternalQuoationPage = () => {
    useEffect(() => {
@@ -44,6 +45,10 @@ const InternalQuoationPage = () => {
          </div>
 
          <div className="gradient-divider"></div>
+
+         <button onClick={() => BuildInternalProductPDF()}>
+            export
+         </button>
 
          {overlay && (
             <div

@@ -35,7 +35,7 @@ export type ProductSupplierClientContextType = {
    editedClient: boolean;
    deletedClient: boolean;
    serviceLoading: boolean;
-   products: { [key: string]: any };
+   products: Record<string, ProductType>;
    suppliers: { [key: string]: any };
    clients: { [key: string]: any };
    errorMessages: string;

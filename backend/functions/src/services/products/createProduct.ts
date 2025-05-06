@@ -96,6 +96,7 @@ export const createProduct = functions.https.onCall(
                   packingMassUnit,
                },
                unitPrice,
+               sellsPrice: unitPrice * 1.05,
                productDimension: {
                   volume: productVolume,
                   unit: dimensionUnit,

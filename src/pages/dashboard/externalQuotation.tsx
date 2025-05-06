@@ -6,19 +6,19 @@ import SideNav from "../../components/dashboard/dashboardNav";
 import "../../styles/quotation.css";
 import { useEffect } from "react";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
+import { ExternalPDFBuilder } from "../../lib/externalPDFBuilder";
+import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
 
 const ExternalQuotationPage = () => {
    useEffect(() => {
       document.title = "Fulcrums | 客户报价";
    }, []);
 
-   const {
-      navOpen,
-      setNavOpen,
-      overlay,
-      closeOverlay,
-      mainContentStyles,
-   } = useUIStateContext();
+   const { products } = useProductSupplierClientContext();
+   console.log(products);
+
+   const { navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles } =
+      useUIStateContext();
 
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
@@ -61,6 +61,14 @@ const ExternalQuotationPage = () => {
                onClick={closeOverlay}
             ></div>
          )}
+
+         <button
+            onClick={async () => {
+               await ExternalPDFBuilder({ products });
+            }}
+         >
+            Export
+         </button>
 
          <Footer />
       </Box>

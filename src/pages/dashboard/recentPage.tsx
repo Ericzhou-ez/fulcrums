@@ -37,7 +37,6 @@ const RecentProductsPage = () => {
 
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
-
          {errorMessages && (
             <Box
                sx={{
@@ -119,10 +118,6 @@ const RecentProductsPage = () => {
                      <ListBullets size={20} />
                   </Button>
                </Box>
-
-               <Button variant="contained" color="primary" size="small">
-                  导出最近产品
-               </Button>
             </Stack>
          </Box>
 
@@ -130,7 +125,7 @@ const RecentProductsPage = () => {
 
          {viewMode === "grid" ? (
             <div className="cards-grid">
-               {products.length === 0 ? (
+               {Object.keys(products).length === 0 ? (
                   <Stack
                      direction="row"
                      gap={1.5}
