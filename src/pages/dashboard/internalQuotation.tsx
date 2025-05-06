@@ -7,18 +7,16 @@ import "../../styles/quotation.css";
 import { useEffect } from "react";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
 import { BuildInternalProductPDF } from "../../lib/InteralProductsPDFBuilder";
+import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
 
 const InternalQuoationPage = () => {
+   const { products } = useProductSupplierClientContext();
+
    useEffect(() => {
       document.title = "Fulcrums | 内部报价";
    }, []);
-   const {
-      navOpen,
-      setNavOpen,
-      overlay,
-      closeOverlay,
-      mainContentStyles,
-   } = useUIStateContext();
+   const { navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles } =
+      useUIStateContext();
 
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
@@ -46,8 +44,12 @@ const InternalQuoationPage = () => {
 
          <div className="gradient-divider"></div>
 
-         <button onClick={() => BuildInternalProductPDF()}>
-            export
+         <button
+            onClick={async () => {
+               await BuildInternalProductPDF({ products });
+            }}
+         >
+            Export
          </button>
 
          {overlay && (
