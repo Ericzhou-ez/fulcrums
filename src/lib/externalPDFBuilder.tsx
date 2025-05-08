@@ -3,16 +3,17 @@ import {
    StandardFonts,
    rgb,
    PDFImage,
-   PDFEmbeddedPage,
 } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
-import { Product, ProductType } from "../types/types";
+import { ProductType } from "../types/types";
 import { wrapText, hasChinese } from "./helpers";
 
 export async function ExternalPDFBuilder({
    products,
+   upCharge,
 }: {
    products: Record<string, ProductType>;
+   upCharge: number;
 }): Promise<void> {
    if (Object.keys(products).length === 0) return;
 
@@ -136,9 +137,10 @@ export async function ExternalPDFBuilder({
       });
 
       yCur -= 12;
+      const upChargedUnitPrice = (p.unitPrice * upCharge).toFixed(2);
 
       const rows: [string, string][] = [
-         ["Unit Price:", `${p.currency ?? ""}${p.unitPrice ?? ""}`],
+         ["Unit Price:", `${p.currency ?? ""}${upChargedUnitPrice ?? ""}`],
          ["Unit Mass:", `${p.mass?.quantity ?? ""}${p.mass?.unit ?? ""}`],
          ["Packing:", String(p.packaging ?? "")],
          [

@@ -11,8 +11,10 @@ import { wrapText, hasChinese } from "./helpers";
 
 export async function BuildInternalProductPDF({
    products,
+   upCharge,
 }: {
    products: Record<string, ProductType>;
+   upCharge: number;
 }): Promise<void> {
    const pdfDoc = await PDFDocument.create();
    pdfDoc.registerFontkit(fontkit);
@@ -29,10 +31,10 @@ export async function BuildInternalProductPDF({
    const cellW = (pageW - margin * (gridCols + 1)) / gridCols;
    const cellH = (pageH - margin * (gridRows + 1)) / gridRows;
    const imgMaxH = 60;
-   const sizeCN = 13,
-      sizeEN = 12,
-      sizeID = 10,
-      sizeRow = 9,
+   const sizeCN = 12,
+      sizeEN = 11,
+      sizeID = 7,
+      sizeRow = 8,
       lead = 2;
 
    let page = pdfDoc.addPage([pageW, pageH]);
@@ -140,8 +142,11 @@ export async function BuildInternalProductPDF({
          yCur -= sizeID + lead + 5;
       });
 
+      const upChargedUnitPrice = (p.unitPrice * upCharge).toFixed(2);
+
       const rows: [string, string][] = [
          ["UnitPrice:", `${p.currency ?? ""}${p.unitPrice ?? ""}`],
+         ["SalesPrice:", `${p.currency ?? ""}${upChargedUnitPrice ?? ""}`],
          ["UnitMass:", `${p.mass?.quantity ?? ""}${p.mass?.unit ?? ""}`],
          ["Packing:", String(p.packaging ?? "")],
          [

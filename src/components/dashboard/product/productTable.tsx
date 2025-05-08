@@ -24,6 +24,7 @@ import {
    DialogContent,
    DialogActions,
    Alert,
+   TextField,
 } from "@mui/material";
 import {
    Image as ImageIcon,
@@ -40,6 +41,7 @@ import { BuildInternalProductPDF } from "../../../lib/InteralProductsPDFBuilder"
 import { ExternalPDFBuilder } from "../../../lib/externalPDFBuilder";
 import Loader from "../../core/loader";
 import { useUIStateContext } from "../../../contexts/UIStateContextProvider";
+import { error } from "pdf-lib";
 
 export function ProductTable({ productList }: { productList: ProductType[] }) {
    const { toggleSaveUnsaveProduct, deleteProducts, clients } =
@@ -57,7 +59,10 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
    const [products, setProducts] = React.useState<Product[]>([]);
    const [open, setOpen] = React.useState(false);
    const [pdfLoading, setPdfLoading] = React.useState(false);
-   const [pdfSuccess, setPdfSuccess] = React.useState(true);
+   const [pdfSuccess, setPdfSuccess] = React.useState(false);
+   const [upCharge, setUpCharge] = React.useState("");
+   const [upChargeNum, setUpChargeNum] = React.useState(0);
+   const [errorMessage, setErrorMessage] = React.useState("");
 
    React.useEffect(() => {
       setProducts(productList);
@@ -172,6 +177,8 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
    }, [products, selected]);
 
    const handleInternal = async () => {
+      if (upChargeNum < 1.01 || upChargeNum >= 10 || isNaN(upChargeNum)) return;
+
       setPdfLoading(true);
 
       await BuildInternalProductPDF({
@@ -179,6 +186,7 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
             acc[product.productId] = product;
             return acc;
          }, {} as Record<string, ProductType>),
+         upCharge: upChargeNum,
       });
 
       setPdfLoading(false);
@@ -191,6 +199,8 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
    };
 
    const handleClient = async () => {
+      if (upChargeNum < 1.01 || upChargeNum >= 10 || isNaN(upChargeNum)) return;
+
       setPdfLoading(true);
 
       await ExternalPDFBuilder({
@@ -198,6 +208,7 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
             acc[product.productId] = product;
             return acc;
          }, {} as Record<string, ProductType>),
+         upCharge: upChargeNum,
       });
 
       setPdfLoading(false);
@@ -582,6 +593,33 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
                               justifyContent: "space-between",
                            }}
                         >
+                           <TextField
+                              type="number"
+                              label="加价幅度"
+                              value={upCharge}
+                              onChange={(e) => {
+                                 const val = e.target.value;
+                                 setUpCharge(val);
+
+                                 const num = parseFloat(val);
+                                 if (val === "") {
+                                    setErrorMessage("请输入数字");
+                                 } else if (
+                                    isNaN(num) ||
+                                    num < 1.01 ||
+                                    num >= 10
+                                 ) {
+                                    setErrorMessage(
+                                       "请输入有效的数字"
+                                    );
+                                 } else {
+                                    setErrorMessage("");
+                                    setUpChargeNum(num);
+                                 }
+                              }}
+                              error={!!errorMessage}
+                              helperText={errorMessage || "5% 为 1.05"}
+                           />
                            <Button
                               fullWidth
                               onClick={handleInternal}
