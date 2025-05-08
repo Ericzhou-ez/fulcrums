@@ -338,7 +338,6 @@ const AddProductForm = () => {
       if (!productEnglishName) missing.push("产品英文名");
       if (!unitPrice) missing.push("单价");
       if (!packing) missing.push("包装方式");
-      if (!productCatagory) missing.push("产品类别");
       if (!packingMass) missing.push("包装重量");
       if (!supplierName) missing.push("供应商名称");
       if (!clientName) missing.push("客户名称");
@@ -360,7 +359,6 @@ const AddProductForm = () => {
       productEnglishName,
       unitPrice,
       packing,
-      productCatagory,
       packingMass,
       supplierName,
       clientName,
@@ -1137,6 +1135,7 @@ const AddProductForm = () => {
                sx={{
                   position: "fixed",
                   top: 0,
+                  right: 0,
                   zIndex: "5000",
                   width: navOpen ? "calc(100% - 240px)" : "100%",
                }}

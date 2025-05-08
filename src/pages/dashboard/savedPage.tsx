@@ -36,7 +36,6 @@ const SavedPage = () => {
 
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
-
          {errorMessages && (
             <Box
                sx={{
@@ -115,15 +114,12 @@ const SavedPage = () => {
                      <ListBullets size={20} />
                   </Button>
                </Box>
-               <Button variant="contained" color="primary" size="small">
-                  导出保存产品
-               </Button>
             </Stack>
          </Box>
 
          <div className="gradient-divider" />
 
-         {products.length === 0 ? (
+         {Object.keys(products).length === 0 ? (
             <Stack
                direction="row"
                gap={1.5}

@@ -1,0 +1,12 @@
+[
+   {
+      "origin": [
+         "http://localhost:5173",
+         "http://localhost:3000",
+         "http://fulcrums.ca",
+         "https://fulcrum-jwauar644-ericzhou-ezs-projects.vercel.app"
+      ],
+      "method": ["GET"],
+      "maxAgeSeconds": 3600
+   }
+]
