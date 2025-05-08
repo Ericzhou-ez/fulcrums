@@ -175,7 +175,6 @@ const AddProductForm = ({ p }: { p: Product }) => {
       if (!productEnglishName) missing.push("产品英文名");
       if (!unitPrice) missing.push("单价");
       if (!packing) missing.push("包装方式");
-      if (!productCatagory) missing.push("产品类别");
       if (!packingVolume) missing.push("包装体积");
       if (!packingMass) missing.push("包装重量");
       if (!supplierName) missing.push("供应商名称");
@@ -189,7 +188,6 @@ const AddProductForm = ({ p }: { p: Product }) => {
          mass === p?.mass?.quantity &&
          productVolume === p?.productDimension?.volume &&
          packing === p?.packaging &&
-         productCatagory === p?.catagory &&
          packingVolume === p?.packingVolume?.volume &&
          packingMass === p?.packingMass?.packingMass &&
          supplierName === p?.supplier?.name &&

@@ -19,6 +19,12 @@ import {
    Button,
    Tooltip,
    TablePagination,
+   Dialog,
+   DialogTitle,
+   DialogContent,
+   DialogActions,
+   Alert,
+   TextField,
 } from "@mui/material";
 import {
    Image as ImageIcon,
@@ -27,27 +33,44 @@ import {
    Heart as HeartIcon,
 } from "phosphor-react";
 import { useThemeContext } from "../../../contexts/themeContextProvider";
-import { Product } from "../../../types/types";
+import { Clients, Product, ProductType } from "../../../types/types";
 import { typeOptions } from "../search/productFilter";
 import HeartComponent from "./heart";
 import { useProductSupplierClientContext } from "../../../contexts/productSupplierClientContextProvider";
+import { BuildInternalProductPDF } from "../../../lib/InteralProductsPDFBuilder";
+import { ExternalPDFBuilder } from "../../../lib/externalPDFBuilder";
 import Loader from "../../core/loader";
+import { useUIStateContext } from "../../../contexts/UIStateContextProvider";
+import { error } from "pdf-lib";
 
-export function ProductTable({ productList }: { productList: Product[] }) {
-   const { toggleSaveUnsaveProduct, deleteProducts } =
+export function ProductTable({ productList }: { productList: ProductType[] }) {
+   const { toggleSaveUnsaveProduct, deleteProducts, clients } =
       useProductSupplierClientContext();
    async function toggleSave(productId: string) {
       await toggleSaveUnsaveProduct(productId);
    }
+   const { navOpen } = useUIStateContext();
    const { isDark, isSmUp } = useThemeContext();
    const [searchTerm, setSearchTerm] = React.useState("");
    const [category, setCategory] = React.useState("all");
+   const [selectedClient, setSelectedClient] = React.useState("all");
+   const [client, setClient] = React.useState<Clients[] | undefined>(undefined);
    const [sortOrder, setSortOrder] = React.useState("desc");
    const [products, setProducts] = React.useState<Product[]>([]);
+   const [open, setOpen] = React.useState(false);
+   const [pdfLoading, setPdfLoading] = React.useState(false);
+   const [pdfSuccess, setPdfSuccess] = React.useState(false);
+   const [upCharge, setUpCharge] = React.useState("");
+   const [upChargeNum, setUpChargeNum] = React.useState(0);
+   const [errorMessage, setErrorMessage] = React.useState("");
 
    React.useEffect(() => {
       setProducts(productList);
    }, [productList]);
+
+   React.useEffect(() => {
+      setClient(Object.values(clients));
+   }, []);
 
    const [selected, setSelected] = React.useState<Set<string>>(new Set());
    const [page, setPage] = React.useState(0);
@@ -66,7 +89,11 @@ export function ProductTable({ productList }: { productList: Product[] }) {
       }
 
       if (category !== "all") {
-         data = data.filter((item) => item.catagory === category);
+         data = data.filter((item) => item?.catagory === category);
+      }
+
+      if (selectedClient !== "all") {
+         data = data.filter((p) => p.clientId === selectedClient);
       }
 
       data.sort((a, b) => {
@@ -79,7 +106,7 @@ export function ProductTable({ productList }: { productList: Product[] }) {
       });
 
       return data;
-   }, [products, searchTerm, category, sortOrder]);
+   }, [products, searchTerm, category, sortOrder, selectedClient]);
 
    const displayedProducts = React.useMemo(() => {
       const startIndex = page * rowsPerPage;
@@ -145,6 +172,54 @@ export function ProductTable({ productList }: { productList: Product[] }) {
       setPage(0);
    };
 
+   const selectedProductsList = React.useMemo(() => {
+      return products.filter((p) => selected.has(p.productId));
+   }, [products, selected]);
+
+   const handleInternal = async () => {
+      if (upChargeNum < 1.01 || upChargeNum >= 10 || isNaN(upChargeNum)) return;
+
+      setPdfLoading(true);
+
+      await BuildInternalProductPDF({
+         products: selectedProductsList.reduce((acc, product) => {
+            acc[product.productId] = product;
+            return acc;
+         }, {} as Record<string, ProductType>),
+         upCharge: upChargeNum,
+      });
+
+      setPdfLoading(false);
+      setPdfSuccess(true);
+
+      setTimeout(() => {
+         setOpen(false);
+         setPdfSuccess(false);
+      }, 2000);
+   };
+
+   const handleClient = async () => {
+      if (upChargeNum < 1.01 || upChargeNum >= 10 || isNaN(upChargeNum)) return;
+
+      setPdfLoading(true);
+
+      await ExternalPDFBuilder({
+         products: selectedProductsList.reduce((acc, product) => {
+            acc[product.productId] = product;
+            return acc;
+         }, {} as Record<string, ProductType>),
+         upCharge: upChargeNum,
+      });
+
+      setPdfLoading(false);
+      setPdfSuccess(true);
+
+      setTimeout(() => {
+         setOpen(false);
+         setPdfSuccess(false);
+      }, 2000);
+   };
+
    return (
       <Box
          sx={{
@@ -208,6 +283,21 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                   </Select>
                   <Select
                      size="small"
+                     value={selectedClient} // "all" or a clientName
+                     onChange={(e) => {
+                        setSelectedClient(e.target.value); // clientId
+                        setPage(0);
+                     }}
+                  >
+                     <MenuItem value="all">全部客户</MenuItem>
+                     {client?.map((c) => (
+                        <MenuItem key={c.clientId} value={c.clientId}>
+                           {c.name}
+                        </MenuItem>
+                     ))}
+                  </Select>
+                  <Select
+                     size="small"
                      value={category}
                      onChange={handleCategoryChange}
                      name="category"
@@ -220,17 +310,34 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                      ))}
                   </Select>
                   {isAnySelected && (
-                     <Button
-                        variant="contained"
-                        color="info"
-                        onClick={handleDeleteSelected}
-                        sx={{
-                           textWrap: "nowrap",
-                           width: "fit",
-                        }}
+                     <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{ justifyContent: "space-between" }}
                      >
-                        删除
-                     </Button>
+                        <Button
+                           variant="contained"
+                           color="info"
+                           onClick={handleDeleteSelected}
+                           sx={{
+                              textWrap: "nowrap",
+                              width: "fit",
+                           }}
+                        >
+                           删除
+                        </Button>
+                        <Button
+                           variant="contained"
+                           color="primary"
+                           onClick={() => setOpen(true)}
+                           sx={{
+                              textWrap: "nowrap",
+                              width: "fit",
+                           }}
+                        >
+                           导出
+                        </Button>
+                     </Stack>
                   )}
                </Stack>
             </Stack>
@@ -375,7 +482,7 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                                  <Typography variant="inherit" noWrap>
                                     {typeOptions.find(
                                        (option) => option.value === row.catagory
-                                    )?.label || row.catagory}
+                                    )?.label || "---"}
                                  </Typography>
                               </TableCell>
 
@@ -448,6 +555,114 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                labelRowsPerPage="每页显示:"
             />
          </Card>
+
+         {open && (
+            <Dialog
+               open={open}
+               onClose={() => setOpen(false)}
+               PaperProps={{
+                  sx: { p: 3, borderRadius: 3, minWidth: 200 },
+               }}
+            >
+               {pdfLoading ? (
+                  <Stack direction={"column"} spacing={2} alignItems="center">
+                     <Loader />
+                     <p>下载中...</p>
+                  </Stack>
+               ) : (
+                  <div>
+                     <DialogTitle
+                        sx={{ pb: 1, fontWeight: 600, fontSize: "1.6rem" }}
+                     >
+                        请选择导出类型
+                     </DialogTitle>
+
+                     <DialogContent sx={{ pt: 0, pb: 8 }}>
+                        <Typography>
+                           您想要<strong>内部导出</strong>还是
+                           <strong>导出给客户</strong>？
+                        </Typography>
+                     </DialogContent>
+
+                     <DialogActions sx={{ pt: 0 }}>
+                        <Stack
+                           direction="column"
+                           spacing={1.5}
+                           sx={{
+                              width: "100%",
+                              justifyContent: "space-between",
+                           }}
+                        >
+                           <TextField
+                              type="number"
+                              label="加价幅度"
+                              value={upCharge}
+                              onChange={(e) => {
+                                 const val = e.target.value;
+                                 setUpCharge(val);
+
+                                 const num = parseFloat(val);
+                                 if (val === "") {
+                                    setErrorMessage("请输入数字");
+                                 } else if (
+                                    isNaN(num) ||
+                                    num < 1.01 ||
+                                    num >= 10
+                                 ) {
+                                    setErrorMessage(
+                                       "请输入有效的数字"
+                                    );
+                                 } else {
+                                    setErrorMessage("");
+                                    setUpChargeNum(num);
+                                 }
+                              }}
+                              error={!!errorMessage}
+                              helperText={errorMessage || "5% 为 1.05"}
+                           />
+                           <Button
+                              fullWidth
+                              onClick={handleInternal}
+                              variant="contained"
+                              color="info"
+                           >
+                              内部导出
+                           </Button>
+                           <Button
+                              fullWidth
+                              onClick={handleClient}
+                              variant="contained"
+                              color="primary"
+                           >
+                              导出给客户
+                           </Button>
+                           <Button
+                              fullWidth
+                              onClick={() => setOpen(false)}
+                              variant="outlined"
+                           >
+                              取消
+                           </Button>
+                        </Stack>
+                     </DialogActions>
+                  </div>
+               )}
+            </Dialog>
+         )}
+
+         {pdfSuccess && (
+            <Box
+               sx={{
+                  position: "fixed",
+                  top: 0,
+                  right: 0,
+                  zIndex: "9999",
+                  width: navOpen ? "calc(100% - 240px)" : "100%",
+               }}
+            >
+               <Alert severity="success">导出成功 :)</Alert>
+            </Box>
+         )}
       </Box>
    );
 }

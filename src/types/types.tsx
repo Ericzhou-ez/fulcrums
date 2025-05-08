@@ -14,6 +14,7 @@ export type Product = {
    productChineseName: string;
    productEnglishName: string;
    unitPrice: number;
+   salesPrice: number;
 
    productDimension: VolumetricDimensions;
    mass: Mass;
@@ -49,23 +50,40 @@ export type Product = {
 export type ProductType = {
    productId: string;
    image: string;
-   name: string;
+   productChineseName: string;
+   productEnglishName: string;
    unitPrice: number;
-   productDimension: VolumetricDimensions; // this is the CBM *********
+   salesPrice: number;
+
+   productDimension: VolumetricDimensions;
    mass: Mass;
 
-   packaging: string;
+   packaging: number;
    packingVolume: VolumetricDimensions;
+   packingMass: {
+      packingMass: number;
+      packingMassUnit: string;
+   };
+
    saved: boolean;
    updatedAt: string;
 
-   supplierName?: string; // to be made required later
-   supplierId?: string; // to be made required later
+   supplier: {
+      name: string;
+      phone: string;
+      address: string;
+      email: string;
+      supplierId: string;
+   };
 
    additionalNotes: string;
    catagory: string;
+   client: string;
+   clientId: string;
+
    purchaseVolume?: number;
    salesVolume?: number;
+   currency: string;
 };
 
 export type Supplier = {
