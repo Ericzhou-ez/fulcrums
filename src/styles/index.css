@@ -37,15 +37,6 @@ html,
    box-sizing: border-box !important;
 }
 
-::selection {
-   background: #fa9261;
-   color: #000;
-}
-::-moz-selection {
-   background: #fa9261;
-   color: #000;
-}
-
 .loader {
    width: 50px;
    aspect-ratio: 1;
@@ -71,4 +62,11 @@ html,
 .link:hover {
    text-decoration: underline;
    color: #f99214;
+}
+
+.custom-menu {
+  background-color: var(--background-color);
+  padding: 6px;
+  border-radius: 20px !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1) !important;
 }
