@@ -36,35 +36,26 @@ import {
 } from "phosphor-react";
 import { useThemeContext } from "../../../contexts/themeContextProvider";
 import { Clients, Product, ProductType } from "../../../types/types";
-import { Clients, Product, ProductType } from "../../../types/types";
+import { useProductSupplierClientContext } from "../../../contexts/productSupplierClientContextProvider";
+import { useUIStateContext } from "../../../contexts/UIStateContextProvider";
+import { BuildInternalProductPDF } from "../../../lib/InteralProductsPDFBuilder";
+import { ExternalPDFBuilder } from "../../../lib/externalPDFBuilder";
 import { typeOptions } from "../search/productFilter";
 import HeartComponent from "./heart";
-import { useProductSupplierClientContext } from "../../../contexts/productSupplierClientContextProvider";
-import { BuildInternalProductPDF } from "../../../lib/InteralProductsPDFBuilder";
-import { ExternalPDFBuilder } from "../../../lib/externalPDFBuilder";
-import { BuildInternalProductPDF } from "../../../lib/InteralProductsPDFBuilder";
-import { ExternalPDFBuilder } from "../../../lib/externalPDFBuilder";
 import Loader from "../../core/loader";
-import { useUIStateContext } from "../../../contexts/UIStateContextProvider";
-import { error } from "pdf-lib";
-import { useUIStateContext } from "../../../contexts/UIStateContextProvider";
-import { error } from "pdf-lib";
 
 export function ProductTable({ productList }: { productList: ProductType[] }) {
    const { toggleSaveUnsaveProduct, deleteProducts, clients } =
-export function ProductTable({ productList }: { productList: ProductType[] }) {
-   const { toggleSaveUnsaveProduct, deleteProducts, clients } =
       useProductSupplierClientContext();
+
    async function toggleSave(productId: string) {
       await toggleSaveUnsaveProduct(productId);
    }
-   const { navOpen } = useUIStateContext();
+
    const { navOpen } = useUIStateContext();
    const { isDark, isSmUp } = useThemeContext();
    const [searchTerm, setSearchTerm] = React.useState("");
    const [category, setCategory] = React.useState("all");
-   const [selectedClient, setSelectedClient] = React.useState("all");
-   const [client, setClient] = React.useState<Clients[] | undefined>(undefined);
    const [selectedClient, setSelectedClient] = React.useState("all");
    const [client, setClient] = React.useState<Clients[] | undefined>(undefined);
    const [sortOrder, setSortOrder] = React.useState("desc");
@@ -93,10 +84,6 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
       setClient(Object.values(clients));
    }, []);
 
-   React.useEffect(() => {
-      setClient(Object.values(clients));
-   }, []);
-
    const [selected, setSelected] = React.useState<Set<string>>(new Set());
    const [page, setPage] = React.useState(0);
    const [rowsPerPage, setRowsPerPage] = React.useState(20);
@@ -119,11 +106,6 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
 
       if (selectedClient !== "all") {
          data = data.filter((p) => p.clientId === selectedClient);
-         data = data.filter((item) => item?.catagory === category);
-      }
-
-      if (selectedClient !== "all") {
-         data = data.filter((p) => p.clientId === selectedClient);
       }
 
       data.sort((a, b) => {
@@ -136,7 +118,6 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
       });
 
       return data;
-   }, [products, searchTerm, category, sortOrder, selectedClient]);
    }, [products, searchTerm, category, sortOrder, selectedClient]);
 
    const displayedProducts = React.useMemo(() => {
@@ -250,55 +231,6 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
          setPdfSuccess(false);
       }, 2000);
    };
-
-   const selectedProductsList = React.useMemo(() => {
-      return products.filter((p) => selected.has(p.productId));
-   }, [products, selected]);
-
-   const handleInternal = async () => {
-      if (upChargeNum < 1.01 || upChargeNum >= 10 || isNaN(upChargeNum)) return;
-
-      setPdfLoading(true);
-
-      await BuildInternalProductPDF({
-         products: selectedProductsList.reduce((acc, product) => {
-            acc[product.productId] = product;
-            return acc;
-         }, {} as Record<string, ProductType>),
-         upCharge: upChargeNum,
-      });
-
-      setPdfLoading(false);
-      setPdfSuccess(true);
-
-      setTimeout(() => {
-         setOpen(false);
-         setPdfSuccess(false);
-      }, 2000);
-   };
-
-   const handleClient = async () => {
-      if (upChargeNum < 1.01 || upChargeNum >= 10 || isNaN(upChargeNum)) return;
-
-      setPdfLoading(true);
-
-      await ExternalPDFBuilder({
-         products: selectedProductsList.reduce((acc, product) => {
-            acc[product.productId] = product;
-            return acc;
-         }, {} as Record<string, ProductType>),
-         upCharge: upChargeNum,
-      });
-
-      setPdfLoading(false);
-      setPdfSuccess(true);
-
-      setTimeout(() => {
-         setOpen(false);
-         setPdfSuccess(false);
-      }, 2000);
-   };
-
    return (
       <Box
          sx={{
@@ -321,7 +253,7 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
             }}
          >
             <Stack
-               direction={`${isSmUp ? "row" : "column"}`}
+               direction={isSmUp ? "row" : "column"}
                spacing={2}
                sx={{
                   alignItems: "center",
@@ -359,21 +291,6 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
                   >
                      <MenuItem value="desc">最新</MenuItem>
                      <MenuItem value="asc">最早</MenuItem>
-                  </Select>
-                  <Select
-                     size="small"
-                     value={selectedClient} // "all" or a clientName
-                     onChange={(e) => {
-                        setSelectedClient(e.target.value); // clientId
-                        setPage(0);
-                     }}
-                  >
-                     <MenuItem value="all">全部客户</MenuItem>
-                     {client?.map((c) => (
-                        <MenuItem key={c.clientId} value={c.clientId}>
-                           {c.name}
-                        </MenuItem>
-                     ))}
                   </Select>
                   <Select
                      size="small"
