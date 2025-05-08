@@ -44,14 +44,6 @@ const InternalQuoationPage = () => {
 
          <div className="gradient-divider"></div>
 
-         <button
-            onClick={async () => {
-               await BuildInternalProductPDF({ products });
-            }}
-         >
-            Export
-         </button>
-
          {overlay && (
             <div
                style={{

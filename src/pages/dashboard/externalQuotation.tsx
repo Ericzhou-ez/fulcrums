@@ -62,14 +62,6 @@ const ExternalQuotationPage = () => {
             ></div>
          )}
 
-         <button
-            onClick={async () => {
-               await ExternalPDFBuilder({ products });
-            }}
-         >
-            Export
-         </button>
-
          <Footer />
       </Box>
    );
