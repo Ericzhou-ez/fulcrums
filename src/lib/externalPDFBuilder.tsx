@@ -14,7 +14,7 @@ export async function ExternalPDFBuilder({
 }: {
    products: Record<string, ProductType>;
 }): Promise<void> {
-   if (Object.keys(products).length === 0) return; 
+   if (Object.keys(products).length === 0) return;
 
    const pdfDoc = await PDFDocument.create();
    pdfDoc.registerFontkit(fontkit);
@@ -30,7 +30,7 @@ export async function ExternalPDFBuilder({
       gridRows = 2;
    const cellW = (pageW - margin * (gridCols + 1)) / gridCols;
    const cellH = (pageH - margin * (gridRows + 1)) / gridRows;
-   const imgMaxH = 60;
+   const imgMaxH = 100;
    const sizeCN = 8,
       sizeEN = 13,
       sizeRow = 9,
@@ -116,7 +116,7 @@ export async function ExternalPDFBuilder({
       wrapText(p.productEnglishName, latin, sizeEN, cellW - 12).forEach(
          (ln) => {
             page.drawText(ln, {
-               x: x0 + 6 + 0.3,
+               x: x0 + 6 + 0.4,
                y: yCur,
                size: sizeEN,
                font: latin,
@@ -135,18 +135,20 @@ export async function ExternalPDFBuilder({
          yCur -= sizeCN + lead;
       });
 
+      yCur -= 12;
+
       const rows: [string, string][] = [
-         ["UnitPrice:", `${p.currency ?? ""}${p.unitPrice ?? ""}`],
-         ["UnitMass:", `${p.mass?.quantity ?? ""}${p.mass?.unit ?? ""}`],
+         ["Unit Price:", `${p.currency ?? ""}${p.unitPrice ?? ""}`],
+         ["Unit Mass:", `${p.mass?.quantity ?? ""}${p.mass?.unit ?? ""}`],
          ["Packing:", String(p.packaging ?? "")],
          [
-            "PackingMass:",
+            "Packing Mass:",
             `${p.packingMass?.packingMass ?? ""}${
                p.packingMass?.packingMassUnit ?? ""
             }`,
          ],
          [
-            "Volume:",
+            "Packing Volume:",
             `${p.packingVolume?.volume ?? ""}${p.packingVolume?.unit ?? ""}`,
          ],
       ];
@@ -154,6 +156,37 @@ export async function ExternalPDFBuilder({
       for (const [lab, val] of rows) {
          if (yCur < y0 + 10) break;
          yCur = drawDataRow(lab, val, x0 + 6, yCur, cellW - 12) - lead;
+      }
+
+      if (yCur > y0 + 20) {
+         const label = "Quantity:";
+         const labelX = x0 + 6;
+         const labelY = y0 + 14; 
+         const inputX = labelX + latin.widthOfTextAtSize(label, sizeRow) + 6;
+         const inputY = labelY - 2;
+         const inputW = 70;
+         const inputH = 12;
+
+         page.drawText(label, {
+            x: labelX,
+            y: labelY,
+            size: sizeRow,
+            font: latin,
+         });
+
+         const form = pdfDoc.getForm();
+         const fieldName = `quantity_${i}`;
+         const field = form.createTextField(fieldName);
+
+         field.setText("");
+         field.addToPage(page, {
+            x: inputX,
+            y: inputY,
+            width: inputW,
+            height: inputH,
+            borderColor: rgb(0.5, 0.5, 0.5),
+            borderWidth: 0.3,
+         });
       }
    }
 

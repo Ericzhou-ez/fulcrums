@@ -5,9 +5,9 @@ import React, {
    ReactNode,
    useEffect,
 } from "react";
-import { Product, ProductType, Supplier } from "../types/types";
+import { Product, ProductType, Supplier, Clients } from "../types/types";
 import { getFunctions, httpsCallable } from "firebase/functions";
-import { getDocs, collection, doc, onSnapshot } from "firebase/firestore";
+import { getDocs, collection, onSnapshot } from "firebase/firestore";
 import { db } from "../configs/firebase";
 import { useAuth } from "./authContexts";
 import { useNavigate } from "react-router";
@@ -68,7 +68,7 @@ export const ProductSupplierClientContextProvider = ({
    const [errorMessages, setErrorMessages] = useState<string>("");
 
    const [products, setProducts] = useState<{ [key: string]: ProductType }>({});
-   const [clients, setClients] = useState<{ [key: string]: ClientTypes }>({});
+   const [clients, setClients] = useState<{ [key: string]: Clients }>({});
    const [suppliers, setSuppliers] = useState<{ [key: string]: Supplier }>({});
    const functions = getFunctions();
    const navigate = useNavigate();
@@ -130,6 +130,46 @@ export const ProductSupplierClientContextProvider = ({
       };
    }, [user?.uid]);
 
+   // listen to firestore client changes
+   useEffect(() => {
+      if (!user?.uid) {
+         return;
+      }
+
+      const unsub = onSnapshot(
+         collection(db, "users", user.uid, "clients"),
+         (snap) => {
+            const map: Record<string, Clients> = {};
+            snap.forEach((doc) => {
+               const c = doc.data() as Clients;
+               map[c.clientId] = c; // keyed by clientId
+            });
+
+            setClients(map);
+         },
+         (err) => {
+            console.error("Firestore listener error (clients):", err);
+            let msg = "";
+            switch (err.code) {
+               case "permission-denied":
+                  msg = "权限不足，无法访问客户数据";
+                  break;
+               case "unavailable":
+                  msg = "网络错误，请尝试重新连接";
+                  break;
+               case "resource-exhausted":
+                  msg = "服务器繁忙，请稍后再试";
+                  break;
+               default:
+                  msg = "客户加载失败，请稍后再试";
+            }
+            console.error(msg);
+         }
+      );
+
+      return unsub;
+   }, [user?.uid]);
+
    const addProduct = async (product: Product) => {
       try {
          setServiceLoading(true);
@@ -180,7 +220,6 @@ export const ProductSupplierClientContextProvider = ({
       } catch (err) {
          console.error("error in deletion", err);
          setServiceLoading(false);
-         
       }
    };
 
