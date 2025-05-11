@@ -7,7 +7,12 @@
          "https://www.fulcrums.ca",
          "https://fulcrum-jwauar644-ericzhou-ezs-projects.vercel.app"
       ],
-      "method": ["GET"],
+      "method": ["GET", "HEAD", "OPTIONS"],
+      "responseHeader": [
+         "Content-Type",
+         "Access-Control-Allow-Origin",
+         "Range"
+      ],
       "maxAgeSeconds": 3600
    }
 ]

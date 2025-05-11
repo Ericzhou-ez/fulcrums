@@ -56,7 +56,9 @@ export const createProduct = functions.https.onCall(
          const storagePath = `users/${uid}/products/${productId}`;
          const file = bucket.file(storagePath);
 
-         const buffer = Buffer.from(src, "base64");
+         const base64Data = src.includes(",") ? src.split(",")[1] : src;
+         const buffer = Buffer.from(base64Data, "base64");
+         
          await file.save(buffer, {
             contentType: "image/jpeg",
             metadata: {
@@ -114,12 +116,12 @@ export const createProduct = functions.https.onCall(
                   phone: supplierPhone,
                   address: supplierAddress,
                   email: supplierEmail,
-                  supplierId, 
+                  supplierId,
                },
                additionalNotes,
                catagory: productCatagory,
                client: clientName,
-               clientId, 
+               clientId,
                currency,
             },
             { merge: true }
