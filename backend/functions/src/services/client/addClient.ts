@@ -1,33 +1,69 @@
 import * as admin from "firebase-admin";
+import * as functions from "firebase-functions";
 import { db } from "../../utils";
 
-export const addClientInternal = async (
-   clientData: { clientName: string; productId: string },
-   uid: string
-): Promise<string> => {
-   const clientsRef = db.collection("users").doc(uid).collection("clients");
-   const querySnapshot = await clientsRef
-      .where("name", "==", clientData.clientName)
-      .get(); // if exists return s the id
+export const addClient = functions.https.onCall(
+   async (req: functions.https.CallableRequest) => {
+      const { auth, data } = req;
 
-   if (!querySnapshot.empty) {
-      // exists
-      const clientSnapshotRef = querySnapshot.docs[0].ref;
-      await clientSnapshotRef.update({
-         products: admin.firestore.FieldValue.arrayUnion(clientData.productId),
-      });
+      if (!auth) {
+         throw new functions.https.HttpsError("unauthenticated", "你没有权限");
+      }
 
-      return querySnapshot.docs[0].id;
-   } else {
-      // new client
-      const newClientRef = clientsRef.doc();
-      const clientId = newClientRef.id;
-      await newClientRef.set({
-         clientId,
-         name: clientData.clientName,
-         products: [clientData.productId],
-      });
+      const uid = auth.uid;
+      const errors: string[] = [];
+      const {
+         companyName,
+         vatNumber,
+         eoriNumber,
+         address,
+         contactName,
+         contactPhoneNumber,
+         contactEmail,
+      } = data;
 
-      return clientId;
+      const required = {
+         companyName,
+         address,
+         contactName,
+         contactPhoneNumber,
+      };
+      const clientData = { ...required, vatNumber, eoriNumber, contactEmail };
+
+      for (const [k, v] of Object.entries(required)) {
+         if (!v || typeof v !== "string" || v.trim().length === 0) {
+            errors.push(`${v} is not a valid value for ${k}`);
+         }
+      }
+      for (const [k, v] of Object.entries(clientData)) {
+         if (v.trim().length >= 250) {
+            errors.push(`${v} for ${k} is longer than 250 characters`);
+         }
+      }
+
+      if (errors.length > 0) {
+         throw new functions.https.HttpsError(
+            "invalid-argument",
+            errors.join("; ")
+         );
+      }
+
+      const newClientRef = db
+         .collection("users")
+         .doc(uid)
+         .collection("clients")
+         .doc();
+      await newClientRef.set(
+         {
+            ...clientData,
+            clientId: newClientRef.id,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+         },
+         {
+            merge: true,
+         }
+      );
+
+      return { success: true, clientId: newClientRef.id };
    }
-};
+);

@@ -338,7 +338,16 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
             </Stack>
             <Divider sx={{ mt: 5 }} />
 
-            <Box sx={{ overflowX: "auto" }}>
+            <Box
+               sx={{
+                  overflowX: "auto",
+                  "&::-webkit-scrollbar": {
+                     display: "none",
+                  },
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none",
+               }}
+            >
                <Table
                   sx={{
                      "& .MuiTableCell-root": {
@@ -557,6 +566,12 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
                onClose={() => setOpen(false)}
                PaperProps={{
                   sx: { p: 3, borderRadius: 3, minWidth: 200 },
+               }}
+               BackdropProps={{
+                  sx: {
+                     bgcolor: "rgba(18, 18, 18, 0.1)",
+                     backdropFilter: "blur(3px)",
+                  },
                }}
             >
                {pdfLoading ? (

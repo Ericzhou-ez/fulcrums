@@ -18,11 +18,12 @@ if (!admin.apps.length) {
 
 import createUserDoc from "./services/users/createUser";
 import { createProduct } from "./services/products/createProduct";
+import { addClient } from "./services/client/addClient";
 import { saveUnsavedProduct } from "./services/products/saveProduct";
 import { editProduct } from "./services/products/editProduct";
 import { deleteProducts } from "./services/products/deleteProduct";
 
-export { createUserDoc, createProduct, saveUnsavedProduct, editProduct, deleteProducts };
+export { createUserDoc, createProduct, saveUnsavedProduct, editProduct, deleteProducts, addClient };
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript

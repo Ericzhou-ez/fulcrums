@@ -1,24 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
-import { auth, googleAuth, actionCodeSettings } from "../configs/firebase";
-import {
-   createUserWithEmailAndPassword,
-   signInWithEmailAndPassword,
-   signInWithPopup,
-   sendSignInLinkToEmail,
-   isSignInWithEmailLink,
-   signInWithEmailLink,
-} from "firebase/auth";
+import React, { useState, useRef } from "react";
 import "../styles/authentication.css";
 import Footer from "../components/core/footer";
 import Nav from "../components/core/nav";
 import { Box, Checkbox, Typography, Link } from "@mui/material";
 import FooterName from "../assets/images/footerName.svg";
-import { useAuth } from "../contexts/authContexts";
 import { useUserServices } from "../contexts/userServices";
 import { useThemeContext } from "../contexts/themeContextProvider";
 import CtaPhoto from "../assets/images/sunset_dune.svg";
-import LoginBackground from "../assets/images/signin-background.svg";
-import { useUIStateContext } from "../contexts/UIStateContextProvider";
 
 
 const SignInPage = () => {

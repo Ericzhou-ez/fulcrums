@@ -1,4 +1,3 @@
-import * as admin from "firebase-admin";
 import * as functions from "firebase-functions/v2";
 import { db } from "../../utils";
 import { deleteImageByUrl } from "./handleDeletePhoto";
@@ -11,7 +10,6 @@ export const deleteProducts = functions.https.onCall(
       if (!auth) {
          throw new functions.https.HttpsError("unauthenticated", "你没有权限");
       }
-
       const uid = auth.uid;
 
       if (!Array.isArray(productIds) || productIds.length === 0) {
@@ -47,16 +45,6 @@ export const deleteProducts = functions.https.onCall(
 
             // delete doc
             await productRef.delete();
-
-            // remove product id from client and supplier product arrays
-            await Promise.all([
-               removeProductFromClient(uid, productData.clientId, productId),
-               removeProductFromSupplier(
-                  uid,
-                  productData.supplier.supplierId,
-                  productId
-               ),
-            ]);
          })
       );
 
@@ -75,37 +63,3 @@ export const deleteProducts = functions.https.onCall(
       };
    }
 );
-
-const removeProductFromClient = async (
-   uid: string,
-   clientId: string,
-   productId: string
-) => {
-   if (!clientId) return console.warn("Missing client ID");
-   const clientRef = db
-      .collection("users")
-      .doc(uid)
-      .collection("clients")
-      .doc(clientId);
-
-   await clientRef.update({
-      products: admin.firestore.FieldValue.arrayRemove(productId),
-   });
-};
-
-const removeProductFromSupplier = async (
-   uid: string,
-   supplierId: string,
-   productId: string
-) => {
-   if (!supplierId) return console.warn("Missing supplier ID");
-   const supplierRef = db
-      .collection("users")
-      .doc(uid)
-      .collection("suppliers")
-      .doc(supplierId);
-
-   await supplierRef.update({
-      products: admin.firestore.FieldValue.arrayRemove(productId),
-   });
-};

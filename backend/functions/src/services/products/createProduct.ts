@@ -1,9 +1,10 @@
 import * as functions from "firebase-functions/v2";
-import { addClientInternal } from "../client/addClient";
-import { addSupplierInternal } from "../supplier/addSupplier";
-import { db, storage } from "../../utils";
+import { db } from "../../utils";
+import { uploadBlobAsJPG } from "../lib/upload_blob_as_jpg";
+import * as admin from "firebase-admin";
 
-// this also updates product if it already exists
+const bucket = admin.storage().bucket();
+
 export const createProduct = functions.https.onCall(
    async (req: functions.https.CallableRequest) => {
       const { data, auth } = req;
@@ -13,127 +14,138 @@ export const createProduct = functions.https.onCall(
       }
 
       const uid = auth.uid;
+      const errors: string[] = [];
       const {
-         image: src,
-         productChineseName: productChineseName,
-         productEnglishName: productEnglishName,
+         image,
+         productChineseName,
+         productEnglishName,
          unitPrice,
-         productDimension: { volume: productVolume, unit: dimensionUnit },
-         mass: { quantity: mass, unit: massUnit },
-         packaging,
-         packingMass: { quantity: packingMass, unit: packingMassUnit },
-         packingVolume: { volume: packingVolume, unit: packingDimensionUnit },
+         unitMass: { unitMassQuantity, unitMassUnit },
+         packing,
+         packingMass: { packingMassQuantity, packingMassUnit },
+         packingVolume: { length, width, height, packingUnit },
          saved,
          updatedAt,
          supplier: {
-            name: supplierName,
-            phone: supplierPhone,
-            address: supplierAddress,
-            email: supplierEmail,
+            supplierName,
+            supplierAddress,
+            supplierPhoneNumber,
+            supplierEmail,
          },
          additionalNotes,
-         catagory: productCatagory,
-         client: clientName,
-         currency: currency,
+         clients,
+         currency,
+         hsCode,
+         material,
       } = data;
 
-      if (!productChineseName || !productEnglishName) {
+      const required = {
+         productChineseName,
+         productEnglishName,
+         unitPrice,
+         packing,
+         length,
+         width,
+         height,
+         packingUnit,
+         supplierName,
+      };
+      
+      // validate
+      for (const [k, v] of Object.entries(required)) {
+         let value = v;
+         if (typeof value !== "string") value = String(value);
+
+         if (!value || value.trim().length === 0) {
+            errors.push(`${v} of ${k} is invalid`);
+         }
+      }
+      for (const [k, v] of Object.entries(required)) {
+         if (typeof v === "string") {
+            if (v.trim().length === 0) errors.push(`${k} 不能为空`);
+         } else if (v === undefined || v === null) {
+            errors.push(`${k} 不能为空`);
+         }
+      }
+
+      if (clients.length > 50) {
+         errors.push("Too many clients assigned");
+      }
+      if (!image) {
+         errors.push("No product image");
+      }
+      for (const client of clients) {
+         if (client.length > 100) {
+            errors.push(`${client} is not a valid client ID`);
+         }
+      }
+
+      if (errors.length > 0) {
          throw new functions.https.HttpsError(
             "invalid-argument",
-            "Not sufficient fields"
+            errors.join("; ")
          );
       }
 
-      try {
-         const productRef = db
-            .collection("users")
-            .doc(uid)
-            .collection("products")
-            .doc();
-         const productId = productRef.id;
+      // store
+      const newProductRef = db
+         .collection("users")
+         .doc(uid)
+         .collection("products")
+         .doc();
 
-         const bucket = storage.bucket();
-         const storagePath = `users/${uid}/products/${productId}`;
-         const file = bucket.file(storagePath);
-
-         const base64Data = src.includes(",") ? src.split(",")[1] : src;
-         const buffer = Buffer.from(base64Data, "base64");
-         
-         await file.save(buffer, {
-            contentType: "image/jpeg",
-            metadata: {
-               firebaseStorageDownloadTokens: productId,
-            },
-         });
-
-         const token = productId;
-         const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${
-            bucket.name
-         }/o/${encodeURIComponent(storagePath)}?alt=media&token=${token}`;
-
-         const clientId = await addClientInternal(
-            { clientName: clientName, productId },
-            uid
-         );
-
-         const supplierId = await addSupplierInternal(
+      const productId = newProductRef.id;
+      const productImagePath = `users_${uid}_products_${productId}.jpg`;
+      const uploadImagePromise = uploadBlobAsJPG(
+         image,
+         productId,
+         productImagePath
+      );
+      const uploadProductPromise = newProductRef
+         .set(
             {
-               name: supplierName,
-               phone: supplierPhone,
-               address: supplierAddress,
-               email: supplierEmail,
-               productId,
-            },
-            uid
-         );
-
-         await productRef.set(
-            {
-               productId,
-               image: publicUrl,
+               image: `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${productImagePath}?alt=media&token=${productId}`,
                productChineseName,
                productEnglishName,
-               packingMass: {
-                  packingMass,
-                  packingMassUnit,
-               },
                unitPrice,
-               sellsPrice: unitPrice * 1.05,
-               productDimension: {
-                  volume: productVolume,
-                  unit: dimensionUnit,
-               },
-               mass: { quantity: mass, unit: massUnit },
-               packaging,
-               packingVolume: {
-                  volume: packingVolume,
-                  unit: packingDimensionUnit,
-               },
+               unitMass: { unitMassQuantity, unitMassUnit },
+               packing,
+               packingMass: { packingMassQuantity, packingMassUnit },
+               packingVolume: { length, width, height, packingUnit },
                saved,
                updatedAt,
                supplier: {
-                  name: supplierName,
-                  phone: supplierPhone,
-                  address: supplierAddress,
-                  email: supplierEmail,
-                  supplierId,
+                  supplierName,
+                  supplierAddress,
+                  supplierPhoneNumber,
+                  supplierEmail,
                },
                additionalNotes,
-               catagory: productCatagory,
-               client: clientName,
-               clientId,
+               clients,
                currency,
+               hsCode,
+               material,
+               productId: newProductRef.id,
             },
             { merge: true }
-         );
+         )
+         .catch((err) => {
+            functions.logger.error("Error writing to firestore: " + err);
+            throw new functions.https.HttpsError(
+               "internal",
+               "Failed to upload product info"
+            );
+         });
 
-         return { success: true, productId, imageUrl: publicUrl };
+      try {
+         await Promise.all([uploadImagePromise, uploadProductPromise]);
+
+         return { success: true };
       } catch (err) {
-         console.error(err);
-         throw new functions.https.HttpsError(
-            "internal",
-            "Error in adding new product"
-         );
+         functions.logger.error("addProduct overall failure", err.message, {
+            uid: uid,
+         });
+         throw err;
       }
    }
 );

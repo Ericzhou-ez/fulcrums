@@ -18,8 +18,7 @@ import Suggestions from "../../components/dashboard/core/suggestion";
 
 const RecentProductsPage = () => {
    const { isDark, isMdUp, isSmUp } = useThemeContext();
-   const { products, errorMessages } =
-      useProductSupplierClientContext();
+   const { products, errorMessages } = useProductSupplierClientContext();
 
    const productList = products;
 
@@ -37,21 +36,6 @@ const RecentProductsPage = () => {
 
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
-         {errorMessages && (
-            <Box
-               sx={{
-                  position: "fixed",
-                  top: 0,
-                  zIndex: "5000",
-                  width: navOpen ? "calc(100% - 240px)" : "100%",
-               }}
-            >
-               {errorMessages && (
-                  <Alert severity="error">{errorMessages}</Alert>
-               )}
-            </Box>
-         )}
-
          <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
          <Nav home={false} searchBar={true} />
 
@@ -125,23 +109,9 @@ const RecentProductsPage = () => {
 
          {viewMode === "grid" ? (
             <div className="cards-grid">
-               {Object.keys(products).length === 0 ? (
-                  <Stack
-                     direction="row"
-                     gap={1.5}
-                     justifyContent="center"
-                     alignItems="center"
-                  >
-                     <Typography variant="body2" textAlign="center">
-                        拼命加载中...
-                     </Typography>
-                     <Loader />
-                  </Stack>
-               ) : (
-                  Object.entries(productList).map(([id, product]) => (
-                     <ProductCard key={id} item={product} isDarkMode={isDark} />
-                  ))
-               )}
+               {Object.entries(productList).map(([id, product]) => (
+                  <ProductCard key={id} item={product} isDarkMode={isDark} />
+               ))}
             </div>
          ) : (
             <ProductTable productList={Object.values(productList)} />

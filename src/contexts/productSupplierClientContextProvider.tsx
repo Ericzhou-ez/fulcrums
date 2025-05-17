@@ -5,7 +5,7 @@ import React, {
    ReactNode,
    useEffect,
 } from "react";
-import { Product, ProductType, Supplier, Clients } from "../types/types";
+import { Product, Supplier, Clients } from "../types/types";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { getDocs, collection, onSnapshot } from "firebase/firestore";
 import { db } from "../configs/firebase";
@@ -35,10 +35,11 @@ export type ProductSupplierClientContextType = {
    editedClient: boolean;
    deletedClient: boolean;
    serviceLoading: boolean;
-   products: Record<string, ProductType>;
+   products: Record<string, Product>;
    suppliers: { [key: string]: any };
    clients: { [key: string]: any };
    errorMessages: string;
+   setErrorMessages: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const ProductSupplierClientContext = createContext<
@@ -49,10 +50,14 @@ export const ProductSupplierClientContextProvider = ({
    children,
    serviceLoading,
    setServiceLoading,
+   errorMessages,
+   setErrorMessages,
 }: {
    children: ReactNode;
    serviceLoading: boolean;
    setServiceLoading: React.Dispatch<React.SetStateAction<boolean>>;
+   errorMessages: string;
+   setErrorMessages: React.Dispatch<React.SetStateAction<string>>;
 }) => {
    const { user } = useAuth();
    const uid = user?.uid;
@@ -65,9 +70,8 @@ export const ProductSupplierClientContextProvider = ({
    const [addedClient, setAddedClient] = useState(false);
    const [editedClient, setEditedClient] = useState(false);
    const [deletedClient, setDeletedClient] = useState(false);
-   const [errorMessages, setErrorMessages] = useState<string>("");
 
-   const [products, setProducts] = useState<{ [key: string]: ProductType }>({});
+   const [products, setProducts] = useState<{ [key: string]: Product }>({});
    const [clients, setClients] = useState<{ [key: string]: Clients }>({});
    const [suppliers, setSuppliers] = useState<{ [key: string]: Supplier }>({});
    const functions = getFunctions();
@@ -88,10 +92,10 @@ export const ProductSupplierClientContextProvider = ({
       const unsub = onSnapshot(
          collection(db, "users", user.uid, "products"),
          (snapshot) => {
-            let products: { [key: string]: ProductType } = {};
+            let products: { [key: string]: Product } = {};
 
             snapshot.forEach((doc) => {
-               const product = doc.data() as ProductType;
+               const product = doc.data() as Product;
                products[product.productId] = product;
             });
 
@@ -177,9 +181,10 @@ export const ProductSupplierClientContextProvider = ({
          const response: any = await createProduct(product);
 
          if (response.data.success) {
-            setServiceLoading(false);
             setAddedProduct(true);
+            setServiceLoading(false);
          }
+         
       } catch (err) {
          console.error("Error calling createProduct function: ", err);
          setServiceLoading(false);
@@ -239,8 +244,29 @@ export const ProductSupplierClientContextProvider = ({
    };
 
    const addClient = async (client: any) => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setAddedClient(true);
+      try {
+         setServiceLoading(true);
+
+         const addNewClient = httpsCallable(functions, "addClient");
+         const response: any = await addNewClient(client);
+
+         if (response.data.success) {
+            setAddedClient(true);
+            setServiceLoading(false);
+
+            setErrorMessages("添加成功");
+         }
+
+      } catch (err: any) {
+         setServiceLoading(false);
+
+         const message =
+            typeof err === "string" ? err : err?.message ?? "未知错误";
+
+         setErrorMessages(message);
+
+         console.error("Failed to add client: " + err);
+      }
    };
 
    const editClient = async (client: any) => {
@@ -331,6 +357,7 @@ export const ProductSupplierClientContextProvider = ({
             suppliers,
             clients,
             errorMessages,
+            setErrorMessages,
          }}
       >
          {children}

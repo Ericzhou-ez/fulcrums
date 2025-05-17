@@ -4,7 +4,9 @@ export type Mass = {
 };
 
 export type VolumetricDimensions = {
-   volume: number;
+   height: number;
+   width: number;
+   length: number;
    unit: "m" | "cm" | "in" | "L";
 };
 
@@ -14,49 +16,9 @@ export type Product = {
    productChineseName: string;
    productEnglishName: string;
    unitPrice: number;
-   salesPrice: number;
-
-   productDimension: VolumetricDimensions;
-   mass: Mass;
-
-   packaging: number;
-   packingVolume: VolumetricDimensions;
-   packingMass: {
-      packingMass: number;
-      packingMassUnit: string;
-   };
-
-   saved: boolean;
-   updatedAt: string;
-
-   supplier: {
-      name: string;
-      phone: string;
-      address: string;
-      email: string;
-      supplierId: string;
-   };
-
-   additionalNotes: string;
-   catagory: string;
-   client: string;
-   clientId: string;
-
-   purchaseVolume?: number;
-   salesVolume?: number;
-   currency: string;
-};
-
-export type ProductType = {
-   productId: string;
-   image: string;
-   productChineseName: string;
-   productEnglishName: string;
-   unitPrice: number;
-   salesPrice: number;
-
-   productDimension: VolumetricDimensions;
-   mass: Mass;
+   unitMass: Mass;
+   material: string;
+   hsCode: string;
 
    packaging: number;
    packingVolume: VolumetricDimensions;
@@ -77,12 +39,11 @@ export type ProductType = {
    };
 
    additionalNotes: string;
-   catagory: string;
-   client: string;
-   clientId: string;
-
-   purchaseVolume?: number;
-   salesVolume?: number;
+   client: {
+      clientId: string;
+      name: string;
+      products: string[];
+   };
    currency: string;
 };
 
@@ -101,6 +62,7 @@ export type SupplierMapping = {
 export type Clients = {
    name: string;
    clientId: string;
+   products: string[];
 };
 
 export type UserType = {

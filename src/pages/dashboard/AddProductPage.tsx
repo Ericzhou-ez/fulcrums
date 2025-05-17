@@ -2,52 +2,30 @@ import React, { useState, useEffect } from "react";
 import {
    Typography,
    Box,
-   Paper,
    TextField,
    InputAdornment,
    IconButton,
    Button,
-   Select,
-   MenuItem,
-   FormControl,
-   InputLabel,
-   FormHelperText,
    Tooltip,
    Autocomplete,
    Alert,
+   Stack,
+   Popper,
 } from "@mui/material";
-import { Exam, X } from "phosphor-react";
+import { Exam, PlusCircle, X } from "phosphor-react";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import SideNav from "../../components/dashboard/dashboardNav";
 import "../../styles/Add-product.css";
-import FloatingTocNav from "../../components/core/FloatingTocNav";
 import { useThemeContext } from "../../contexts/themeContextProvider";
-import {
-   ToggleLeft,
-   ToggleRight,
-   ArrowsOut,
-   ArrowsIn,
-   Heart,
-   Plus,
-} from "phosphor-react";
+import { ArrowsOut, ArrowsIn, Heart } from "phosphor-react";
 import ProductDefaultImage from "../../assets/images/product-background.svg";
-import ExmapleProduct from "/public/demo/O1CN01pln4jM203FPjV7zaX_!!2214227246793-0-cib.220x220.jpg";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
-import { MultiSelect } from "../../components/core/multiSelect";
-import { typeOptions } from "../../components/dashboard/search/productFilter";
 import ProductandCompanyData from "../../data/products_companies.json";
 import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
-import Loading from "../../components/core/loading";
-import { useNavigate } from "react-router";
-
-const TOS_SECTIONS = [
-   { id: "product-input", label: "产品" },
-   { id: "packing-input", label: "包装" },
-   { id: "supplier-input", label: "供应商" },
-   { id: "client-input", label: "客户" },
-   { id: "extra-input", label: "更多" },
-];
+import NewClientModal from "./addNewClient";
+import MultipleSelectChip from "../../components/core/multiselectWithChip";
+import getBase64FromBlobUrl from "../../lib/blob-to-blob64";
 
 const AddProductForm = () => {
    const { navOpen } = useUIStateContext();
@@ -61,75 +39,41 @@ const AddProductForm = () => {
    const [currency, setCurrency] = useState("¥"); // 切换：$, €, ¥
    const [mass, setMass] = useState("");
    const [massUnit, setMassUnit] = useState("g"); // 切换 kg <-> g
-   // For dimensions: either separate L/W/H OR single volume when toggled
-   const [length, setLength] = useState("");
-   const [width, setWidth] = useState("");
-   const [height, setHeight] = useState("");
-   const [productVolume, setProductVolume] = useState(""); // used when volume mode is true
-   const [dimensionUnit, setDimensionUnit] = useState("cm"); // 切换 cm <-> m; volume unit will be derived (cm³ or m³)
+   const [hsCode, sethsCode] = useState("");
+   const [material, setMaterial] = useState("");
+
    const [packingMass, setPackingMass] = useState("");
    const [packingMassUnit, setPackingMassUnit] = useState("g"); // 切换 kg <-> g
    const [productCatagory, setProductCatagory] = useState(""); // required
-   const [isVolumeMode, setIsVolumeMode] = useState(false); // false = 分拆模式 (L/W/H), true = 体积模式
    const [packing, setPacking] = useState("");
-   const [packingVolume, setPackingVolume] = useState("");
    const [packingLength, setPackingLength] = useState("");
    const [packingWidth, setPackingWidth] = useState("");
    const [packingHeight, setPackingHeight] = useState("");
    const [packingDimensionUnit, setPackingDimensionUnit] = useState("cm"); // 切换 cm <-> m
-   const [isPackingVolumeMode, setIsPackingVolumeMode] = useState(false); // 切换为体积模式
+
    const [supplierName, setSupplierName] = useState("");
    const [supplierAddress, setSupplierAddress] = useState("");
    const [supplierPhone, setSupplierPhone] = useState("");
    const [supplierEmail, setSupplierEmail] = useState("");
-   const [clientName, setClientName] = useState("");
+   const [selectedClient, setSelectedClient] = useState<string[] | null>([]);
+
    const [additionalNotes, setAdditionalNotes] = useState("");
-   const handleClear = (setter: (value: string) => void) => () => setter("");
    const [submittingForm, setSubmittingForm] = useState(false);
    const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
    const [selectedSupplier, setSelectedSupplier] = useState<string | null>(
       null
    );
-   const [selectedClient, setSelectedClient] = useState<string | null>(null);
    const [isFormComplete, setIsFormComplete] = useState<string | boolean>(
       false
    );
-   const { addedProduct, addProduct } =
-      useProductSupplierClientContext();
+   const { addedProduct, addProduct } = useProductSupplierClientContext();
    const [buttonDisabled, setButtonDisabled] = useState(addedProduct);
-   const [autoFillClients, setAutoFillClients] = useState<string[]>();
+   const handleClear = (setter: (value: string) => void) => () => setter("");
+   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
 
-   async function getBase64FromBlobUrl(blobUrl: string) {
-      const blob = await fetch(blobUrl).then((res) => res.blob());
-      return new Promise((resolve, reject) => {
-         const reader = new FileReader();
-         reader.onload = () => {
-            const base64String = (reader.result as string).split(",")[1];
-            resolve(base64String);
-         };
-         reader.onerror = () => {
-            reject(new Error("Failed to read blob as base64"));
-         };
-
-         reader.readAsDataURL(blob);
-      });
-   }
-
-   const { getClients, clients } = useProductSupplierClientContext();
-   useEffect(() => {
-      const fetchClients = async () => {
-         await getClients();
-         const clientArray: string[] = [];
-
-         Object.values(clients).forEach((c: any) => {
-            clientArray.push(c.name);
-         });
-
-         setAutoFillClients(clientArray);
-      };
-
-      fetchClients();
-   }, [productChineseName, supplierName]);
+   const closeClientModal = (): void => {
+      setIsClientModalOpen((prev) => !prev);
+   };
 
    async function handleAddProduct() {
       setSubmittingForm(true);
@@ -147,59 +91,36 @@ const AddProductForm = () => {
          productChineseName: productChineseName,
          productEnglishName: productEnglishName,
          unitPrice: unitPrice,
-         productDimension: {
-            volume: parseFloat(productVolume) || 0,
-            unit: dimensionUnit,
+         unitMass: {
+            unitMassQuantity: mass,
+            unitMassUnit: massUnit,
          },
-         mass: {
-            quantity: parseFloat(mass),
-            unit: massUnit,
-         },
-         packaging: parseInt(packing),
+         packing: parseInt(packing),
          packingVolume: {
-            volume: parseFloat(packingVolume),
-            unit: packingDimensionUnit,
+            length: packingLength,
+            width: packingWidth,
+            height: packingHeight,
+            packingUnit: packingDimensionUnit,
          },
          packingMass: {
-            quantity: parseFloat(packingMass),
-            unit: packingMassUnit,
+            packingMassQuantity: packingMass,
+            packingMassUnit: packingMassUnit,
          },
          saved: saved,
          updatedAt: new Date().toISOString(),
          supplier: {
-            name: supplierName,
-            phone: supplierPhone,
-            address: supplierAddress,
-            email: supplierEmail,
+            supplierName: supplierName,
+            supplierAddress: supplierAddress,
+            supplierPhoneNumber: supplierPhone,
+            supplierEmail: supplierEmail,
          },
          additionalNotes: additionalNotes,
-         catagory: productCatagory,
-         client: clientName,
+         clients: selectedClient,
          currency: currency,
+         hsCode: hsCode,
+         material: material,
       });
    }
-
-   useEffect(() => {
-      const l = parseFloat(length);
-      const w = parseFloat(width);
-      const h = parseFloat(height);
-
-      if (l > 0 && w > 0 && h > 0) {
-         const volume = l * w * h;
-         setProductVolume(volume.toString());
-      }
-   }, [length, width, height, productVolume]);
-
-   useEffect(() => {
-      const pl = parseFloat(packingLength);
-      const pw = parseFloat(packingWidth);
-      const ph = parseFloat(packingHeight);
-
-      if (pl > 0 && pw > 0 && ph > 0) {
-         const pVolume = pl * pw * ph;
-         setPackingVolume(pVolume.toString());
-      } 
-   }, [packingLength, packingWidth, packingHeight, packingVolume]);
 
    // default values
    const [forexRates, setForexRates] = useState({
@@ -268,34 +189,17 @@ const AddProductForm = () => {
       setPackingMassUnit((prev) => (prev === "kg" ? "g" : "kg"));
    };
 
-   const toggleDimensionUnit = () => {
-      setDimensionUnit((prev) => (prev === "cm" ? "m" : "cm"));
-   };
-
-   const toggleVolumeMode = () => {
-      setIsVolumeMode((prev) => !prev);
-      setLength("");
-      setWidth("");
-      setHeight("");
-      setProductVolume("");
-   };
-
    const togglePackingDimensionUnit = () => {
       setPackingDimensionUnit((prev) => (prev === "cm" ? "m" : "cm"));
-   };
-
-   const togglePackingVolumeMode = () => {
-      setIsPackingVolumeMode((prev) => !prev);
-      setPackingLength("");
-      setPackingWidth("");
-      setPackingHeight("");
    };
 
    // get product autofill res
    const getProductFromQuery = () => {
       if (productChineseName.length > 0) {
          const keys = Object.keys(ProductandCompanyData["search_by_product"]);
-         const res = keys.filter((p) => p.includes(productChineseName));
+         const res = keys
+            .filter((p) => p.includes(productChineseName))
+            .filter((name) => !!name && name.trim() !== "");
 
          return res.slice(0, 10);
       }
@@ -337,21 +241,13 @@ const AddProductForm = () => {
       if (!productChineseName) missing.push("产品中文名");
       if (!productEnglishName) missing.push("产品英文名");
       if (!unitPrice) missing.push("单价");
-      if (!packing) missing.push("包装方式");
-      if (!packingMass) missing.push("包装重量");
-      if (!supplierName) missing.push("供应商名称");
-      if (!clientName) missing.push("客户名称");
-      if (src === ProductDefaultImage) missing.push("产品图片");
-
-      if (isPackingVolumeMode) {
-         // user is in '单一体积' mode:
-         if (!packingVolume) missing.push("包装体积");
-      } else {
-         // user is in '长 x 宽 x 高' mode:
-         if (!packingLength || !packingWidth || !packingHeight) {
-            missing.push("包装尺寸(长宽高)");
-         }
+      if (!packing) missing.push("包装");
+      if (!packingLength || !packingWidth || !packingHeight) {
+         missing.push("包装尺寸");
       }
+      if (!supplierName) missing.push("供应商名称");
+      if (selectedClient?.length === 0) missing.push("客户");
+      if (src === ProductDefaultImage) missing.push("产品图片");
 
       setIsFormComplete(missing.length ? "请填写" + missing.join(", ") : true);
    }, [
@@ -359,15 +255,12 @@ const AddProductForm = () => {
       productEnglishName,
       unitPrice,
       packing,
-      packingMass,
       supplierName,
-      clientName,
+      selectedClient,
       src,
-      packingVolume,
       packingLength,
       packingWidth,
       packingHeight,
-      isPackingVolumeMode,
    ]);
 
    useEffect(() => {
@@ -385,28 +278,17 @@ const AddProductForm = () => {
       setProductChineseName("");
       setPackingMass("");
       setUnitPrice("");
-      setCurrency("¥");
       setMass("");
-      setMassUnit("g");
-      setLength("");
-      setWidth("");
-      setHeight("");
-      setProductVolume("");
-      setDimensionUnit("cm");
       setProductCatagory("");
-      setIsVolumeMode(false);
       setPacking("");
-      setPackingVolume("");
       setPackingLength("");
       setPackingWidth("");
       setPackingHeight("");
-      setPackingDimensionUnit("cm");
-      setIsPackingVolumeMode(false);
       setSupplierName("");
       setSupplierAddress("");
       setSupplierPhone("");
       setSupplierEmail("");
-      setClientName("");
+      setSelectedClient(null);
       setSelectedProduct(null);
       setSelectedSupplier(null);
       setSelectedClient(null);
@@ -466,6 +348,42 @@ const AddProductForm = () => {
                      setProductChineseName(newValue || "");
                   }}
                   clearOnEscape
+                  PopperComponent={(props) => (
+                     <Popper
+                        {...props}
+                        modifiers={[
+                           {
+                              name: "offset",
+                              options: {
+                                 offset: [0, 4],
+                              },
+                           },
+                        ]}
+                        sx={{
+                           mt: 0,
+                           "& .MuiAutocomplete-paper": {
+                              maxHeight: 300,
+                              overflowY: "auto",
+                              overflowX: "hidden",
+                           },
+                           "& .MuiAutocomplete-listbox": {
+                              maxHeight: 300,
+                              overflowY: "auto",
+                              overflowX: "hidden",
+                              padding: 2,
+                              scrollbarWidth: "none",
+                              "&::-webkit-scrollbar": {
+                                 display: "none",
+                              },
+                           },
+                        }}
+                     />
+                  )}
+                  sx={{
+                     "& .MuiAutocomplete-inputRoot": {
+                        paddingBottom: "2px",
+                     },
+                  }}
                   renderInput={(params) => (
                      <TextField
                         {...params}
@@ -516,181 +434,111 @@ const AddProductForm = () => {
                   sx={{ my: 2 }}
                />
 
-               {/* 单价 - 数字类型, left adornment for currency, clear button on right if text exists */}
-               <TextField
-                  inputProps={{ maxLength: 20 }}
-                  fullWidth
-                  label="单价"
-                  type="number"
-                  value={unitPrice}
-                  onChange={(e) => setUnitPrice(e.target.value)}
-                  required
-                  size="small"
-                  InputProps={{
-                     startAdornment: (
-                        <InputAdornment position="start">
-                           <IconButton onClick={toggleCurrency} color="primary">
-                              <Typography>{currency}</Typography>
-                           </IconButton>
-                        </InputAdornment>
-                     ),
-                     endAdornment: unitPrice && (
-                        <InputAdornment position="end">
-                           <IconButton onClick={handleClear(setUnitPrice)}>
-                              <X size={20} />
-                           </IconButton>
-                        </InputAdornment>
-                     ),
-                  }}
-                  sx={{ my: 2 }}
-               />
-               {/* 质量（重量) right adornment for toggle; also include clear button before toggle if text exists */}
-               <TextField
-                  inputProps={{ maxLength: 20 }}
-                  fullWidth
-                  label="重量"
-                  type="number"
-                  size="small"
-                  value={mass}
-                  onChange={(e) => setMass(e.target.value)}
-                  InputProps={{
-                     endAdornment: (
-                        <InputAdornment position="end">
-                           {mass && (
-                              <IconButton onClick={handleClear(setMass)}>
+               <Stack
+                  direction={{ sx: "column", sm: "row" }}
+                  gap={{ xs: 0, sm: 2 }}
+               >
+                  <TextField
+                     inputProps={{ maxLength: 20 }}
+                     fullWidth
+                     label="单价"
+                     type="number"
+                     value={unitPrice}
+                     onChange={(e) => setUnitPrice(e.target.value)}
+                     required
+                     size="small"
+                     InputProps={{
+                        startAdornment: (
+                           <InputAdornment position="start">
+                              <IconButton
+                                 onClick={toggleCurrency}
+                                 color="primary"
+                              >
+                                 <Typography>{currency}</Typography>
+                              </IconButton>
+                           </InputAdornment>
+                        ),
+                        endAdornment: unitPrice && (
+                           <InputAdornment position="end">
+                              <IconButton onClick={handleClear(setUnitPrice)}>
                                  <X size={20} />
                               </IconButton>
-                           )}
-                           <Button onClick={toggleMassUnit} size="small">
-                              {massUnit}
-                           </Button>
-                        </InputAdornment>
-                     ),
-                  }}
-                  sx={{ my: 2 }}
-               />
-               {/* 尺寸（长 x 宽 x 高） 或体积模式 */}
-               <Box
-                  sx={{
-                     display: { xs: "block", sm: "flex" },
-                     justifyContent: "space-between",
-                     alignItems: "center",
-                  }}
-               >
-                  {isVolumeMode ? (
-                     // Volume mode
-                     <Box
-                        sx={{
-                           display: "flex",
-                           alignItems: "flex-sart",
-                           my: 2,
-                           gap: 1,
-                        }}
-                     >
-                        <IconButton onClick={toggleVolumeMode}>
-                           <ToggleRight size={22} weight="fill" />
-                        </IconButton>
-                        <TextField
-                           inputProps={{ maxLength: 20 }}
-                           label="体积"
-                           type="number"
-                           size="small"
-                           value={productVolume}
-                           onChange={(e) => setProductVolume(e.target.value)}
-                        />
-                        <IconButton
-                           onClick={toggleDimensionUnit}
-                           color="primary"
-                        >
-                           <Typography>
-                              {dimensionUnit === "cm" ? "cm³" : "m³"}
-                           </Typography>
-                        </IconButton>
-                     </Box>
-                  ) : (
-                     // Dimension mode: three separate fields for 长, 宽, 高 with clear buttons on left
-                     <Box
-                        sx={{
-                           display: "flex",
-                           gap: 1,
-                           alignItems: "flex-start",
-                           my: 2,
-                        }}
-                     >
-                        <IconButton onClick={toggleVolumeMode}>
-                           <ToggleLeft size={22} weight="fill" />
-                        </IconButton>
-                        <TextField
-                           inputProps={{ maxLength: 20 }}
-                           label="长"
-                           type="number"
-                           size="small"
-                           value={length}
-                           onChange={(e) => setLength(e.target.value)}
-                           InputProps={{
-                              startAdornment: length && (
-                                 <InputAdornment position="start">
-                                    <IconButton
-                                       onClick={handleClear(setLength)}
-                                    >
-                                       <X size={20} />
-                                    </IconButton>
-                                 </InputAdornment>
-                              ),
-                           }}
-                        />
-                        <TextField
-                           inputProps={{ maxLength: 20 }}
-                           label="宽"
-                           type="number"
-                           size="small"
-                           value={width}
-                           onChange={(e) => setWidth(e.target.value)}
-                           InputProps={{
-                              startAdornment: width && (
-                                 <InputAdornment position="start">
-                                    <IconButton onClick={handleClear(setWidth)}>
-                                       <X size={20} />
-                                    </IconButton>
-                                 </InputAdornment>
-                              ),
-                           }}
-                        />
-                        <TextField
-                           inputProps={{ maxLength: 20 }}
-                           label="高"
-                           type="number"
-                           size="small"
-                           value={height}
-                           onChange={(e) => setHeight(e.target.value)}
-                           InputProps={{
-                              startAdornment: height && (
-                                 <InputAdornment position="start">
-                                    <IconButton
-                                       onClick={handleClear(setHeight)}
-                                    >
-                                       <X size={20} />
-                                    </IconButton>
-                                 </InputAdornment>
-                              ),
-                           }}
-                        />
-
-                        <IconButton
-                           onClick={toggleDimensionUnit}
-                           color="primary"
-                        >
-                           <Typography>{dimensionUnit}</Typography>
-                        </IconButton>
-                     </Box>
-                  )}
-                  <MultiSelect
-                     label="类别"
-                     options={typeOptions}
-                     value={productCatagory}
-                     onChange={(value: string) => setProductCatagory(value)}
+                           </InputAdornment>
+                        ),
+                     }}
+                     sx={{ my: 2 }}
                   />
-               </Box>
+                  <TextField
+                     inputProps={{ maxLength: 20 }}
+                     fullWidth
+                     label="重量"
+                     type="number"
+                     size="small"
+                     value={mass}
+                     onChange={(e) => setMass(e.target.value)}
+                     InputProps={{
+                        endAdornment: (
+                           <InputAdornment position="end">
+                              {mass && (
+                                 <IconButton onClick={handleClear(setMass)}>
+                                    <X size={20} />
+                                 </IconButton>
+                              )}
+                              <Button onClick={toggleMassUnit} size="small">
+                                 {massUnit}
+                              </Button>
+                           </InputAdornment>
+                        ),
+                     }}
+                     sx={{ my: 2 }}
+                  />
+               </Stack>
+
+               <Stack
+                  direction={{ sx: "column", sm: "row" }}
+                  gap={{ xs: 0, sm: 2 }}
+               >
+                  <TextField
+                     inputProps={{ maxLength: 20 }}
+                     fullWidth
+                     label="HS编码"
+                     type="text"
+                     value={hsCode}
+                     onChange={(e) => sethsCode(e.target.value)}
+                     size="small"
+                     InputProps={{
+                        endAdornment: hsCode && (
+                           <InputAdornment position="end">
+                              <IconButton onClick={handleClear(sethsCode)}>
+                                 <X size={20} />
+                              </IconButton>
+                           </InputAdornment>
+                        ),
+                     }}
+                     sx={{ my: 2 }}
+                  />
+                  <TextField
+                     inputProps={{ maxLength: 20 }}
+                     fullWidth
+                     label="材料"
+                     type="text"
+                     size="small"
+                     value={material}
+                     onChange={(e) => setMaterial(e.target.value)}
+                     InputProps={{
+                        endAdornment: (
+                           <InputAdornment position="end">
+                              {material && (
+                                 <IconButton onClick={handleClear(setMaterial)}>
+                                    <X size={20} />
+                                 </IconButton>
+                              )}
+                           </InputAdornment>
+                        ),
+                     }}
+                     sx={{ my: 2 }}
+                  />
+               </Stack>
             </Box>
 
             {/* -------------- 包装信息 -------------- */}
@@ -737,6 +585,88 @@ const AddProductForm = () => {
                   sx={{ my: 1 }}
                />
 
+               {/* 包装尺寸 */}
+               <Box
+                  sx={{
+                     display: "flex",
+                     gap: 1,
+                     alignItems: "center",
+                     my: 1,
+                  }}
+               >
+                  <TextField
+                     inputProps={{ maxLength: 20 }}
+                     label="长"
+                     type="number"
+                     size="small"
+                     value={packingLength}
+                     onChange={(e) => setPackingLength(e.target.value)}
+                     required
+                     fullWidth
+                     InputProps={{
+                        startAdornment: packingLength && (
+                           <InputAdornment position="start">
+                              <IconButton
+                                 onClick={handleClear(setPackingLength)}
+                              >
+                                 <X size={20} />
+                              </IconButton>
+                           </InputAdornment>
+                        ),
+                     }}
+                  />
+
+                  <TextField
+                     fullWidth
+                     inputProps={{ maxLength: 20 }}
+                     label="宽"
+                     type="number"
+                     size="small"
+                     value={packingWidth}
+                     onChange={(e) => setPackingWidth(e.target.value)}
+                     required
+                     InputProps={{
+                        startAdornment: packingWidth && (
+                           <InputAdornment position="start">
+                              <IconButton
+                                 onClick={handleClear(setPackingWidth)}
+                              >
+                                 <X size={20} />
+                              </IconButton>
+                           </InputAdornment>
+                        ),
+                     }}
+                  />
+                  <TextField
+                     fullWidth
+                     inputProps={{ maxLength: 20 }}
+                     label="高"
+                     type="number"
+                     size="small"
+                     value={packingHeight}
+                     onChange={(e) => setPackingHeight(e.target.value)}
+                     required
+                     InputProps={{
+                        startAdornment: packingHeight && (
+                           <InputAdornment position="start">
+                              <IconButton
+                                 onClick={handleClear(setPackingHeight)}
+                              >
+                                 <X size={20} />
+                              </IconButton>
+                           </InputAdornment>
+                        ),
+                     }}
+                  />
+
+                  <IconButton
+                     onClick={togglePackingDimensionUnit}
+                     color="primary"
+                  >
+                     <Typography>{packingDimensionUnit}</Typography>
+                  </IconButton>
+               </Box>
+
                <TextField
                   inputProps={{ maxLength: 20 }}
                   fullWidth
@@ -761,123 +691,6 @@ const AddProductForm = () => {
                   }}
                   sx={{ my: 2 }}
                />
-               {/* 包装尺寸 */}
-               {isPackingVolumeMode ? (
-                  // 单一体积输入模式
-                  <Box
-                     sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
-                        my: 1,
-                     }}
-                  >
-                     <IconButton onClick={togglePackingVolumeMode}>
-                        <ToggleLeft size={22} weight="fill" />
-                     </IconButton>
-                     <TextField
-                        inputProps={{ maxLength: 20 }}
-                        label="包装体积"
-                        type="number"
-                        value={packingVolume}
-                        onChange={(e) => {
-                           setPackingVolume(e.target.value);
-                        }}
-                        required
-                        size="small"
-                     />
-                     <IconButton
-                        onClick={togglePackingDimensionUnit}
-                        color="primary"
-                     >
-                        <Typography>
-                           {packingDimensionUnit === "cm" ? "cm³" : "m³"}
-                        </Typography>
-                     </IconButton>
-                  </Box>
-               ) : (
-                  // 分拆模式: 长、宽、高
-                  <Box
-                     sx={{
-                        display: "flex",
-                        gap: 1,
-                        alignItems: "center",
-                        my: 1,
-                     }}
-                  >
-                     <IconButton onClick={togglePackingVolumeMode}>
-                        <ToggleLeft size={22} weight="fill" />
-                     </IconButton>
-                     <TextField
-                        inputProps={{ maxLength: 20 }}
-                        label="长"
-                        type="number"
-                        size="small"
-                        value={packingLength}
-                        onChange={(e) => setPackingLength(e.target.value)}
-                        required
-                        InputProps={{
-                           startAdornment: packingLength && (
-                              <InputAdornment position="start">
-                                 <IconButton
-                                    onClick={handleClear(setPackingLength)}
-                                 >
-                                    <X size={20} />
-                                 </IconButton>
-                              </InputAdornment>
-                           ),
-                        }}
-                     />
-
-                     <TextField
-                        inputProps={{ maxLength: 20 }}
-                        label="宽"
-                        type="number"
-                        size="small"
-                        value={packingWidth}
-                        onChange={(e) => setPackingWidth(e.target.value)}
-                        required
-                        InputProps={{
-                           startAdornment: packingWidth && (
-                              <InputAdornment position="start">
-                                 <IconButton
-                                    onClick={handleClear(setPackingWidth)}
-                                 >
-                                    <X size={20} />
-                                 </IconButton>
-                              </InputAdornment>
-                           ),
-                        }}
-                     />
-                     <TextField
-                        inputProps={{ maxLength: 20 }}
-                        label="高"
-                        type="number"
-                        size="small"
-                        value={packingHeight}
-                        onChange={(e) => setPackingHeight(e.target.value)}
-                        required
-                        InputProps={{
-                           startAdornment: packingHeight && (
-                              <InputAdornment position="start">
-                                 <IconButton
-                                    onClick={handleClear(setPackingHeight)}
-                                 >
-                                    <X size={20} />
-                                 </IconButton>
-                              </InputAdornment>
-                           ),
-                        }}
-                     />
-
-                     <IconButton
-                        onClick={togglePackingDimensionUnit}
-                        color="primary"
-                     >
-                        <Typography>{packingDimensionUnit}</Typography>
-                     </IconButton>
-                  </Box>
-               )}
             </Box>
 
             {/* -------------- 供应商信息 -------------- */}
@@ -909,6 +722,42 @@ const AddProductForm = () => {
                      setSupplierName(newValue || "");
                   }}
                   clearOnEscape
+                  PopperComponent={(props) => (
+                     <Popper
+                        {...props}
+                        modifiers={[
+                           {
+                              name: "offset",
+                              options: {
+                                 offset: [0, 4],
+                              },
+                           },
+                        ]}
+                        sx={{
+                           mt: 0,
+                           "& .MuiAutocomplete-paper": {
+                              maxHeight: 300,
+                              overflowY: "auto",
+                              overflowX: "hidden",
+                           },
+                           "& .MuiAutocomplete-listbox": {
+                              maxHeight: 300,
+                              overflowY: "auto",
+                              overflowX: "hidden",
+                              padding: 2,
+                              scrollbarWidth: "none",
+                              "&::-webkit-scrollbar": {
+                                 display: "none",
+                              },
+                           },
+                        }}
+                     />
+                  )}
+                  sx={{
+                     "& .MuiAutocomplete-inputRoot": {
+                        paddingBottom: "2px",
+                     },
+                  }}
                   renderInput={(params) => (
                      <TextField
                         {...params}
@@ -936,6 +785,7 @@ const AddProductForm = () => {
                      />
                   )}
                />
+
                <TextField
                   fullWidth
                   inputProps={{ maxLength: 50 }}
@@ -1015,47 +865,21 @@ const AddProductForm = () => {
                   客户信息
                </Typography>
 
-               <Autocomplete
-                  freeSolo
-                  options={autoFillClients || []}
-                  value={selectedClient}
-                  inputValue={clientName}
-                  onInputChange={(event, newInputValue) =>
-                     setClientName(newInputValue)
-                  }
-                  onChange={(event, newValue) => {
-                     setSelectedClient(newValue);
-                     setClientName(newValue || "");
-                  }}
-                  clearOnEscape
-                  renderInput={(params) => (
-                     <TextField
-                        {...params}
-                        fullWidth
-                        inputProps={{ ...params.inputProps, maxLength: 50 }}
-                        label="选择客户"
-                        required
-                        helperText="如果自动补全中没有该客户，请直接输入"
-                        InputProps={{
-                           ...params.InputProps,
-                           endAdornment: clientName ? (
-                              <InputAdornment position="end">
-                                 <IconButton
-                                    onClick={(event) => {
-                                       event.stopPropagation();
-                                       setClientName("");
-                                       setSelectedClient(null);
-                                    }}
-                                 >
-                                    <X size={20} />
-                                 </IconButton>
-                              </InputAdornment>
-                           ) : null,
-                        }}
-                        sx={{ my: 1 }}
-                     />
-                  )}
-               />
+               <Stack
+                  sx={{ alignItems: "center", flexDirection: "row" }}
+                  gap={1}
+               >
+                  <MultipleSelectChip
+                     selectedClientIds={selectedClient || []}
+                     setSelectedClientIds={setSelectedClient}
+                  />
+
+                  <IconButton
+                     onClick={() => setIsClientModalOpen(!isClientModalOpen)}
+                  >
+                     <PlusCircle size={30} />
+                  </IconButton>
+               </Stack>
             </Box>
 
             {/* -------------- 附加信息 -------------- */}
@@ -1077,12 +901,12 @@ const AddProductForm = () => {
                <TextField
                   fullWidth
                   multiline
-                  rows={4}
+                  rows={5}
                   value={additionalNotes}
                   onChange={(e) => setAdditionalNotes(e.target.value)}
-                  placeholder="最多200个字符"
-                  inputProps={{ maxLength: 200 }}
-                  helperText={`${additionalNotes.length}/200`}
+                  placeholder="最多1000个字符"
+                  inputProps={{ maxLength: 1000 }}
+                  helperText={`${additionalNotes.length}/1000`}
                   InputProps={{
                      endAdornment: additionalNotes && (
                         <InputAdornment position="end">
@@ -1123,11 +947,6 @@ const AddProductForm = () => {
                保存产品
             </button>
          )}
-         <FloatingTocNav
-            sections={TOS_SECTIONS}
-            defaultWidth="30"
-            hoveredWidth="120"
-         />
 
          {/* not only isFormComplete true but productAdded further needs to be true */}
          {submittingForm && (
@@ -1152,6 +971,8 @@ const AddProductForm = () => {
                )}
             </Box>
          )}
+
+         <NewClientModal open={isClientModalOpen} onClose={closeClientModal} />
       </React.Fragment>
    );
 };
