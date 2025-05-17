@@ -1,13 +1,13 @@
 export type Mass = {
-   quantity: number;
-   unit: string;
+   unitMassQuantity: string;
+   unitMassUnit: string;
 };
 
 export type VolumetricDimensions = {
-   height: number;
-   width: number;
-   length: number;
-   unit: "m" | "cm" | "in" | "L";
+   length: string;
+   width: string;
+   height: string;
+   packingUnit: string;
 };
 
 export type Product = {
@@ -15,15 +15,15 @@ export type Product = {
    image: string;
    productChineseName: string;
    productEnglishName: string;
-   unitPrice: number;
+   unitPrice: string;
    unitMass: Mass;
    material: string;
    hsCode: string;
 
-   packaging: number;
+   packing: string;
    packingVolume: VolumetricDimensions;
    packingMass: {
-      packingMass: number;
+      packingMassQuantity: string;
       packingMassUnit: string;
    };
 
@@ -31,19 +31,15 @@ export type Product = {
    updatedAt: string;
 
    supplier: {
-      name: string;
-      phone: string;
-      address: string;
-      email: string;
-      supplierId: string;
+      supplierName: string;
+      supplierPhoneNumber: string;
+      supplierAddress: string;
+      supplierEmail: string;
+      supplierId?: string; 
    };
 
    additionalNotes: string;
-   client: {
-      clientId: string;
-      name: string;
-      products: string[];
-   };
+   clients: string[]; 
    currency: string;
 };
 

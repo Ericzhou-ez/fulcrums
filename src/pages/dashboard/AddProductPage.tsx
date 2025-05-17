@@ -44,7 +44,6 @@ const AddProductForm = () => {
 
    const [packingMass, setPackingMass] = useState("");
    const [packingMassUnit, setPackingMassUnit] = useState("g"); // 切换 kg <-> g
-   const [productCatagory, setProductCatagory] = useState(""); // required
    const [packing, setPacking] = useState("");
    const [packingLength, setPackingLength] = useState("");
    const [packingWidth, setPackingWidth] = useState("");
@@ -95,7 +94,7 @@ const AddProductForm = () => {
             unitMassQuantity: mass,
             unitMassUnit: massUnit,
          },
-         packing: parseInt(packing),
+         packing: packing,
          packingVolume: {
             length: packingLength,
             width: packingWidth,
@@ -279,7 +278,6 @@ const AddProductForm = () => {
       setPackingMass("");
       setUnitPrice("");
       setMass("");
-      setProductCatagory("");
       setPacking("");
       setPackingLength("");
       setPackingWidth("");
@@ -296,6 +294,9 @@ const AddProductForm = () => {
       setIsFormComplete(false);
       setButtonDisabled(false);
       setSubmittingForm(false);
+      setMaterial("");
+      sethsCode("");
+      setSelectedClient([]);
    };
 
    return (
@@ -499,7 +500,7 @@ const AddProductForm = () => {
                   gap={{ xs: 0, sm: 2 }}
                >
                   <TextField
-                     inputProps={{ maxLength: 20 }}
+                     inputProps={{ maxLength: 200 }}
                      fullWidth
                      label="HS编码"
                      type="text"
@@ -518,7 +519,7 @@ const AddProductForm = () => {
                      sx={{ my: 2 }}
                   />
                   <TextField
-                     inputProps={{ maxLength: 20 }}
+                     inputProps={{ maxLength: 200 }}
                      fullWidth
                      label="材料"
                      type="text"
@@ -898,6 +899,7 @@ const AddProductForm = () => {
                >
                   附加信息
                </Typography>
+               
                <TextField
                   fullWidth
                   multiline

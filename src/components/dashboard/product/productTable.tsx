@@ -35,7 +35,7 @@ import {
    ShareNetwork as ExportIcon,
 } from "phosphor-react";
 import { useThemeContext } from "../../../contexts/themeContextProvider";
-import { Clients, Product, ProductType } from "../../../types/types";
+import { Clients, Product } from "../../../types/types";
 import { useProductSupplierClientContext } from "../../../contexts/productSupplierClientContextProvider";
 import { useUIStateContext } from "../../../contexts/UIStateContextProvider";
 import { BuildInternalProductPDF } from "../../../lib/InteralProductsPDFBuilder";
@@ -44,7 +44,13 @@ import { typeOptions } from "../search/productFilter";
 import HeartComponent from "./heart";
 import Loader from "../../core/loader";
 
-export function ProductTable({ productList }: { productList: ProductType[] }) {
+const symbolToCurrencyCode: Record<string, string> = {
+   "¥": "CNY",
+   $: "USD",
+   "€": "EUR",
+};
+
+export function ProductTable({ productList }: { productList: Product[] }) {
    const { toggleSaveUnsaveProduct, deleteProducts, clients } =
       useProductSupplierClientContext();
 
@@ -101,11 +107,11 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
       }
 
       if (category !== "all") {
-         data = data.filter((item) => item?.catagory === category);
+         data = data.filter((item) => item?.hsCode === category);
       }
 
       if (selectedClient !== "all") {
-         data = data.filter((p) => p.clientId === selectedClient);
+         data = data.filter((p) => p.clients.includes(selectedClient));
       }
 
       data.sort((a, b) => {
@@ -197,7 +203,7 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
          products: selectedProductsList.reduce((acc, product) => {
             acc[product.productId] = product;
             return acc;
-         }, {} as Record<string, ProductType>),
+         }, {} as Record<string, Product>),
          upCharge: upChargeNum,
       });
 
@@ -219,7 +225,7 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
          products: selectedProductsList.reduce((acc, product) => {
             acc[product.productId] = product;
             return acc;
-         }, {} as Record<string, ProductType>),
+         }, {} as Record<string, Product>),
          upCharge: upChargeNum,
       });
 
@@ -384,7 +390,7 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
                            />
                         </TableCell>
                         <TableCell>产品</TableCell>
-                        <TableCell>类别</TableCell>
+                        <TableCell>HS代码</TableCell>
                         <TableCell>供应商</TableCell>
                         <TableCell>数量</TableCell>
                         <TableCell>单价</TableCell>
@@ -396,8 +402,9 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
 
                         const priceString = new Intl.NumberFormat("en-US", {
                            style: "currency",
-                           currency: "USD", // to be updated with actual currency
-                        }).format(row.unitPrice);
+                           currency:
+                              symbolToCurrencyCode[row.currency] ?? "CNY",
+                        }).format(parseFloat(row.unitPrice));
 
                         return (
                            <TableRow
@@ -485,20 +492,20 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
                               <TableCell>
                                  <Typography variant="inherit" noWrap>
                                     {typeOptions.find(
-                                       (option) => option.value === row.catagory
+                                       (option) => option.value === row.hsCode
                                     )?.label || "---"}
                                  </Typography>
                               </TableCell>
 
                               <TableCell>
                                  <Typography variant="inherit" noWrap>
-                                    {row.supplier.name}
+                                    {row.supplier.supplierName}
                                  </Typography>
                               </TableCell>
 
                               <TableCell>
                                  <Typography variant="inherit" noWrap>
-                                    {row.packaging}
+                                    {row.packing}
                                  </Typography>
                               </TableCell>
 
