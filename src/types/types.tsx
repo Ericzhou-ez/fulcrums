@@ -30,13 +30,7 @@ export type Product = {
    saved: boolean;
    updatedAt: string;
 
-   supplier: {
-      supplierName: string;
-      supplierPhoneNumber: string;
-      supplierAddress: string;
-      supplierEmail: string;
-      supplierId?: string; 
-   };
+   supplierId: string;
 
    additionalNotes: string;
    clients: string[]; 
@@ -45,10 +39,10 @@ export type Product = {
 
 export type Supplier = {
    supplierId: string;
-   name: string;
-   phone: string;
-   address: string;
-   email: string;
+   supplierName: string;
+   supplierPhoneNumber: string;
+   supplierAddress: string;
+   supplierEmail: string;
 };
 
 export type SupplierMapping = {

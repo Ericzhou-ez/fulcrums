@@ -26,6 +26,8 @@ import { useProductSupplierClientContext } from "../../contexts/productSupplierC
 import NewClientModal from "./addNewClient";
 import MultipleSelectChip from "../../components/core/multiselectWithChip";
 import getBase64FromBlobUrl from "../../lib/blob-to-blob64";
+import NewSupplierModal from "../../components/dashboard/supplier/addNewSupplierModal";
+import { getSupplierIdByName } from "../../lib/supplierHelpers";
 
 const AddProductForm = () => {
    const { navOpen } = useUIStateContext();
@@ -65,13 +67,26 @@ const AddProductForm = () => {
    const [isFormComplete, setIsFormComplete] = useState<string | boolean>(
       false
    );
-   const { addedProduct, addProduct } = useProductSupplierClientContext();
+   const {
+      addedProduct,
+      addProduct,
+      suppliers,
+      setErrorMessages,
+      setAddedProduct,
+   } = useProductSupplierClientContext();
    const [buttonDisabled, setButtonDisabled] = useState(addedProduct);
    const handleClear = (setter: (value: string) => void) => () => setter("");
+
    const [isClientModalOpen, setIsClientModalOpen] = useState(false);
+   const [isSupplierModalOpen, setIsSupplierModalOpen] = useState(false);
+   const [supplierNames, setSupplierNames] = useState<string[]>([]);
 
    const closeClientModal = (): void => {
       setIsClientModalOpen((prev) => !prev);
+   };
+
+   const closeSupplierModal = (): void => {
+      setIsSupplierModalOpen((prev) => !prev);
    };
 
    async function handleAddProduct() {
@@ -84,6 +99,13 @@ const AddProductForm = () => {
       setButtonDisabled(true);
 
       const base64String = await getBase64FromBlobUrl(src);
+      const supplierId = getSupplierIdByName(supplierName, suppliers);
+
+      if (!supplierId) {
+         console.error(`${supplierId}不是一个供应商ID`);
+         setErrorMessages(`${supplierId}不是一个供应商ID`);
+         return;
+      }
 
       await addProduct({
          image: base64String,
@@ -107,12 +129,7 @@ const AddProductForm = () => {
          },
          saved: saved,
          updatedAt: new Date().toISOString(),
-         supplier: {
-            supplierName: supplierName,
-            supplierAddress: supplierAddress,
-            supplierPhoneNumber: supplierPhone,
-            supplierEmail: supplierEmail,
-         },
+         supplierId: supplierId,
          additionalNotes: additionalNotes,
          clients: selectedClient,
          currency: currency,
@@ -126,35 +143,6 @@ const AddProductForm = () => {
       CNYtoUSD: 0.1381677,
       CNYtoEURO: 0.1269832,
    });
-
-   useEffect(() => {
-      const fetchForexRates = async () => {
-         try {
-            const res = await fetch(
-               "https://api.freecurrencyapi.com/v1/latest?apikey=YOUR_API_KEY&currencies=USD%2CEUR&base_currency=CNY"
-            );
-            // todo: replace with actual key in .env
-
-            const { data } = await res.json();
-
-            setForexRates({
-               CNYtoUSD: parseFloat(data.USD),
-               CNYtoEURO: parseFloat(data.EUR),
-            });
-
-            console.log("Fetched Rates:", data);
-         } catch (err) {
-            console.error("Error fetching rates: " + err);
-            // Use fallback values if fetch fails
-            setForexRates({
-               CNYtoUSD: 0.1381677,
-               CNYtoEURO: 0.1269832,
-            });
-         }
-      };
-
-      fetchForexRates();
-   }, []);
 
    const toggleCurrency = () => {
       const base = parseFloat(unitPrice);
@@ -205,33 +193,85 @@ const AddProductForm = () => {
       return [];
    };
 
-   const getSupplierFromQuery = () => {
-      if (supplierName.length > 0) {
-         const keys = Object.keys(ProductandCompanyData["search_by_store"]);
-         const res = keys.filter((p) => p.includes(supplierName));
-
-         return res.slice(0, 10);
-      }
-      return [];
+   const resetPage = () => {
+      setSrc(ProductDefaultImage);
+      setSaved(false);
+      setProductEnglishName("");
+      setProductChineseName("");
+      setPackingMass("");
+      setUnitPrice("");
+      setMass("");
+      setPacking("");
+      setPackingLength("");
+      setPackingWidth("");
+      setPackingHeight("");
+      setSupplierName("");
+      setSupplierAddress("");
+      setSupplierPhone("");
+      setSupplierEmail("");
+      setSelectedClient([]);
+      setSelectedProduct(null);
+      setSelectedSupplier(null);
+      setAdditionalNotes("");
+      setIsFormComplete(false);
+      setButtonDisabled(false);
+      setMaterial("");
+      sethsCode("");
+      setSelectedSupplier(null);
    };
 
-   useEffect(() => {
-      if (selectedSupplier) {
-         const address =
-            ProductandCompanyData["search_by_store"][
-               selectedSupplier as keyof (typeof ProductandCompanyData)["search_by_store"]
-            ]["Address"];
-         const phoneNumber =
-            ProductandCompanyData["search_by_store"][
-               selectedSupplier as keyof (typeof ProductandCompanyData)["search_by_store"]
-            ]["Phone Number"];
+   // useEffect(() => {
+   //    const fetchForexRates = async () => {
+   //       try {
+   //          const res = await fetch(
+   //             "https://api.freecurrencyapi.com/v1/latest?apikey=YOUR_API_KEY&currencies=USD%2CEUR&base_currency=CNY"
+   //          );
+   //          // todo: replace with actual key in .env
 
-         setSupplierAddress(address);
-         setSupplierPhone(`${phoneNumber}`);
-      } else {
-         setSupplierAddress("");
-         setSupplierPhone("");
-      }
+   //          const { data } = await res.json();
+
+   //          setForexRates({
+   //             CNYtoUSD: parseFloat(data.USD),
+   //             CNYtoEURO: parseFloat(data.EUR),
+   //          });
+
+   //          console.log("Fetched Rates:", data);
+   //       } catch (err) {
+   //          console.error("Error fetching rates: " + err);
+   //          // Use fallback values if fetch fails
+   //          setForexRates({
+   //             CNYtoUSD: 0.1381677,
+   //             CNYtoEURO: 0.1269832,
+   //          });
+   //       }
+   //    };
+
+   //    fetchForexRates();
+   // }, []);
+
+   useEffect(() => {
+      const supplierNames = Object.values(suppliers).map(
+         (supplier) => supplier.supplierName
+      );
+
+      setSupplierNames(supplierNames);
+   }, [suppliers]);
+
+   useEffect(() => {
+      const selectedSupplierId =
+         typeof selectedSupplier === "string" && selectedSupplier.length > 0
+            ? getSupplierIdByName(selectedSupplier, suppliers)
+            : null;
+
+      if (!selectedSupplierId) return;
+
+      const selectedSupplierData = suppliers[selectedSupplierId];
+
+      if (!selectedSupplierData) return;
+
+      setSupplierAddress(selectedSupplierData.supplierAddress || "");
+      setSupplierPhone(selectedSupplierData.supplierPhone || "");
+      setSupplierEmail(selectedSupplierData.supplierEmail || "");
    }, [selectedSupplier]);
 
    useEffect(() => {
@@ -245,7 +285,7 @@ const AddProductForm = () => {
          missing.push("包装尺寸");
       }
       if (!supplierName) missing.push("供应商名称");
-      if (selectedClient?.length === 0) missing.push("客户");
+      if (selectedClient?.length === 0 || selectedClient === null) missing.push("客户");
       if (src === ProductDefaultImage) missing.push("产品图片");
 
       setIsFormComplete(missing.length ? "请填写" + missing.join(", ") : true);
@@ -266,38 +306,11 @@ const AddProductForm = () => {
       if (isFormComplete === true && addedProduct === true) {
          setTimeout(() => {
             resetPage();
+            setAddedProduct(false);
+            setSubmittingForm(false); 
          }, 2000);
       }
    }, [isFormComplete, addedProduct]);
-
-   const resetPage = () => {
-      setSrc(ProductDefaultImage);
-      setSaved(false);
-      setProductEnglishName("");
-      setProductChineseName("");
-      setPackingMass("");
-      setUnitPrice("");
-      setMass("");
-      setPacking("");
-      setPackingLength("");
-      setPackingWidth("");
-      setPackingHeight("");
-      setSupplierName("");
-      setSupplierAddress("");
-      setSupplierPhone("");
-      setSupplierEmail("");
-      setSelectedClient(null);
-      setSelectedProduct(null);
-      setSelectedSupplier(null);
-      setSelectedClient(null);
-      setAdditionalNotes("");
-      setIsFormComplete(false);
-      setButtonDisabled(false);
-      setSubmittingForm(false);
-      setMaterial("");
-      sethsCode("");
-      setSelectedClient([]);
-   };
 
    return (
       <React.Fragment>
@@ -371,7 +384,7 @@ const AddProductForm = () => {
                               maxHeight: 300,
                               overflowY: "auto",
                               overflowX: "hidden",
-                              padding: 2,
+                              padding: 1,
                               scrollbarWidth: "none",
                               "&::-webkit-scrollbar": {
                                  display: "none",
@@ -710,141 +723,115 @@ const AddProductForm = () => {
                >
                   供应商信息
                </Typography>
-               <Autocomplete
-                  freeSolo
-                  options={getSupplierFromQuery()}
-                  value={selectedSupplier}
-                  inputValue={supplierName}
-                  onInputChange={(event, newInputValue) =>
-                     setSupplierName(newInputValue)
-                  }
-                  onChange={(event, newValue) => {
-                     setSelectedSupplier(newValue);
-                     setSupplierName(newValue || "");
-                  }}
-                  clearOnEscape
-                  PopperComponent={(props) => (
-                     <Popper
-                        {...props}
-                        modifiers={[
-                           {
-                              name: "offset",
-                              options: {
-                                 offset: [0, 4],
+               <Stack
+                  sx={{ alignItems: "center", flexDirection: "row" }}
+                  gap={1}
+               >
+                  <Autocomplete
+                     fullWidth
+                     options={supplierNames}
+                     value={selectedSupplier}
+                     inputValue={supplierName}
+                     onInputChange={(event, newInputValue) =>
+                        setSupplierName(newInputValue)
+                     }
+                     onChange={(event, newValue) => {
+                        setSelectedSupplier(newValue);
+                        setSupplierName(newValue || "");
+                     }}
+                     clearOnEscape
+                     PopperComponent={(props) => (
+                        <Popper
+                           {...props}
+                           sx={{
+                              mt: 0,
+                              "& .MuiAutocomplete-paper": {
+                                 maxHeight: 300,
+                                 overflowY: "auto",
+                                 overflowX: "hidden",
                               },
-                           },
-                        ]}
-                        sx={{
-                           mt: 0,
-                           "& .MuiAutocomplete-paper": {
-                              maxHeight: 300,
-                              overflowY: "auto",
-                              overflowX: "hidden",
-                           },
-                           "& .MuiAutocomplete-listbox": {
-                              maxHeight: 300,
-                              overflowY: "auto",
-                              overflowX: "hidden",
-                              padding: 2,
-                              scrollbarWidth: "none",
-                              "&::-webkit-scrollbar": {
-                                 display: "none",
+                              "& .MuiAutocomplete-listbox": {
+                                 maxHeight: 300,
+                                 overflowY: "auto",
+                                 overflowX: "hidden",
+                                 padding: 1,
+                                 scrollbarWidth: "none",
+                                 "&::-webkit-scrollbar": {
+                                    display: "none",
+                                 },
                               },
-                           },
-                        }}
-                     />
-                  )}
-                  sx={{
-                     "& .MuiAutocomplete-inputRoot": {
-                        paddingBottom: "2px",
-                     },
-                  }}
-                  renderInput={(params) => (
-                     <TextField
-                        {...params}
-                        fullWidth
-                        inputProps={{ ...params.inputProps, maxLength: 50 }}
-                        label="供应商名称"
-                        required
-                        InputProps={{
-                           ...params.InputProps,
-                           endAdornment: supplierName ? (
-                              <InputAdornment position="end">
-                                 <IconButton
-                                    onClick={(event) => {
-                                       event.stopPropagation();
-                                       setSupplierName("");
-                                       setSelectedSupplier(null);
-                                    }}
-                                 >
-                                    <X size={20} />
-                                 </IconButton>
-                              </InputAdornment>
-                           ) : null,
-                        }}
-                        sx={{ my: 1 }}
-                     />
-                  )}
-               />
+                           }}
+                        />
+                     )}
+                     sx={{
+                        "& .MuiAutocomplete-inputRoot": {
+                           paddingBottom: "2px",
+                        },
+                     }}
+                     renderInput={(params) => (
+                        <TextField
+                           {...params}
+                           fullWidth
+                           inputProps={{ ...params.inputProps, maxLength: 100 }}
+                           label="供应商名称"
+                           required
+                           InputProps={{
+                              ...params.InputProps,
+                              endAdornment: supplierName ? (
+                                 <InputAdornment position="end">
+                                    <IconButton
+                                       onClick={(event) => {
+                                          event.stopPropagation();
+                                          setSupplierName("");
+                                          setSelectedSupplier(null);
+                                       }}
+                                    >
+                                       <X size={20} />
+                                    </IconButton>
+                                 </InputAdornment>
+                              ) : null,
+                           }}
+                           sx={{ my: 1 }}
+                        />
+                     )}
+                  />
+                  <IconButton
+                     onClick={() =>
+                        setIsSupplierModalOpen(!isSupplierModalOpen)
+                     }
+                  >
+                     <PlusCircle size={30} />
+                  </IconButton>
+               </Stack>
 
                <TextField
+                  disabled
                   fullWidth
                   inputProps={{ maxLength: 50 }}
                   label="地址"
                   size="small"
                   value={supplierAddress}
                   onChange={(e) => setSupplierAddress(e.target.value)}
-                  InputProps={{
-                     endAdornment: supplierAddress && (
-                        <InputAdornment position="end">
-                           <IconButton
-                              onClick={handleClear(setSupplierAddress)}
-                           >
-                              <X size={20} />
-                           </IconButton>
-                        </InputAdornment>
-                     ),
-                  }}
                   sx={{ my: 1 }}
                />
                <Box sx={{ display: "flex", gap: 2, my: 1 }}>
                   <TextField
+                     disabled
                      inputProps={{ maxLength: 20 }}
                      fullWidth
                      label="电话号码"
                      size="small"
                      value={supplierPhone}
                      onChange={(e) => setSupplierPhone(e.target.value)}
-                     InputProps={{
-                        endAdornment: supplierPhone && (
-                           <InputAdornment position="end">
-                              <IconButton
-                                 onClick={handleClear(setSupplierPhone)}
-                              >
-                                 <X size={20} />
-                              </IconButton>
-                           </InputAdornment>
-                        ),
-                     }}
                   />
                   <TextField
+                     disabled
                      inputProps={{ maxLength: 50 }}
                      fullWidth
                      label="电子邮件"
                      size="small"
                      value={supplierEmail}
                      onChange={(e) => setSupplierEmail(e.target.value)}
-                     InputProps={{
-                        endAdornment: supplierEmail && (
-                           <InputAdornment position="end">
-                              <IconButton
-                                 onClick={handleClear(setSupplierEmail)}
-                              >
-                                 <X size={20} />
-                              </IconButton>
-                           </InputAdornment>
-                        ),
-                     }}
                   />
                </Box>
             </Box>
@@ -899,7 +886,7 @@ const AddProductForm = () => {
                >
                   附加信息
                </Typography>
-               
+
                <TextField
                   fullWidth
                   multiline
@@ -975,6 +962,10 @@ const AddProductForm = () => {
          )}
 
          <NewClientModal open={isClientModalOpen} onClose={closeClientModal} />
+         <NewSupplierModal
+            open={isSupplierModalOpen}
+            onClose={closeSupplierModal}
+         />
       </React.Fragment>
    );
 };

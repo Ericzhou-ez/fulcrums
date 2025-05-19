@@ -2,6 +2,7 @@ import * as functions from "firebase-functions/v2";
 import { db } from "../../utils";
 import { uploadBlobAsJPG } from "../lib/upload_blob_as_jpg";
 import * as admin from "firebase-admin";
+import { FieldValue } from "firebase-admin/firestore";
 
 const bucket = admin.storage().bucket();
 
@@ -26,12 +27,7 @@ export const createProduct = functions.https.onCall(
          packingVolume: { length, width, height, packingUnit },
          saved,
          updatedAt,
-         supplier: {
-            supplierName,
-            supplierAddress,
-            supplierPhoneNumber,
-            supplierEmail,
-         },
+         supplierId,
          additionalNotes,
          clients,
          currency,
@@ -48,9 +44,9 @@ export const createProduct = functions.https.onCall(
          width,
          height,
          packingUnit,
-         supplierName,
+         supplierId,
       };
-      
+
       // validate
       for (const [k, v] of Object.entries(required)) {
          let value = v;
@@ -87,24 +83,83 @@ export const createProduct = functions.https.onCall(
          );
       }
 
-      // store
+      // validate that client exists
+      const clientRefs = clients.map((clientId) =>
+         db.collection("users").doc(uid).collection("clients").doc(clientId)
+      );
+      const clientDocs = await db.getAll(...clientRefs);
+
+      const invalidClients = clientDocs
+         .map((doc, index) => (!doc.exists ? clients[index] : null))
+         .filter(Boolean);
+
+      if (invalidClients.length > 0) {
+         throw new functions.https.HttpsError(
+            "invalid-argument",
+            `以下客户不存在: ${invalidClients.join(", ")}`
+         );
+      }
+
+      // validate that supplier exists
+      const supplierRef = db
+         .collection("users")
+         .doc(uid)
+         .collection("suppliers")
+         .doc(supplierId);
+      const supplierDoc = await supplierRef.get();
+
+      if (!supplierDoc.exists) {
+         throw new functions.https.HttpsError(
+            "invalid-argument",
+            `供应商 ${supplierId} 不存在`
+         );
+      }
+
+      // product path
       const newProductRef = db
          .collection("users")
          .doc(uid)
          .collection("products")
          .doc();
-
       const productId = newProductRef.id;
-      const productImagePath = `users_${uid}_products_${productId}.jpg`;
+
+      // upload image
+      const productImagePath = `users/${uid}/products/${productId}.jpg`;
       const uploadImagePromise = uploadBlobAsJPG(
          image,
          productId,
          productImagePath
       );
+
+      // add product ids to client
+      const addProductToClientPromise = clientRefs.map((ref) => {
+         ref.set(
+            {
+               productIds: FieldValue.arrayUnion(productId),
+            },
+            { merge: true }
+         );
+      });
+
+      // add product id to supplier
+      const addProductToSupplierPromise = () => {
+         supplierRef.set(
+            {
+               productIds: FieldValue.arrayUnion(productId),
+            },
+            { merge: true }
+         );
+      };
+
+      // upload product info to firestore
       const uploadProductPromise = newProductRef
          .set(
             {
-               image: `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${productImagePath}?alt=media&token=${productId}`,
+               image: `https://firebasestorage.googleapis.com/v0/b/${
+                  bucket.name
+               }/o/${encodeURIComponent(
+                  productImagePath
+               )}?alt=media&token=${productId}`,
                productChineseName,
                productEnglishName,
                unitPrice,
@@ -114,12 +169,7 @@ export const createProduct = functions.https.onCall(
                packingVolume: { length, width, height, packingUnit },
                saved,
                updatedAt,
-               supplier: {
-                  supplierName,
-                  supplierAddress,
-                  supplierPhoneNumber,
-                  supplierEmail,
-               },
+               supplierId: supplierId,
                additionalNotes,
                clients,
                currency,
@@ -138,7 +188,12 @@ export const createProduct = functions.https.onCall(
          });
 
       try {
-         await Promise.all([uploadImagePromise, uploadProductPromise]);
+         await Promise.all([
+            uploadImagePromise,
+            uploadProductPromise,
+            ...addProductToClientPromise,
+            addProductToSupplierPromise,
+         ]);
 
          return { success: true };
       } catch (err) {

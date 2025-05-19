@@ -25,6 +25,7 @@ export type ProductSupplierClientContextType = {
    getClients: () => Promise<Object>;
    getSuppliers: () => Promise<Object>;
    toggleSaveUnsaveProduct: (productId: string) => Promise<void>;
+   setAddedProduct: React.Dispatch<React.SetStateAction<boolean>>;
    addedProduct: boolean;
    editedProduct: boolean;
    deletedProduct: boolean;
@@ -174,6 +175,46 @@ export const ProductSupplierClientContextProvider = ({
       return unsub;
    }, [user?.uid]);
 
+   // listen to firestore supplier changes
+   useEffect(() => {
+      if (!user?.uid) {
+         return;
+      }
+
+      const unsub = onSnapshot(
+         collection(db, "users", user.uid, "suppliers"),
+         (snap) => {
+            const map: Record<string, Supplier> = {};
+            snap.forEach((doc) => {
+               const c = doc.data() as Supplier;
+               map[c.supplierId] = c;
+            });
+
+            setSuppliers(map);
+         },
+         (err) => {
+            console.error("Firestore listener error (suppliers):", err);
+            let msg = "";
+            switch (err.code) {
+               case "permission-denied":
+                  msg = "权限不足，无法访问客户数据";
+                  break;
+               case "unavailable":
+                  msg = "网络错误，请尝试重新连接";
+                  break;
+               case "resource-exhausted":
+                  msg = "服务器繁忙，请稍后再试";
+                  break;
+               default:
+                  msg = "客户加载失败，请稍后再试";
+            }
+            console.error(msg);
+         }
+      );
+
+      return unsub;
+   }, [user?.uid]);
+
    const addProduct = async (product: Product) => {
       try {
          setServiceLoading(true);
@@ -184,7 +225,6 @@ export const ProductSupplierClientContextProvider = ({
             setAddedProduct(true);
             setServiceLoading(false);
          }
-         
       } catch (err) {
          console.error("Error calling createProduct function: ", err);
          setServiceLoading(false);
@@ -229,8 +269,25 @@ export const ProductSupplierClientContextProvider = ({
    };
 
    const addSupplier = async (supplier: any) => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setAddedSupplier(true);
+      try {
+         setServiceLoading(true);
+         const editProduct = httpsCallable(functions, "addSupplier");
+         const response: any = await editProduct(supplier);
+
+         if (response.data.success) {
+            setServiceLoading(false);
+            setErrorMessages("添加成功");
+         }
+      } catch (err) {
+         setServiceLoading(false);
+
+         const message =
+            typeof err === "string" ? err : (err as any)?.message ?? "未知错误";
+
+         setErrorMessages(message);
+
+         console.error("Failed to add client: " + err);
+      }
    };
 
    const editSupplier = async (supplier: any) => {
@@ -256,7 +313,6 @@ export const ProductSupplierClientContextProvider = ({
 
             setErrorMessages("添加成功");
          }
-
       } catch (err: any) {
          setServiceLoading(false);
 
@@ -344,6 +400,7 @@ export const ProductSupplierClientContextProvider = ({
             getSuppliers,
             toggleSaveUnsaveProduct,
             addedProduct,
+            setAddedProduct,
             editedProduct,
             deletedProduct,
             addedSupplier,

@@ -20,14 +20,7 @@ const MultipleSelectChip: React.FC<ClientSelectProps> = ({
    selectedClientIds,
    setSelectedClientIds,
 }) => {
-   const { clients, getClients } = useProductSupplierClientContext();
-   React.useEffect(() => {
-      const fetchClients = async () => {
-         const fetchedClients = await getClients();
-      };
-
-      fetchClients();
-   }, []);
+   const { clients } = useProductSupplierClientContext();
 
    const handleChange = (
       event: SelectChangeEvent<typeof selectedClientIds>

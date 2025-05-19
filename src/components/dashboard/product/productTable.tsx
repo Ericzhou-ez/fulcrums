@@ -51,7 +51,7 @@ const symbolToCurrencyCode: Record<string, string> = {
 };
 
 export function ProductTable({ productList }: { productList: Product[] }) {
-   const { toggleSaveUnsaveProduct, deleteProducts, clients } =
+   const { toggleSaveUnsaveProduct, deleteProducts, clients, suppliers } =
       useProductSupplierClientContext();
 
    async function toggleSave(productId: string) {
@@ -499,7 +499,7 @@ export function ProductTable({ productList }: { productList: Product[] }) {
 
                               <TableCell>
                                  <Typography variant="inherit" noWrap>
-                                    {row.supplier.supplierName}
+                                    {suppliers[row.supplierId].supplierName}
                                  </Typography>
                               </TableCell>
 

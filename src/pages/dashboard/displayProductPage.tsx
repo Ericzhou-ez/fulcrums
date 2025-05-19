@@ -10,35 +10,40 @@ import {
    Stack,
    InputAdornment,
    FormHelperText,
+   Autocomplete,
+   Popper,
 } from "@mui/material";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import SideNav from "../../components/dashboard/dashboardNav";
 import "../../styles/Add-product.css";
-import FloatingTocNav from "../../components/core/FloatingTocNav";
 import { useThemeContext } from "../../contexts/themeContextProvider";
-import { ArrowsOut, ArrowsIn, Heart, X } from "phosphor-react";
+import { ArrowsOut, ArrowsIn, Heart, X, PlusCircle } from "phosphor-react";
 import ProductDefaultImage from "../../assets/images/product-background.svg";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
 import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
 import Loading from "../../components/core/loading";
 import { useParams } from "react-router";
 import Loader from "../../components/core/loader";
-import { Product } from "../../types/types";
+import { Product, Supplier } from "../../types/types";
 import TimeAgoTypography from "../../components/dashboard/product/timeAgoTypography";
 import MultipleSelectChip from "../../components/core/multiselectWithChip";
-
-const TOS_SECTIONS = [
-   { id: "product-input", label: "产品" },
-   { id: "packing-input", label: "包装" },
-   { id: "supplier-input", label: "供应商" },
-   { id: "client-input", label: "客户" },
-   { id: "extra-input", label: "更多" },
-];
+import getBase64FromBlobUrl from "../../lib/blob-to-blob64";
+import {
+   getSupplierFromId,
+   getSupplierIdByName,
+} from "../../lib/supplierHelpers";
 
 const AddProductForm = ({ p }: { p: Product }) => {
    const { isMdUp } = useThemeContext();
    const { navOpen } = useUIStateContext();
+   const {
+      editedProduct,
+      editProduct,
+      serviceLoading,
+      deleteProducts,
+      suppliers,
+   } = useProductSupplierClientContext();
 
    const [src, setSrc] = useState(p.image);
    const [saved, setSaved] = useState(p.saved);
@@ -50,10 +55,8 @@ const AddProductForm = ({ p }: { p: Product }) => {
    );
    const [unitPrice, setUnitPrice] = useState(p.unitPrice);
    const [currency, setCurrency] = useState(p.currency);
-
    const [unitMass, setUnitMass] = useState(p.unitMass?.unitMassQuantity ?? "");
    const [massUnit, setMassUnit] = useState(p.unitMass?.unitMassUnit ?? "g");
-
    const [hsCode, setHsCode] = useState(p.hsCode);
    const [material, setMaterial] = useState(p.material);
 
@@ -63,7 +66,6 @@ const AddProductForm = ({ p }: { p: Product }) => {
    const [packingMassUnit, setPackingMassUnit] = useState(
       p.packingMass?.packingMassUnit ?? "g"
    );
-
    const [packing, setPacking] = useState(p.packing);
    const [packingLength, setPackingLength] = useState(
       p.packingVolume?.length ?? ""
@@ -78,18 +80,13 @@ const AddProductForm = ({ p }: { p: Product }) => {
       p.packingVolume?.packingUnit ?? "cm"
    );
 
-   const [supplierName, setSupplierName] = useState(
-      p.supplier?.supplierName ?? ""
-   );
-   const [supplierAddress, setSupplierAddress] = useState(
-      p.supplier?.supplierAddress ?? ""
-   );
-   const [supplierPhone, setSupplierPhone] = useState(
-      p.supplier?.supplierPhoneNumber ?? ""
-   );
-   const [supplierEmail, setSupplierEmail] = useState(
-      p.supplier?.supplierEmail ?? ""
-   );
+   // get supplier ID
+   const [supplierId, setSupplierId] = useState(p.supplierId ?? "");
+   const [supplierName, setSupplierName] = useState("");
+   const [supplierAddress, setSupplierAddress] = useState("");
+   const [supplierPhone, setSupplierPhone] = useState("");
+   const [supplierEmail, setSupplierEmail] = useState("");
+   const [supplierNameInput, setSupplierNameInput] = useState("");
 
    const [selectedClient, setSelectedClient] = useState<string[]>(
       p.clients ?? []
@@ -103,38 +100,9 @@ const AddProductForm = ({ p }: { p: Product }) => {
    const [isFormComplete, setIsFormComplete] = useState<string | boolean>(
       false
    );
-
-   const handleClear = (setter: (value: string) => void) => () => setter("");
-
-   const togglePackingDimensionUnit = () => {
-      setPackingDimensionUnit((prev) => (prev === "cm" ? "m" : "cm"));
-   };
-
-   const {
-      editedProduct,
-      editProduct,
-      serviceLoading,
-      deleteProducts,
-      deletedProduct,
-   } = useProductSupplierClientContext();
    const [buttonDisabled, setButtonDisabled] = useState(editedProduct);
 
-   async function getBase64FromBlobUrl(blobUrl: string) {
-      const blob = await fetch(blobUrl).then((res) => res.blob());
-
-      return new Promise((resolve, reject) => {
-         const reader = new FileReader();
-         reader.onload = () => {
-            const base64String = (reader.result as string).split(",")[1];
-            resolve(base64String);
-         };
-         reader.onerror = () => {
-            reject(new Error("Failed to read blob as base64"));
-         };
-
-         reader.readAsDataURL(blob);
-      });
-   }
+   const handleClear = (setter: (value: string) => void) => () => setter("");
 
    async function handleEditProduct() {
       setSubmittingForm(true);
@@ -173,17 +141,13 @@ const AddProductForm = ({ p }: { p: Product }) => {
          },
          saved: saved,
          updatedAt: new Date().toISOString(),
-         supplier: {
-            supplierName: supplierName,
-            supplierAddress: supplierAddress,
-            supplierPhoneNumber: supplierPhone,
-            supplierEmail: supplierEmail,
-         },
+         supplierId: supplierId,
          additionalNotes: additionalNotes,
          clients: selectedClient,
          currency: currency,
          hsCode: hsCode,
          material: material,
+         productId: p?.productId,
       });
    }
 
@@ -223,10 +187,7 @@ const AddProductForm = ({ p }: { p: Product }) => {
          packingHeight === p?.packingVolume?.height &&
          packingDimensionUnit === p?.packingVolume?.packingUnit &&
          // Supplier
-         supplierName === p?.supplier?.supplierName &&
-         supplierAddress === p?.supplier?.supplierAddress &&
-         supplierPhone === p?.supplier?.supplierPhoneNumber &&
-         supplierEmail === p?.supplier?.supplierEmail &&
+         supplierId === p?.supplierId &&
          // Clients
          Array.isArray(selectedClient) &&
          Array.isArray(p?.clients) &&
@@ -263,10 +224,7 @@ const AddProductForm = ({ p }: { p: Product }) => {
       packingMass,
       src,
       additionalNotes,
-      supplierName,
-      supplierAddress,
-      supplierEmail,
-      supplierPhone,
+      supplierId,
       additionalNotes,
    ]);
 
@@ -278,6 +236,18 @@ const AddProductForm = ({ p }: { p: Product }) => {
       }
    }, [isFormComplete, editedProduct]);
 
+   useEffect(() => {
+      if (!p.supplierId || Object.keys(suppliers).length === 0) return;
+
+      const supplierDetails = getSupplierFromId(p.supplierId, suppliers);
+      if (!supplierDetails) return;
+
+      setSupplierName(supplierDetails.supplierName);
+      setSupplierNameInput(supplierDetails.supplierName);
+      setSupplierAddress(supplierDetails.supplierAddress ?? "");
+      setSupplierPhone(supplierDetails.supplierPhoneNumber ?? "");
+      setSupplierEmail(supplierDetails.supplierEmail ?? "");
+   }, [suppliers, p.supplierId]);
    return (
       <React.Fragment>
          {/* -------------- 产品image -------------- */}
@@ -547,10 +517,7 @@ const AddProductForm = ({ p }: { p: Product }) => {
                      }}
                   />
 
-                  <IconButton
-                     onClick={togglePackingDimensionUnit}
-                     color="primary"
-                  >
+                  <IconButton color="primary">
                      <Typography>{packingDimensionUnit}</Typography>
                   </IconButton>
                </Box>
@@ -593,16 +560,87 @@ const AddProductForm = ({ p }: { p: Product }) => {
                   供应商信息
                </Typography>
 
-               <TextField
+               <Autocomplete
                   fullWidth
-                  inputProps={{ maxLength: 50 }}
-                  label="供应商名称"
-                  required
-                  value={supplierName}
-                  onChange={(e) => setSupplierName(e.target.value)}
-                  sx={{ my: 2 }}
+                  options={Object.values(suppliers)} 
+                  getOptionLabel={(option) => option.supplierName}
+                  value={
+                     Object.values(suppliers).find(
+                        (s) => s.supplierId === supplierId
+                     ) ?? null
+                  }
+                  onChange={(event, newValue) => {
+                     if (!newValue) return;
+
+                     setSupplierId(newValue.supplierId);
+                     setSupplierName(newValue.supplierName);
+                     setSupplierNameInput(newValue.supplierName);
+                     setSupplierAddress(newValue.supplierAddress ?? "");
+                     setSupplierPhone(newValue.supplierPhoneNumber ?? "");
+                     setSupplierEmail(newValue.supplierEmail ?? "");
+                  }}
+                  isOptionEqualToValue={
+                     (option, value) => option.supplierId === value.supplierId 
+                  }
+                  clearOnEscape
+                  PopperComponent={(props) => (
+                     <Popper
+                        {...props}
+                        sx={{
+                           mt: 0,
+                           "& .MuiAutocomplete-paper": {
+                              maxHeight: 300,
+                              overflowY: "auto",
+                              overflowX: "hidden",
+                           },
+                           "& .MuiAutocomplete-listbox": {
+                              maxHeight: 300,
+                              overflowY: "auto",
+                              overflowX: "hidden",
+                              padding: 1,
+                              scrollbarWidth: "none",
+                              "&::-webkit-scrollbar": {
+                                 display: "none",
+                              },
+                           },
+                        }}
+                     />
+                  )}
+                  sx={{
+                     "& .MuiAutocomplete-inputRoot": {
+                        paddingBottom: "2px",
+                     },
+                  }}
+                  renderInput={(params) => (
+                     <TextField
+                        {...params}
+                        fullWidth
+                        inputProps={{ ...params.inputProps, maxLength: 100 }}
+                        label="供应商名称"
+                        required
+                        InputProps={{
+                           ...params.InputProps,
+                           endAdornment: supplierNameInput ? (
+                              <InputAdornment position="end">
+                                 <IconButton
+                                    onClick={(event) => {
+                                       event.stopPropagation();
+                                       setSupplierName("");
+                                       setSupplierNameInput("");
+                                    }}
+                                 >
+                                    <X size={20} />
+                                 </IconButton>
+                              </InputAdornment>
+                           ) : null,
+                        }}
+                        sx={{ my: 2 }}
+                     />
+                  )}
                />
+
                <TextField
+                  disabled
                   fullWidth
                   inputProps={{ maxLength: 50 }}
                   label="地址"
@@ -612,20 +650,20 @@ const AddProductForm = ({ p }: { p: Product }) => {
 
                <Box sx={{ display: "flex", gap: 2, my: 2 }}>
                   <TextField
+                     disabled
                      inputProps={{ maxLength: 20 }}
                      fullWidth
                      label="电话号码"
                      size="small"
                      value={supplierPhone}
-                     onChange={(e) => setSupplierPhone(e.target.value)}
                   />
                   <TextField
+                     disabled
                      inputProps={{ maxLength: 50 }}
                      fullWidth
                      label="电子邮件"
                      size="small"
                      value={supplierEmail}
-                     onChange={(e) => setSupplierEmail(e.target.value)}
                   />
                </Box>
             </Box>
@@ -736,11 +774,6 @@ const AddProductForm = ({ p }: { p: Product }) => {
                更新产品
             </button>
          )}
-         <FloatingTocNav
-            sections={TOS_SECTIONS}
-            defaultWidth="30"
-            hoveredWidth="120"
-         />
 
          {serviceLoading && <Loading />}
 
@@ -755,7 +788,14 @@ const AddProductForm = ({ p }: { p: Product }) => {
                }}
             >
                {isFormComplete === true ? (
-                  editedProduct && <Alert severity="success">更改成功 :)</Alert>
+                  editedProduct && (
+                     <Alert
+                        severity="success"
+                        onClose={() => setSubmittingForm(false)}
+                     >
+                        更改成功 :)
+                     </Alert>
+                  )
                ) : (
                   <Alert
                      severity="warning"
@@ -824,7 +864,9 @@ const displayProductPage = () => {
 
          <Nav home={false} searchBar={true} />
 
-         <AddProductForm p={curProduct} />
+         <AddProductForm
+            p={curProduct}
+         />
 
          <div style={{ padding: "0 16px" }}>
             <Footer />

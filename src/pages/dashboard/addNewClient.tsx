@@ -8,6 +8,7 @@ import {
    Stack,
    TextField,
    Button,
+   Grid,
    useTheme,
 } from "@mui/material";
 import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
@@ -57,10 +58,10 @@ const NewClientModal: React.FC<NewClientModalProps> = ({ open, onClose }) => {
    const { addClient } = useProductSupplierClientContext();
 
    const handleSave = () => {
-      addClient(form); 
+      addClient(form);
 
-      setForm(emptyForm); 
-      onClose(); 
+      setForm(emptyForm);
+      onClose();
    };
 
    const handleChange =
@@ -95,7 +96,8 @@ const NewClientModal: React.FC<NewClientModalProps> = ({ open, onClose }) => {
             sx={{
                fontWeight: 700,
                pb: 1,
-               fontSize: { xs: "1.8rem", sm: "2.2rem" },
+               mt: 2,
+               fontSize: { xs: "2rem", sm: "2.2rem" },
             }}
          >
             添加新客户
@@ -103,24 +105,79 @@ const NewClientModal: React.FC<NewClientModalProps> = ({ open, onClose }) => {
 
          <DialogContent>
             <Stack spacing={2.5} mt={4}>
-               {fieldMeta.map(({ key, label, required }) => (
-                  <Box
-                     key={key}
-                     sx={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr",
-                        alignItems: "center",
-                     }}
-                  >
+               {/* Each on its own line */}
+               <TextField
+                  size="small"
+                  required
+                  label="公司全称"
+                  value={form.companyName}
+                  onChange={handleChange("companyName")}
+               />
+               <TextField
+                  size="small"
+                  required
+                  label="完整地址"
+                  value={form.address}
+                  onChange={handleChange("address")}
+               />
+               <TextField
+                  size="small"
+                  required
+                  label="联系人"
+                  value={form.contactName}
+                  onChange={handleChange("contactName")}
+               />
+
+               <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={2}
+                  sx={{ width: "100%" }}
+               >
+                  <Box sx={{ flex: 1 }}>
                      <TextField
+                        fullWidth
                         size="small"
-                        required={required}
-                        value={form[key]}
-                        onChange={handleChange(key)}
-                        label={label}
+                        required
+                        label="电话号码"
+                        value={form.contactPhoneNumber}
+                        onChange={handleChange("contactPhoneNumber")}
                      />
                   </Box>
-               ))}
+                  <Box sx={{ flex: 1 }}>
+                     <TextField
+                        fullWidth
+                        size="small"
+                        label="电子邮件地址"
+                        value={form.contactEmail}
+                        onChange={handleChange("contactEmail")}
+                     />
+                  </Box>
+               </Stack>
+
+               <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={2}
+                  sx={{ width: "100%", mt: 2 }}
+               >
+                  <Box sx={{ flex: 1 }}>
+                     <TextField
+                        fullWidth
+                        size="small"
+                        label="VAT 增值税号"
+                        value={form.vatNumber}
+                        onChange={handleChange("vatNumber")}
+                     />
+                  </Box>
+                  <Box sx={{ flex: 1 }}>
+                     <TextField
+                        fullWidth
+                        size="small"
+                        label="EORI 编号"
+                        value={form.eoriNumber}
+                        onChange={handleChange("eoriNumber")}
+                     />
+                  </Box>
+               </Stack>
             </Stack>
          </DialogContent>
 

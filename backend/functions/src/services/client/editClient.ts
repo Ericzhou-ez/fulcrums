@@ -2,7 +2,7 @@ import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import { db } from "../../utils";
 
-export const addClient = functions.https.onCall(
+export const editClient = functions.https.onCall(
    async (req: functions.https.CallableRequest) => {
       const { auth, data } = req;
 
@@ -20,6 +20,7 @@ export const addClient = functions.https.onCall(
          contactName,
          contactPhoneNumber,
          contactEmail,
+         clientId,
       } = data;
 
       const required = {
@@ -27,6 +28,7 @@ export const addClient = functions.https.onCall(
          address,
          contactName,
          contactPhoneNumber,
+         clientId,
       };
       const clientData = { ...required, vatNumber, eoriNumber, contactEmail };
 
@@ -48,15 +50,24 @@ export const addClient = functions.https.onCall(
          );
       }
 
-      const newClientRef = db
+      const clientRef = db
          .collection("users")
          .doc(uid)
          .collection("clients")
-         .doc();
-      await newClientRef.set(
+         .doc(clientId);
+      
+      const clientDoc = await clientRef.get();
+
+      if (!clientDoc.exists) {
+         throw new functions.https.HttpsError(
+            "not-found",
+            `Client with ID ${clientId} not found`
+         );
+      }
+
+      await clientRef.set(
          {
             ...clientData,
-            clientId: newClientRef.id,
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
          },
          {
@@ -64,6 +75,6 @@ export const addClient = functions.https.onCall(
          }
       );
 
-      return { success: true, clientId: newClientRef.id };
+      return { success: true, clientId: clientId };
    }
 );
