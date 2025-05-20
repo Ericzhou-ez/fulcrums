@@ -1,6 +1,6 @@
 import React from "react";
 import ProductCard from "./card";
-import { Product, ProductType } from "../../../types/types";
+import { Product } from "../../../types/types";
 import {
    ProductSupplierClientContextProvider,
    useProductSupplierClientContext,

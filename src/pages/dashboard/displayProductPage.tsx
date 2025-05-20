@@ -55,8 +55,6 @@ const AddProductForm = ({ p }: { p: Product }) => {
    );
    const [unitPrice, setUnitPrice] = useState(p.unitPrice);
    const [currency, setCurrency] = useState(p.currency);
-   const [unitMass, setUnitMass] = useState(p.unitMass?.unitMassQuantity ?? "");
-   const [massUnit, setMassUnit] = useState(p.unitMass?.unitMassUnit ?? "g");
    const [hsCode, setHsCode] = useState(p.hsCode);
    const [material, setMaterial] = useState(p.material);
 
@@ -124,10 +122,6 @@ const AddProductForm = ({ p }: { p: Product }) => {
          productChineseName: productChineseName,
          productEnglishName: productEnglishName,
          unitPrice: unitPrice,
-         unitMass: {
-            unitMassQuantity: unitMass,
-            unitMassUnit: massUnit,
-         },
          packing: packing,
          packingVolume: {
             length: packingLength,
@@ -174,9 +168,6 @@ const AddProductForm = ({ p }: { p: Product }) => {
          productEnglishName === p?.productEnglishName &&
          unitPrice === p?.unitPrice &&
          currency === p?.currency &&
-         // Unit mass
-         unitMass === p?.unitMass?.unitMassQuantity &&
-         massUnit === p?.unitMass?.unitMassUnit &&
          // Packing
          packing === p?.packing &&
          packingMass === p?.packingMass?.packingMassQuantity &&
@@ -212,7 +203,6 @@ const AddProductForm = ({ p }: { p: Product }) => {
       productEnglishName,
       unitPrice,
       packing,
-      unitMass,
       packingHeight,
       packingWidth,
       packingLength,
@@ -331,26 +321,6 @@ const AddProductForm = ({ p }: { p: Product }) => {
                         <InputAdornment position="start">
                            <IconButton color="primary">
                               <Typography>{currency}</Typography>
-                           </IconButton>
-                        </InputAdornment>
-                     ),
-                  }}
-               />
-
-               <TextField
-                  inputProps={{ maxLength: 20 }}
-                  fullWidth
-                  label="重量"
-                  type="number"
-                  size="small"
-                  value={unitMass}
-                  onChange={(e) => setUnitMass(e.target.value)}
-                  sx={{ my: 1.5 }}
-                  InputProps={{
-                     endAdornment: (
-                        <InputAdornment position="start">
-                           <IconButton color="primary">
-                              <Typography>{massUnit}</Typography>
                            </IconButton>
                         </InputAdornment>
                      ),

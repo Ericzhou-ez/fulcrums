@@ -39,8 +39,6 @@ const AddProductForm = () => {
    const [productEnglishName, setProductEnglishName] = useState("");
    const [unitPrice, setUnitPrice] = useState("");
    const [currency, setCurrency] = useState("¥"); // 切换：$, €, ¥
-   const [mass, setMass] = useState("");
-   const [massUnit, setMassUnit] = useState("g"); // 切换 kg <-> g
    const [hsCode, sethsCode] = useState("");
    const [material, setMaterial] = useState("");
 
@@ -112,10 +110,6 @@ const AddProductForm = () => {
          productChineseName: productChineseName,
          productEnglishName: productEnglishName,
          unitPrice: unitPrice,
-         unitMass: {
-            unitMassQuantity: mass,
-            unitMassUnit: massUnit,
-         },
          packing: packing,
          packingVolume: {
             length: packingLength,
@@ -168,10 +162,6 @@ const AddProductForm = () => {
       setCurrency(newCurrency);
    };
 
-   const toggleMassUnit = () => {
-      setMassUnit((prev) => (prev === "kg" ? "g" : "kg"));
-   };
-
    const togglePackingUnit = () => {
       setPackingMassUnit((prev) => (prev === "kg" ? "g" : "kg"));
    };
@@ -200,7 +190,6 @@ const AddProductForm = () => {
       setProductChineseName("");
       setPackingMass("");
       setUnitPrice("");
-      setMass("");
       setPacking("");
       setPackingLength("");
       setPackingWidth("");
@@ -465,7 +454,6 @@ const AddProductForm = () => {
                         startAdornment: (
                            <InputAdornment position="start">
                               <IconButton
-                                 onClick={toggleCurrency}
                                  color="primary"
                               >
                                  <Typography>{currency}</Typography>
@@ -477,30 +465,6 @@ const AddProductForm = () => {
                               <IconButton onClick={handleClear(setUnitPrice)}>
                                  <X size={20} />
                               </IconButton>
-                           </InputAdornment>
-                        ),
-                     }}
-                     sx={{ my: 2 }}
-                  />
-                  <TextField
-                     inputProps={{ maxLength: 20 }}
-                     fullWidth
-                     label="重量"
-                     type="number"
-                     size="small"
-                     value={mass}
-                     onChange={(e) => setMass(e.target.value)}
-                     InputProps={{
-                        endAdornment: (
-                           <InputAdornment position="end">
-                              {mass && (
-                                 <IconButton onClick={handleClear(setMass)}>
-                                    <X size={20} />
-                                 </IconButton>
-                              )}
-                              <Button onClick={toggleMassUnit} size="small">
-                                 {massUnit}
-                              </Button>
                            </InputAdornment>
                         ),
                      }}

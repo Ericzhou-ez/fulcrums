@@ -33,7 +33,7 @@ export type Product = {
    supplierId: string;
 
    additionalNotes: string;
-   clients: string[]; 
+   clients: string[];
    currency: string;
 };
 
@@ -50,9 +50,15 @@ export type SupplierMapping = {
 };
 
 export type Clients = {
-   name: string;
+   address: string;
    clientId: string;
-   products: string[];
+   companyName: string;
+   contactEmail: string;
+   contactName: string;
+   contactPhoneNumber: string;
+   eoriNumber: string;
+   productIds: string[];
+   updatedAt: string;
 };
 
 export type UserType = {

@@ -3,18 +3,25 @@ import {
    StandardFonts,
    rgb,
    PDFImage,
-   PDFEmbeddedPage,
 } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
-import { Product, ProductType } from "../types/types";
+import { Clients, Product, Supplier } from "../types/types";
 import { wrapText, hasChinese } from "./helpers";
 
 export async function BuildInternalProductPDF({
    products,
    upCharge,
+   conversionRate,
+   currency,
+   suppliers,
+   clients,
 }: {
-   products: Record<string, ProductType>;
+   products: Record<string, Product>;
    upCharge: number;
+   conversionRate: number;
+   currency: string;
+   suppliers: Record<string, Supplier>;
+   clients: Record<string, Clients>;
 }): Promise<void> {
    const pdfDoc = await PDFDocument.create();
    pdfDoc.registerFontkit(fontkit);
@@ -30,12 +37,11 @@ export async function BuildInternalProductPDF({
       gridRows = 2;
    const cellW = (pageW - margin * (gridCols + 1)) / gridCols;
    const cellH = (pageH - margin * (gridRows + 1)) / gridRows;
-   const imgMaxH = 60;
+   const imgMaxH = 55;
    const sizeCN = 12,
-      sizeEN = 11,
-      sizeID = 7,
+      sizeEN = 10,
       sizeRow = 8,
-      lead = 2;
+      lead = 1;
 
    let page = pdfDoc.addPage([pageW, pageH]);
 
@@ -108,7 +114,7 @@ export async function BuildInternalProductPDF({
             });
             yCur -= h + 14;
          } catch (err) {
-            console.error("We Love CROSS-ORIGIN", err);
+            console.error("We Love CROSS-ORIGIN errors (ahhahahahhha): ", err);
          }
       }
 
@@ -137,32 +143,55 @@ export async function BuildInternalProductPDF({
          }
       );
 
-      wrapText(p.productId, latin, sizeID, cellW - 12).forEach((ln) => {
-         page.drawText(ln, { x: x0 + 6, y: yCur, size: sizeID, font: latin });
-         yCur -= sizeID + lead + 5;
-      });
+      yCur -= 3;  
 
-      const upChargedUnitPrice = (p.unitPrice * upCharge).toFixed(2);
+      const upChargedPrice = (parseFloat(p.unitPrice) * upCharge).toFixed(2);
+      const adjustedPrice = (
+         (parseFloat(p.unitPrice) * upCharge) /
+         conversionRate
+      ).toFixed(2);
 
       const rows: string[][] = [
          ["UnitPrice:", `${p.currency ?? ""}${p.unitPrice ?? ""}`],
-         ["SalesPrice:", `${p.currency ?? ""}${upChargedUnitPrice ?? ""}`],
-         ["UnitMass:", `${p.mass?.quantity ?? ""}${p.mass?.unit ?? ""}`],
-         ["Packing:", String(p.packaging ?? "")],
          [
-            "PackingMass:",
-            `${p.packingMass?.packingMass ?? ""}${
-               p.packingMass?.packingMassUnit ?? ""
+            "SalesPrice:",
+            `${currency ?? ""}${adjustedPrice ?? ""} ${p.currency ?? ""}${
+               upChargedPrice ?? ""
             }`,
          ],
-         [
-            "Volume:",
-            `${p.packingVolume?.volume ?? ""}${p.packingVolume?.unit ?? ""}`,
-         ],
-         ["Client:", p.client ?? ""],
-         ["Supplier:", p.supplier?.name ?? ""],
-         ["Phone", p.supplier ? p.supplier.phone ?? "" : ""],
-         ["Address:", p.supplier ? p.supplier.address ?? "" : ""],
+         ["Packing:", String(p.packing ?? "")],
+         ...(p.packingMass?.packingMassQuantity
+            ? [
+                 [
+                    "Packing Mass:",
+                    `${p.packingMass.packingMassQuantity}${
+                       p.packingMass.packingMassUnit ?? ""
+                    }`,
+                 ],
+              ]
+            : []),
+         ...(p.packingVolume?.length &&
+         p.packingVolume?.width &&
+         p.packingVolume?.height
+            ? [
+                 [
+                    "Packing Volume:",
+                    `L: ${parseFloat(p.packingVolume.length).toFixed(2)}${
+                       p.packingVolume.packingUnit ?? ""
+                    }   W: ${parseFloat(p.packingVolume.width).toFixed(2)}${
+                       p.packingVolume.packingUnit ?? ""
+                    }   H: ${parseFloat(p.packingVolume.height).toFixed(2)}${
+                       p.packingVolume.packingUnit ?? ""
+                    }`,
+                 ],
+              ]
+            : []),
+         ["Client(s):", p.clients.map((id) => clients[id].companyName).join(", ") ?? ""],
+         ["Supplier:", suppliers[p.supplierId]?.supplierName ?? ""],
+         ["Phone", suppliers[p.supplierId]?.supplierPhoneNumber ?? ""],
+         ["Email", suppliers[p.supplierId]?.supplierEmail ?? ""],
+         ["Address:", suppliers[p.supplierId]?.supplierAddress ?? ""],
+         ["Additional Notes:", p.additionalNotes ?? ""],
       ].filter(
          ([, value]) =>
             value !== undefined && value !== null && String(value).trim() !== ""

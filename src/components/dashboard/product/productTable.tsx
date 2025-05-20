@@ -35,14 +35,14 @@ import {
    ShareNetwork as ExportIcon,
 } from "phosphor-react";
 import { useThemeContext } from "../../../contexts/themeContextProvider";
-import { Clients, Product } from "../../../types/types";
+import { Clients, Product, Supplier } from "../../../types/types";
 import { useProductSupplierClientContext } from "../../../contexts/productSupplierClientContextProvider";
 import { useUIStateContext } from "../../../contexts/UIStateContextProvider";
 import { BuildInternalProductPDF } from "../../../lib/InteralProductsPDFBuilder";
 import { ExternalPDFBuilder } from "../../../lib/externalPDFBuilder";
-import { typeOptions } from "../search/productFilter";
 import HeartComponent from "./heart";
 import Loader from "../../core/loader";
+import { exportInternalProductCSV } from "../../../lib/InternalProductCSVBuilder";
 
 const symbolToCurrencyCode: Record<string, string> = {
    "¥": "CNY",
@@ -61,9 +61,15 @@ export function ProductTable({ productList }: { productList: Product[] }) {
    const { navOpen } = useUIStateContext();
    const { isDark, isSmUp } = useThemeContext();
    const [searchTerm, setSearchTerm] = React.useState("");
-   const [category, setCategory] = React.useState("all");
+   // const [category, setCategory] = React.useState("all");
    const [selectedClient, setSelectedClient] = React.useState("all");
    const [client, setClient] = React.useState<Clients[] | undefined>(undefined);
+
+   const [supplier, setSupplier] = React.useState<Supplier[] | undefined>(
+      undefined
+   );
+   const [selectedSupplier, setSelectedSupplier] = React.useState("all");
+
    const [sortOrder, setSortOrder] = React.useState("desc");
    const [products, setProducts] = React.useState<Product[]>([]);
    const [open, setOpen] = React.useState(false);
@@ -71,11 +77,24 @@ export function ProductTable({ productList }: { productList: Product[] }) {
    const [pdfSuccess, setPdfSuccess] = React.useState(false);
    const [upCharge, setUpCharge] = React.useState("");
    const [upChargeNum, setUpChargeNum] = React.useState(0);
-   const [errorMessage, setErrorMessage] = React.useState("");
+   const [conversionRate, setConversionRate] = React.useState("");
+   const [conversionRateNum, setConversionRateNum] = React.useState(0);
+   const [currency, setCurrency] = React.useState("$");
+   const [errorMessage, setErrorMessage] = React.useState("请完成表单");
    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+   const [isFormComplete, setIsFormComplete] = React.useState(false);
+   const [csvModal, setCsvModal] = React.useState(false);
+
+   const toggleCSVModal = () => {
+      setCsvModal(!csvModal);
+   };
 
    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorEl(event.currentTarget);
+   };
+
+   const toggleCurrency = (currency: string) => {
+      currency === "$" ? setCurrency("€") : setCurrency("$");
    };
 
    const handleClose = () => {
@@ -88,7 +107,8 @@ export function ProductTable({ productList }: { productList: Product[] }) {
 
    React.useEffect(() => {
       setClient(Object.values(clients));
-   }, []);
+      setSupplier(Object.values(suppliers));
+   }, [clients, suppliers]);
 
    const [selected, setSelected] = React.useState<Set<string>>(new Set());
    const [page, setPage] = React.useState(0);
@@ -102,16 +122,17 @@ export function ProductTable({ productList }: { productList: Product[] }) {
          data = data.filter(
             (item) =>
                item.productEnglishName.toLowerCase().includes(lowerSearch) ||
-               item.productChineseName.includes(searchTerm)
+               item.productChineseName.includes(searchTerm) ||
+               item.hsCode.includes(searchTerm)
          );
       }
 
-      if (category !== "all") {
-         data = data.filter((item) => item?.hsCode === category);
-      }
+      // if (category !== "all") {
+      //    data = data.filter((item) => item?.hsCode === category);
+      // }
 
       if (selectedClient !== "all") {
-         data = data.filter((p) => p.clients.includes(selectedClient));
+         data = data.filter((p) => p.clients?.includes(selectedClient));
       }
 
       data.sort((a, b) => {
@@ -124,7 +145,7 @@ export function ProductTable({ productList }: { productList: Product[] }) {
       });
 
       return data;
-   }, [products, searchTerm, category, sortOrder, selectedClient]);
+   }, [products, searchTerm, sortOrder, selectedClient, selectedSupplier]);
 
    const displayedProducts = React.useMemo(() => {
       const startIndex = page * rowsPerPage;
@@ -136,10 +157,28 @@ export function ProductTable({ productList }: { productList: Product[] }) {
       setSearchTerm(e.target.value);
       setPage(0);
    };
-   const handleCategoryChange = (e: any) => {
-      setCategory(e.target.value);
-      setPage(0);
-   };
+
+   function exportCSV() {
+      exportInternalProductCSV({
+         products: selectedProductsList.reduce((acc, product) => {
+            acc[product.productId] = product;
+            return acc;
+         }, {} as Record<string, Product>),
+         upCharge: upChargeNum,
+         suppliers: suppliers,
+         clients: clients,
+      });
+
+      setCsvModal(false);
+      setUpCharge("");
+      setUpChargeNum(0);
+   }
+
+   // const handleCategoryChange = (e: any) => {
+   //    setCategory(e.target.value);
+   //    setPage(0);
+   // };
+
    const handleSortChange = (e: any) => {
       setSortOrder(e.target.value);
       setPage(0);
@@ -149,9 +188,11 @@ export function ProductTable({ productList }: { productList: Product[] }) {
       const allIds = displayedProducts.map((p) => p.productId);
       setSelected(new Set(allIds));
    };
+
    const handleDeselectAll = () => {
       setSelected(new Set());
    };
+
    const handleToggleOne = (productId: string) => {
       setSelected((prev) => {
          const newSet = new Set(prev);
@@ -204,7 +245,11 @@ export function ProductTable({ productList }: { productList: Product[] }) {
             acc[product.productId] = product;
             return acc;
          }, {} as Record<string, Product>),
+         conversionRate: conversionRateNum,
+         currency: currency,
          upCharge: upChargeNum,
+         suppliers: suppliers,
+         clients: clients,
       });
 
       setPdfLoading(false);
@@ -213,6 +258,12 @@ export function ProductTable({ productList }: { productList: Product[] }) {
       setTimeout(() => {
          setOpen(false);
          setPdfSuccess(false);
+
+         setUpCharge("");
+         setUpChargeNum(0);
+         setCurrency("$");
+         setConversionRate("");
+         setConversionRateNum(0);
       }, 2000);
    };
 
@@ -227,6 +278,8 @@ export function ProductTable({ productList }: { productList: Product[] }) {
             return acc;
          }, {} as Record<string, Product>),
          upCharge: upChargeNum,
+         conversionRate: conversionRateNum,
+         currency: currency,
       });
 
       setPdfLoading(false);
@@ -235,8 +288,30 @@ export function ProductTable({ productList }: { productList: Product[] }) {
       setTimeout(() => {
          setOpen(false);
          setPdfSuccess(false);
+
+         setUpCharge("");
+         setUpChargeNum(0);
+         setCurrency("$");
+         setConversionRate("");
+         setConversionRateNum(0);
       }, 2000);
    };
+
+   React.useEffect(() => {
+      if (
+         upChargeNum >= 1.01 &&
+         upChargeNum < 10 &&
+         conversionRateNum > 0 &&
+         conversionRateNum < 100 &&
+         conversionRate !== "" &&
+         upCharge !== ""
+      ) {
+         setIsFormComplete(true);
+      } else {
+         setIsFormComplete(false);
+      }
+   }, [conversionRateNum, upChargeNum, conversionRate, upCharge]);
+
    return (
       <Box
          sx={{
@@ -282,7 +357,7 @@ export function ProductTable({ productList }: { productList: Product[] }) {
 
                <Stack
                   direction="row"
-                  gap={2}
+                  gap={1}
                   sx={{
                      alignItems: "center",
                      justifyContent: "space-between",
@@ -309,11 +384,26 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                      <MenuItem value="all">全部客户</MenuItem>
                      {client?.map((c) => (
                         <MenuItem key={c.clientId} value={c.clientId}>
-                           {c.name}
+                           {c.companyName}
                         </MenuItem>
                      ))}
                   </Select>
                   <Select
+                     size="small"
+                     value={selectedSupplier} // "all" or a suplierName
+                     onChange={(e) => {
+                        setSelectedSupplier(e.target.value); // supplierId
+                        setPage(0);
+                     }}
+                  >
+                     <MenuItem value="all">全部供应商</MenuItem>
+                     {supplier?.map((c) => (
+                        <MenuItem key={c.supplierName} value={c.supplierId}>
+                           {c.supplierName}
+                        </MenuItem>
+                     ))}
+                  </Select>
+                  {/* <Select
                      size="small"
                      value={category}
                      onChange={handleCategoryChange}
@@ -325,11 +415,11 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                            {option.label}
                         </MenuItem>
                      ))}
-                  </Select>
+                  </Select> */}
                   {isAnySelected && (
                      <Stack
                         direction="row"
-                        spacing={1}
+                        spacing={0.5}
                         sx={{ justifyContent: "space-between" }}
                      >
                         <IconButton onClick={handleDeleteSelected}>
@@ -491,15 +581,13 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                               {/* Category */}
                               <TableCell>
                                  <Typography variant="inherit" noWrap>
-                                    {typeOptions.find(
-                                       (option) => option.value === row.hsCode
-                                    )?.label || "---"}
+                                    {row.hsCode || "---"}
                                  </Typography>
                               </TableCell>
 
                               <TableCell>
                                  <Typography variant="inherit" noWrap>
-                                    {suppliers[row.supplierId].supplierName}
+                                    {suppliers[row.supplierId]?.supplierName}
                                  </Typography>
                               </TableCell>
 
@@ -635,7 +723,56 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                               error={!!errorMessage}
                               helperText={errorMessage || "5% 为 1.05"}
                            />
+                           <TextField
+                              type="number"
+                              InputProps={{
+                                 startAdornment: (
+                                    <InputAdornment position="start">
+                                       <Box alignItems={"center"}>
+                                          <span>¥ &#8594;</span>
+                                          <IconButton
+                                             sx={{
+                                                fontWeight: 400,
+                                                height: "20px",
+                                                width: "20px",
+                                                fontSize: "1rem",
+                                                mb: "2px",
+                                             }}
+                                             onClick={() =>
+                                                toggleCurrency(currency)
+                                             }
+                                          >
+                                             {currency}
+                                          </IconButton>
+                                       </Box>
+                                    </InputAdornment>
+                                 ),
+                              }}
+                              label="设置汇率"
+                              value={conversionRate}
+                              onChange={(e) => {
+                                 const val = e.target.value;
+                                 setConversionRate(val);
+
+                                 const num = parseFloat(val);
+                                 if (val === "") {
+                                    setErrorMessage("请输入数字");
+                                 } else if (
+                                    isNaN(num) ||
+                                    num < 0 ||
+                                    num >= 100
+                                 ) {
+                                    setErrorMessage("请输入有效的数字");
+                                 } else {
+                                    setErrorMessage("");
+                                    setConversionRateNum(num);
+                                 }
+                              }}
+                              error={!!errorMessage}
+                           />
+
                            <Button
+                              disabled={!isFormComplete}
                               fullWidth
                               onClick={handleClient}
                               variant="contained"
@@ -647,6 +784,7 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                               导出给客户
                            </Button>
                            <Button
+                              disabled={!isFormComplete}
                               fullWidth
                               onClick={handleInternal}
                               variant="outlined"
@@ -689,6 +827,90 @@ export function ProductTable({ productList }: { productList: Product[] }) {
             </Box>
          )}
 
+         {csvModal && (
+            <Dialog
+               open={csvModal}
+               onClose={() => setCsvModal(false)}
+               PaperProps={{
+                  sx: { p: 3, borderRadius: 3, minWidth: 200 },
+               }}
+               BackdropProps={{
+                  sx: {
+                     bgcolor: "rgba(18, 18, 18, 0.1)",
+                     backdropFilter: "blur(3px)",
+                  },
+               }}
+            >
+               <div>
+                  <DialogTitle
+                     sx={{ pb: 1, fontWeight: 600, fontSize: "1.6rem" }}
+                  >
+                     请设置加价幅度
+                  </DialogTitle>
+
+                  <DialogActions sx={{ pt: 0 }}>
+                     <Stack
+                        direction="column"
+                        spacing={1.5}
+                        sx={{
+                           width: "100%",
+                           justifyContent: "space-between",
+                        }}
+                     >
+                        <TextField
+                           type="number"
+                           label="加价幅度"
+                           value={upCharge}
+                           onChange={(e) => {
+                              const val = e.target.value;
+                              setUpCharge(val);
+
+                              const num = parseFloat(val);
+                              if (val === "") {
+                                 setErrorMessage("请输入数字");
+                              } else if (
+                                 isNaN(num) ||
+                                 num < 1.01 ||
+                                 num >= 10
+                              ) {
+                                 setErrorMessage("请输入有效的数字");
+                              } else {
+                                 setErrorMessage("");
+                                 setUpChargeNum(num);
+                              }
+                           }}
+                           error={!!errorMessage}
+                           helperText={errorMessage || "5% 为 1.05"}
+                        />
+
+                        <Button
+                           disabled={errorMessage !== ""}
+                           fullWidth
+                           onClick={exportCSV}
+                           variant="contained"
+                           color="info"
+                           sx={{
+                              borderRadius: 2,
+                           }}
+                        >
+                           导出为EXCEL
+                        </Button>
+                        <Button
+                           fullWidth
+                           onClick={() => setCsvModal(false)}
+                           variant="text"
+                           sx={{
+                              borderRadius: 2,
+                           }}
+                        >
+                           取消
+                        </Button>
+                     </Stack>
+                  </DialogActions>
+               </div>
+            </Dialog>
+         )}
+
          <Menu
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
@@ -708,9 +930,20 @@ export function ProductTable({ productList }: { productList: Product[] }) {
             >
                导出为PDF
             </MenuItem>
-            <MenuItem onClick={handleClose}>导出为EXCEL</MenuItem>
+            <MenuItem
+               onClick={() => {
+                  handleClose();
+                  toggleCSVModal();
+                  // exportCSV();
+               }}
+            >
+               导出为EXCEL
+            </MenuItem>
             <MenuItem onClick={handleClose}>分享为链接</MenuItem>
          </Menu>
       </Box>
    );
+}
+function elif(arg0: boolean) {
+   throw new Error("Function not implemented.");
 }
