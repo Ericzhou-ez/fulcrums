@@ -3,6 +3,7 @@ import { deleteImageByUrl } from "./handleDeletePhoto";
 import { db } from "../../utils";
 import { uploadBlobAsJPG } from "../lib/upload_blob_as_jpg";
 import { FieldValue } from "firebase-admin/firestore";
+import * as admin from "firebase-admin";
 
 export const editProduct = functions.https.onCall(
    async (req: functions.https.CallableRequest) => {
@@ -39,11 +40,18 @@ export const editProduct = functions.https.onCall(
             .collection("products")
             .doc(productId);
 
-         // Get previous data to delete old image
-         const prevData = (await productRef.get()).data() || {};
+         const prevProductSnapshot = await productRef.get();
+
+         if (!prevProductSnapshot.exists) {
+            throw new functions.https.HttpsError(
+               "not-found",
+               `产品 ${productId} 不存在`
+            );
+         }
+         const prevProduct = prevProductSnapshot.data();
 
          if (image !== "none") {
-            await deleteImageByUrl(prevData.image);
+            await deleteImageByUrl(prevProduct.image);
             await uploadBlobAsJPG(
                image,
                productId,
@@ -67,49 +75,76 @@ export const editProduct = functions.https.onCall(
             currency,
             hsCode,
             material,
+            image:
+               image === "none"
+                  ? prevProduct.image
+                  : `https://firebasestorage.googleapis.com/v0/b/${
+                       admin.storage().bucket().name
+                    }/o/${encodeURIComponent(
+                       `users/${uid}/products/${productId}.jpg`
+                    )}?alt=media&token=${productId}`,
          };
 
          const updateProductPromise = productRef.set(updatePayload, {
             merge: true,
          });
 
-         const prevProductRef = db
-            .collection("users")
-            .doc(uid)
-            .collection("products")
-            .doc(productId);
-         const prevProductSnapshot = await prevProductRef.get();
-         const prevProduct = prevProductSnapshot.data();
+         // Supplier updates
+         const updateSupplierPromises = [];
 
-         const updateSupplierPromise = editProductsInSupplier(
-            supplierId,
-            uid,
-            prevProduct?.productId,
-            productId
+         if (prevProduct.supplierId !== supplierId) {
+            
+            // Remove productId from old supplier
+            if (prevProduct.supplierId) {
+               updateSupplierPromises.push(
+                  editProductsInSupplier(
+                     prevProduct.supplierId,
+                     uid,
+                     productId,
+                     true
+                  )
+               );
+            }
+            // Add productId to new supplier
+            updateSupplierPromises.push(
+               editProductsInSupplier(supplierId, uid, productId, false)
+            );
+         }
+
+         // Client updates
+         const prevClients = prevProduct.clients || [];
+         const newClients = clients || [];
+         const clientsToAdd = newClients.filter(
+            (id) => !prevClients.includes(id)
+         );
+         const clientsToRemove = prevClients.filter(
+            (id) => !newClients.includes(id)
          );
 
-         const updateClientsPromises = clients.map((clientId: string) =>
-            editProductsInClient(
-               clientId,
-               uid,
-               prevProduct?.productId,
-               productId
-            )
-         );
+         const updateClientsPromises = [
+            ...clientsToAdd.map((clientId) =>
+               editProductsInClient(clientId, uid, productId, false)
+            ),
+            ...clientsToRemove.map((clientId) =>
+               editProductsInClient(clientId, uid, productId, true)
+            ),
+         ];
 
          await Promise.all([
             updateProductPromise,
-            updateSupplierPromise,
+            ...updateSupplierPromises,
             ...updateClientsPromises,
          ]);
 
          return { success: true };
       } catch (err) {
-         console.error(err);
-
+         functions.logger.error("Error editing product:", err, {
+            uid,
+            productId,
+         });
          throw new functions.https.HttpsError(
             "internal",
-            "Error in editing product"
+            `编辑产品失败: ${err.message}`
          );
       }
    }
@@ -118,8 +153,8 @@ export const editProduct = functions.https.onCall(
 async function editProductsInSupplier(
    supplierId: string,
    uid: string,
-   oldProductId: string,
-   newProductId: string
+   productId: string,
+   remove: boolean
 ) {
    const supplierRef = db
       .collection("users")
@@ -130,49 +165,43 @@ async function editProductsInSupplier(
 
    if (!supplierDoc.exists) {
       throw new functions.https.HttpsError(
-         "data-loss",
-         `${supplierDoc} does not exist`
+         "not-found",
+         `供应商 ${supplierId} 不存在`
       );
    }
 
-   await supplierRef.update({
-      productIds: FieldValue.arrayRemove(oldProductId),
-   });
-   await supplierRef.update({
-      productIds: FieldValue.arrayUnion(newProductId),
-   });
+   const update = remove
+      ? { productIds: FieldValue.arrayRemove(productId) }
+      : { productIds: FieldValue.arrayUnion(productId) };
 
+   await supplierRef.update(update);
    return { success: true };
 }
 
-export async function editProductsInClient(
+async function editProductsInClient(
    clientId: string,
    uid: string,
-   oldProductId: string,
-   newProductId: string
+   productId: string,
+   remove: boolean
 ) {
    const clientRef = db
       .collection("users")
       .doc(uid)
       .collection("clients")
       .doc(clientId);
-
    const clientDoc = await clientRef.get();
 
    if (!clientDoc.exists) {
       throw new functions.https.HttpsError(
-         "data-loss",
-         `Client ${clientId} does not exist`
+         "not-found",
+         `客户 ${clientId} 不存在`
       );
    }
 
-   await clientRef.update({
-      productIds: FieldValue.arrayRemove(oldProductId),
-   });
+   const update = remove
+      ? { productIds: FieldValue.arrayRemove(productId) }
+      : { productIds: FieldValue.arrayUnion(productId) };
 
-   await clientRef.update({
-      productIds: FieldValue.arrayUnion(newProductId),
-   });
-
+   await clientRef.update(update);
    return { success: true };
 }
