@@ -11,11 +11,11 @@ export function getSupplierIdByName(
 }
 
 export function getSupplierFromId(
-   id: string,
+   supplierId: string,
    suppliers: Record<string, any>
 ): Supplier | null {
    for (const [id, details] of Object.entries(suppliers)) {
-      if (id === id) return details;
+      if (id === supplierId) return details;
    }
    return null;
 }
