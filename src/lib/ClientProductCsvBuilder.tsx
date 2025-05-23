@@ -1,17 +1,13 @@
-import { Product, Supplier, Clients } from "../types/types";
+import { Product } from "../types/types";
 
-export function exportInternalProductCSV({
+export function exportExternalProductCSV({
    products,
-   suppliers,
-   clients,
    upCharge,
    exchangeRate,
    currency,
    pricePerContainer,
 }: {
    products: Record<string, Product>;
-   suppliers: Record<string, Supplier>;
-   clients: Record<string, Clients>;
    upCharge: number;
    exchangeRate: number;
    currency: string;
@@ -20,57 +16,33 @@ export function exportInternalProductCSV({
    if (!products || Object.keys(products).length === 0) return;
 
    const headerEn = [
-      "B/C No.",
-      "Ref No.",
       "DESIGNATION CN",
       "DESIGNATION EN",
       "COL",
-      "CTS CONTENEUR",
-      "TTL Cartons",
       "Pack L",
       "Pack W",
       "Pack H",
       "Pack CBM",
-      "TTL CBM",
       `Unit Price (${currency})`,
       `Commission (${currency})`,
       `Freight Cost (${currency})`,
-      `Amount (${currency})`,
-      `Gross Weight`,
-      "STOCK",
-      "ETD",
-      "Container No.",
-      "Seal No.",
-      "Client(s)",
-      "Supplier",
-      "Notes",
+      `Total Price (${currency})`,
+      "Gross Weight",
    ];
 
    const headerZh = [
-      "订单号码",
-      "货号",
       "品名",
       "品名(英)",
       "装箱量",
-      "装柜箱数",
-      "装柜总数",
       "长 (m)",
       "宽 (m)",
       "高 (m)",
       "单箱体积",
-      "总体积",
       `单价 (${currency})`,
       `佣金 (${currency})`,
       `运费 (${currency})`,
-      `总金额 (${currency})`,
+      `总价 (${currency})`,
       "毛重",
-      "库存",
-      "起航日期",
-      "集装箱号",
-      "封号",
-      "客户",
-      "供应商",
-      "备注",
    ];
 
    const csvEscape = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
@@ -104,45 +76,31 @@ export function exportInternalProductCSV({
       const oneBoxCBM = cbm(Lm, Wm, Hm);
 
       const unitPrice = parseFloat(p.unitPrice ?? "0") / exchangeRate;
-      const commission = ((upCharge - 1) * unitPrice).toFixed(2);
-
+      const commission = unitPrice ? (upCharge - 1) * unitPrice : 0;
       const freightCost =
-         (pricePerContainer / 68) *
-         (parseFloat(oneBoxCBM) / parseInt(p.packing));
-
-      const totalUnitPrice = unitPrice + parseFloat(commission) + freightCost;
+         oneBoxCBM && p.packing
+            ? (pricePerContainer / 68) *
+              (parseFloat(oneBoxCBM) / parseInt(p.packing))
+            : 0;
+      const totalPrice = unitPrice + commission + freightCost;
 
       return [
-         "",
-         "", // B/C No., Ref No.
          p.productChineseName ?? "",
          p.productEnglishName ?? "",
          p.packing ?? "",
-         "",
-         "", // CTS CONTENEUR, TTL Cartons
          isNaN(Lm) ? "" : Lm.toFixed(2),
          isNaN(Wm) ? "" : Wm.toFixed(2),
          isNaN(Hm) ? "" : Hm.toFixed(2),
          oneBoxCBM,
-         "",
          unitPrice ? unitPrice.toFixed(2) : "",
-         commission,
-         freightCost.toFixed(2),
-         totalUnitPrice.toFixed(2),
+         commission ? commission.toFixed(2) : "",
+         freightCost ? freightCost.toFixed(2) : "",
+         totalPrice ? totalPrice.toFixed(2) : "",
          p.packingMass
             ? `${parseFloat(p.packingMass?.packingMassQuantity).toFixed(3)}${
                  p.packingMass?.packingMassUnit
               }`
             : "",
-         "",
-         "",
-         "",
-         "",
-         (p.clients ?? [])
-            .map((id) => clients[id]?.companyName ?? "")
-            .join("; "),
-         suppliers[p.supplierId]?.supplierName ?? "",
-         p.additionalNotes ?? "",
       ];
    });
 
@@ -156,7 +114,7 @@ export function exportInternalProductCSV({
    const url = URL.createObjectURL(blob);
    const a = Object.assign(document.createElement("a"), {
       href: url,
-      download: `内部报价_${new Date().toISOString().slice(0, 10)}.csv`,
+      download: `外部报价_${new Date().toISOString().slice(0, 10)}.csv`,
    });
    a.click();
    URL.revokeObjectURL(url);

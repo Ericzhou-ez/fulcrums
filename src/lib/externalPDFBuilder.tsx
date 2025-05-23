@@ -8,11 +8,13 @@ export async function ExternalPDFBuilder({
    upCharge,
    conversionRate,
    currency,
+   pricePerContainer,
 }: {
    products: Record<string, Product>;
    upCharge: number;
    conversionRate: number;
    currency: string;
+   pricePerContainer: number;
 }): Promise<void> {
    if (Object.keys(products).length === 0) return;
 
@@ -136,9 +138,29 @@ export async function ExternalPDFBuilder({
          yCur -= sizeCN + lead;
       });
 
-      const adjustedPrice = (parseFloat(p.unitPrice) * upCharge / conversionRate).toFixed(
-         2
-      );
+      const cbm =
+         p.packingVolume.packingUnit === "cm"
+            ? (parseFloat(p.packingVolume.length) *
+                 parseFloat(p.packingVolume.width) *
+                 parseFloat(p.packingVolume.height)) /
+              1_000_000
+            : p.packingVolume.packingUnit === "m"
+            ? parseFloat(p.packingVolume.length) *
+              parseFloat(p.packingVolume.width) *
+              parseFloat(p.packingVolume.height)
+            : p.packingVolume.packingUnit === "L"
+            ? (parseFloat(p.packingVolume.length) *
+                 parseFloat(p.packingVolume.width) *
+                 parseFloat(p.packingVolume.height)) /
+              1_000
+            : 0;
+
+      const freight = ((pricePerContainer / 68) * cbm) / parseInt(p.packing);
+
+      const adjustedPrice = (
+         (parseFloat(p.unitPrice) * upCharge) / conversionRate +
+         freight
+      ).toFixed(2);
 
       yCur -= 9;
 

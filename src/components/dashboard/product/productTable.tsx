@@ -43,6 +43,8 @@ import { ExternalPDFBuilder } from "../../../lib/externalPDFBuilder";
 import HeartComponent from "./heart";
 import Loader from "../../core/loader";
 import { exportInternalProductCSV } from "../../../lib/InternalProductCSVBuilder";
+import ExportDialog from "./exportProductModal";
+import { exportExternalProductCSV } from "../../../lib/ClientProductCsvBuilder";
 
 const symbolToCurrencyCode: Record<string, string> = {
    "¥": "CNY",
@@ -72,22 +74,15 @@ export function ProductTable({ productList }: { productList: Product[] }) {
 
    const [sortOrder, setSortOrder] = React.useState("desc");
    const [products, setProducts] = React.useState<Product[]>([]);
-   const [open, setOpen] = React.useState(false);
+
    const [pdfLoading, setPdfLoading] = React.useState(false);
    const [pdfSuccess, setPdfSuccess] = React.useState(false);
-   const [upCharge, setUpCharge] = React.useState("");
-   const [upChargeNum, setUpChargeNum] = React.useState(0);
-   const [conversionRate, setConversionRate] = React.useState("");
-   const [conversionRateNum, setConversionRateNum] = React.useState(0);
-   const [currency, setCurrency] = React.useState("$");
-   const [errorMessage, setErrorMessage] = React.useState("请完成表单");
-   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-   const [isFormComplete, setIsFormComplete] = React.useState(false);
-   const [csvModal, setCsvModal] = React.useState(false);
 
-   const toggleCSVModal = () => {
-      setCsvModal(!csvModal);
-   };
+   const [currency, setCurrency] = React.useState("$");
+   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+   const [isExportModalOpen, setIsExportModalOpen] = React.useState(false);
+   const [exportMode, setExportMode] = React.useState<"csv" | "pdf" | "">("");
 
    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorEl(event.currentTarget);
@@ -127,6 +122,7 @@ export function ProductTable({ productList }: { productList: Product[] }) {
          );
       }
 
+      
       // if (category !== "all") {
       //    data = data.filter((item) => item?.hsCode === category);
       // }
@@ -158,7 +154,12 @@ export function ProductTable({ productList }: { productList: Product[] }) {
       setPage(0);
    };
 
-   function exportCSV() {
+   function exportInternalCSV(
+      upChargeNum: number,
+      exchangeRate: number,
+      currency: string,
+      pricePerContainer: number
+   ) {
       exportInternalProductCSV({
          products: selectedProductsList.reduce((acc, product) => {
             acc[product.productId] = product;
@@ -167,11 +168,32 @@ export function ProductTable({ productList }: { productList: Product[] }) {
          upCharge: upChargeNum,
          suppliers: suppliers,
          clients: clients,
+         exchangeRate: exchangeRate,
+         currency: currency,
+         pricePerContainer: pricePerContainer,
       });
 
-      setCsvModal(false);
-      setUpCharge("");
-      setUpChargeNum(0);
+      setIsExportModalOpen(false);
+   }
+
+   function exportClientCsv(
+      upChargeNum: number,
+      exchangeRate: number,
+      currency: string,
+      pricePerContainer: number
+   ) {
+      exportExternalProductCSV({
+         products: selectedProductsList.reduce((acc, product) => {
+            acc[product.productId] = product;
+            return acc;
+         }, {} as Record<string, Product>),
+         upCharge: upChargeNum,
+         exchangeRate: exchangeRate,
+         currency: currency,
+         pricePerContainer: pricePerContainer,
+      });
+
+      setIsExportModalOpen(false);
    }
 
    // const handleCategoryChange = (e: any) => {
@@ -235,8 +257,29 @@ export function ProductTable({ productList }: { productList: Product[] }) {
       return products.filter((p) => selected.has(p.productId));
    }, [products, selected]);
 
-   const handleInternal = async () => {
-      if (upChargeNum < 1.01 || upChargeNum >= 10 || isNaN(upChargeNum)) return;
+   const resetExportForm = () => {
+      setIsExportModalOpen(false);
+      setPdfSuccess(false);
+
+      setCurrency("$");
+   };
+
+   const handleInternal = async (
+      upChargeNum: number,
+      conversionRateNum: number,
+      currency: string,
+      pricePerContainerNum: number
+   ) => {
+      if (
+         upChargeNum < 1.01 ||
+         upChargeNum >= 10 ||
+         isNaN(upChargeNum) ||
+         conversionRateNum <= 0 ||
+         isNaN(conversionRateNum) ||
+         pricePerContainerNum <= 0 ||
+         isNaN(pricePerContainerNum)
+      )
+         return;
 
       setPdfLoading(true);
 
@@ -246,29 +289,34 @@ export function ProductTable({ productList }: { productList: Product[] }) {
             return acc;
          }, {} as Record<string, Product>),
          conversionRate: conversionRateNum,
-         currency: currency,
+         currency,
          upCharge: upChargeNum,
-         suppliers: suppliers,
-         clients: clients,
+         pricePerContainer: pricePerContainerNum,
+         suppliers,
+         clients,
       });
 
       setPdfLoading(false);
       setPdfSuccess(true);
-
-      setTimeout(() => {
-         setOpen(false);
-         setPdfSuccess(false);
-
-         setUpCharge("");
-         setUpChargeNum(0);
-         setCurrency("$");
-         setConversionRate("");
-         setConversionRateNum(0);
-      }, 2000);
+      setTimeout(resetExportForm, 2000);
    };
 
-   const handleClient = async () => {
-      if (upChargeNum < 1.01 || upChargeNum >= 10 || isNaN(upChargeNum)) return;
+   const handleClient = async (
+      upChargeNum: number,
+      conversionRateNum: number,
+      currency: string,
+      pricePerContainerNum: number
+   ) => {
+      if (
+         upChargeNum < 1.01 ||
+         upChargeNum >= 10 ||
+         isNaN(upChargeNum) ||
+         conversionRateNum <= 0 ||
+         isNaN(conversionRateNum) ||
+         pricePerContainerNum <= 0 ||
+         isNaN(pricePerContainerNum)
+      )
+         return;
 
       setPdfLoading(true);
 
@@ -279,38 +327,14 @@ export function ProductTable({ productList }: { productList: Product[] }) {
          }, {} as Record<string, Product>),
          upCharge: upChargeNum,
          conversionRate: conversionRateNum,
-         currency: currency,
+         currency,
+         pricePerContainer: pricePerContainerNum,
       });
 
       setPdfLoading(false);
       setPdfSuccess(true);
-
-      setTimeout(() => {
-         setOpen(false);
-         setPdfSuccess(false);
-
-         setUpCharge("");
-         setUpChargeNum(0);
-         setCurrency("$");
-         setConversionRate("");
-         setConversionRateNum(0);
-      }, 2000);
+      setTimeout(resetExportForm, 2000);
    };
-
-   React.useEffect(() => {
-      if (
-         upChargeNum >= 1.01 &&
-         upChargeNum < 10 &&
-         conversionRateNum > 0 &&
-         conversionRateNum < 100 &&
-         conversionRate !== "" &&
-         upCharge !== ""
-      ) {
-         setIsFormComplete(true);
-      } else {
-         setIsFormComplete(false);
-      }
-   }, [conversionRateNum, upChargeNum, conversionRate, upCharge]);
 
    return (
       <Box
@@ -655,163 +679,18 @@ export function ProductTable({ productList }: { productList: Product[] }) {
             />
          </Card>
 
-         {open && (
-            <Dialog
-               open={open}
-               onClose={() => setOpen(false)}
-               PaperProps={{
-                  sx: { p: 3, borderRadius: 3, minWidth: 200 },
-               }}
-               BackdropProps={{
-                  sx: {
-                     bgcolor: "rgba(18, 18, 18, 0.1)",
-                     backdropFilter: "blur(3px)",
-                  },
-               }}
-            >
-               {pdfLoading ? (
-                  <Stack direction={"column"} spacing={2} alignItems="center">
-                     <Loader />
-                     <p>下载中...</p>
-                  </Stack>
-               ) : (
-                  <div>
-                     <DialogTitle
-                        sx={{ pb: 1, fontWeight: 600, fontSize: "1.6rem" }}
-                     >
-                        请选择导出类型
-                     </DialogTitle>
-
-                     <DialogContent sx={{ pt: 0, pb: 8 }}>
-                        <Typography>
-                           您想要<strong>内部导出</strong>还是
-                           <strong>导出给客户</strong>？
-                        </Typography>
-                     </DialogContent>
-
-                     <DialogActions sx={{ pt: 0 }}>
-                        <Stack
-                           direction="column"
-                           spacing={1.5}
-                           sx={{
-                              width: "100%",
-                              justifyContent: "space-between",
-                           }}
-                        >
-                           <TextField
-                              type="number"
-                              label="加价幅度"
-                              value={upCharge}
-                              onChange={(e) => {
-                                 const val = e.target.value;
-                                 setUpCharge(val);
-
-                                 const num = parseFloat(val);
-                                 if (val === "") {
-                                    setErrorMessage("请输入数字");
-                                 } else if (
-                                    isNaN(num) ||
-                                    num < 1.01 ||
-                                    num >= 10
-                                 ) {
-                                    setErrorMessage("请输入有效的数字");
-                                 } else {
-                                    setErrorMessage("");
-                                    setUpChargeNum(num);
-                                 }
-                              }}
-                              error={!!errorMessage}
-                              helperText={errorMessage || "5% 为 1.05"}
-                           />
-                           <TextField
-                              type="number"
-                              InputProps={{
-                                 startAdornment: (
-                                    <InputAdornment position="start">
-                                       <Box alignItems={"center"}>
-                                          <span>¥ &#8594;</span>
-                                          <IconButton
-                                             sx={{
-                                                fontWeight: 400,
-                                                height: "20px",
-                                                width: "20px",
-                                                fontSize: "1rem",
-                                                mb: "2px",
-                                             }}
-                                             onClick={() =>
-                                                toggleCurrency(currency)
-                                             }
-                                          >
-                                             {currency}
-                                          </IconButton>
-                                       </Box>
-                                    </InputAdornment>
-                                 ),
-                              }}
-                              label="设置汇率"
-                              value={conversionRate}
-                              onChange={(e) => {
-                                 const val = e.target.value;
-                                 setConversionRate(val);
-
-                                 const num = parseFloat(val);
-                                 if (val === "") {
-                                    setErrorMessage("请输入数字");
-                                 } else if (
-                                    isNaN(num) ||
-                                    num < 0 ||
-                                    num >= 100
-                                 ) {
-                                    setErrorMessage("请输入有效的数字");
-                                 } else {
-                                    setErrorMessage("");
-                                    setConversionRateNum(num);
-                                 }
-                              }}
-                              error={!!errorMessage}
-                           />
-
-                           <Button
-                              disabled={!isFormComplete}
-                              fullWidth
-                              onClick={handleClient}
-                              variant="contained"
-                              color="info"
-                              sx={{
-                                 borderRadius: 2,
-                              }}
-                           >
-                              导出给客户
-                           </Button>
-                           <Button
-                              disabled={!isFormComplete}
-                              fullWidth
-                              onClick={handleInternal}
-                              variant="outlined"
-                              color="info"
-                              sx={{
-                                 borderRadius: 2,
-                              }}
-                           >
-                              内部导出
-                           </Button>
-
-                           <Button
-                              fullWidth
-                              onClick={() => setOpen(false)}
-                              variant="text"
-                              sx={{
-                                 borderRadius: 2,
-                              }}
-                           >
-                              取消
-                           </Button>
-                        </Stack>
-                     </DialogActions>
-                  </div>
-               )}
-            </Dialog>
-         )}
+         <ExportDialog
+            open={isExportModalOpen}
+            onClose={() => setIsExportModalOpen(false)}
+            pdfLoading={pdfLoading}
+            currency={currency}
+            toggleCurrency={toggleCurrency}
+            onClientExport={handleClient}
+            onInternalExport={handleInternal}
+            exportType={exportMode}
+            onInternalCsv={exportInternalCSV}
+            onClientCsv={exportClientCsv}
+         />
 
          {pdfSuccess && (
             <Box
@@ -825,90 +704,6 @@ export function ProductTable({ productList }: { productList: Product[] }) {
             >
                <Alert severity="success">导出成功 :)</Alert>
             </Box>
-         )}
-
-         {csvModal && (
-            <Dialog
-               open={csvModal}
-               onClose={() => setCsvModal(false)}
-               PaperProps={{
-                  sx: { p: 3, borderRadius: 3, minWidth: 200 },
-               }}
-               BackdropProps={{
-                  sx: {
-                     bgcolor: "rgba(18, 18, 18, 0.1)",
-                     backdropFilter: "blur(3px)",
-                  },
-               }}
-            >
-               <div>
-                  <DialogTitle
-                     sx={{ pb: 1, fontWeight: 600, fontSize: "1.6rem" }}
-                  >
-                     请设置加价幅度
-                  </DialogTitle>
-
-                  <DialogActions sx={{ pt: 0 }}>
-                     <Stack
-                        direction="column"
-                        spacing={1.5}
-                        sx={{
-                           width: "100%",
-                           justifyContent: "space-between",
-                        }}
-                     >
-                        <TextField
-                           type="number"
-                           label="加价幅度"
-                           value={upCharge}
-                           onChange={(e) => {
-                              const val = e.target.value;
-                              setUpCharge(val);
-
-                              const num = parseFloat(val);
-                              if (val === "") {
-                                 setErrorMessage("请输入数字");
-                              } else if (
-                                 isNaN(num) ||
-                                 num < 1.01 ||
-                                 num >= 10
-                              ) {
-                                 setErrorMessage("请输入有效的数字");
-                              } else {
-                                 setErrorMessage("");
-                                 setUpChargeNum(num);
-                              }
-                           }}
-                           error={!!errorMessage}
-                           helperText={errorMessage || "5% 为 1.05"}
-                        />
-
-                        <Button
-                           disabled={errorMessage !== ""}
-                           fullWidth
-                           onClick={exportCSV}
-                           variant="contained"
-                           color="info"
-                           sx={{
-                              borderRadius: 2,
-                           }}
-                        >
-                           导出为EXCEL
-                        </Button>
-                        <Button
-                           fullWidth
-                           onClick={() => setCsvModal(false)}
-                           variant="text"
-                           sx={{
-                              borderRadius: 2,
-                           }}
-                        >
-                           取消
-                        </Button>
-                     </Stack>
-                  </DialogActions>
-               </div>
-            </Dialog>
          )}
 
          <Menu
@@ -925,7 +720,8 @@ export function ProductTable({ productList }: { productList: Product[] }) {
             <MenuItem
                onClick={() => {
                   handleClose();
-                  setOpen(true);
+                  setIsExportModalOpen(true);
+                  setExportMode("pdf");
                }}
             >
                导出为PDF
@@ -933,8 +729,8 @@ export function ProductTable({ productList }: { productList: Product[] }) {
             <MenuItem
                onClick={() => {
                   handleClose();
-                  toggleCSVModal();
-                  // exportCSV();
+                  setIsExportModalOpen(true);
+                  setExportMode("csv");
                }}
             >
                导出为EXCEL
@@ -943,7 +739,4 @@ export function ProductTable({ productList }: { productList: Product[] }) {
          </Menu>
       </Box>
    );
-}
-function elif(arg0: boolean) {
-   throw new Error("Function not implemented.");
 }

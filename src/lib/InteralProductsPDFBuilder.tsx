@@ -1,9 +1,4 @@
-import {
-   PDFDocument,
-   StandardFonts,
-   rgb,
-   PDFImage,
-} from "pdf-lib";
+import { PDFDocument, StandardFonts, rgb, PDFImage } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 import { Clients, Product, Supplier } from "../types/types";
 import { wrapText, hasChinese } from "./helpers";
@@ -15,6 +10,7 @@ export async function BuildInternalProductPDF({
    currency,
    suppliers,
    clients,
+   pricePerContainer,
 }: {
    products: Record<string, Product>;
    upCharge: number;
@@ -22,6 +18,7 @@ export async function BuildInternalProductPDF({
    currency: string;
    suppliers: Record<string, Supplier>;
    clients: Record<string, Clients>;
+   pricePerContainer: number;
 }): Promise<void> {
    const pdfDoc = await PDFDocument.create();
    pdfDoc.registerFontkit(fontkit);
@@ -143,12 +140,32 @@ export async function BuildInternalProductPDF({
          }
       );
 
-      yCur -= 3;  
+      yCur -= 3;
+
+      const cbm =
+         p.packingVolume.packingUnit === "cm"
+            ? (parseFloat(p.packingVolume.length) *
+                 parseFloat(p.packingVolume.width) *
+                 parseFloat(p.packingVolume.height)) /
+              1_000_000
+            : p.packingVolume.packingUnit === "m"
+            ? parseFloat(p.packingVolume.length) *
+              parseFloat(p.packingVolume.width) *
+              parseFloat(p.packingVolume.height)
+            : p.packingVolume.packingUnit === "L"
+            ? (parseFloat(p.packingVolume.length) *
+                 parseFloat(p.packingVolume.width) *
+                 parseFloat(p.packingVolume.height)) /
+              1_000
+            : 0;
 
       const upChargedPrice = (parseFloat(p.unitPrice) * upCharge).toFixed(2);
+
+      const freight = ((pricePerContainer / 68) * cbm) / parseInt(p.packing);
+
       const adjustedPrice = (
-         (parseFloat(p.unitPrice) * upCharge) /
-         conversionRate
+         (parseFloat(p.unitPrice) * upCharge) / conversionRate +
+         freight
       ).toFixed(2);
 
       const rows: string[][] = [
@@ -186,7 +203,10 @@ export async function BuildInternalProductPDF({
                  ],
               ]
             : []),
-         ["Client(s):", p.clients.map((id) => clients[id].companyName).join(", ") ?? ""],
+         [
+            "Client(s):",
+            p.clients.map((id) => clients[id].companyName).join(", ") ?? "",
+         ],
          ["Supplier:", suppliers[p.supplierId]?.supplierName ?? ""],
          ["Phone", suppliers[p.supplierId]?.supplierPhoneNumber ?? ""],
          ["Email", suppliers[p.supplierId]?.supplierEmail ?? ""],

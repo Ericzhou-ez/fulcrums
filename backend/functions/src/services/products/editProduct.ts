@@ -57,12 +57,8 @@ export const editProduct = functions.https.onCall(
             productEnglishName,
             unitPrice,
             packing,
-            packingMassQuantity,
-            packingMassUnit,
-            length,
-            width,
-            height,
-            packingUnit,
+            packingMass: { packingMassQuantity, packingMassUnit },
+            packingVolume: { length, width, height, packingUnit },
             saved,
             updatedAt,
             supplierId,
@@ -104,7 +100,7 @@ export const editProduct = functions.https.onCall(
          await Promise.all([
             updateProductPromise,
             updateSupplierPromise,
-            ...updateClientsPromises, 
+            ...updateClientsPromises,
          ]);
 
          return { success: true };

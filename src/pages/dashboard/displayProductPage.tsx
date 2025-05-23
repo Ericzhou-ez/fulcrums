@@ -29,10 +29,7 @@ import { Product, Supplier } from "../../types/types";
 import TimeAgoTypography from "../../components/dashboard/product/timeAgoTypography";
 import MultipleSelectChip from "../../components/core/multiselectWithChip";
 import getBase64FromBlobUrl from "../../lib/blob-to-blob64";
-import {
-   getSupplierFromId,
-   getSupplierIdByName,
-} from "../../lib/supplierHelpers";
+import { getSupplierFromId } from "../../lib/supplierHelpers";
 
 const AddProductForm = ({ p }: { p: Product }) => {
    const { isMdUp } = useThemeContext();
@@ -144,6 +141,8 @@ const AddProductForm = ({ p }: { p: Product }) => {
          productId: p?.productId,
       });
    }
+
+   console.log(p);
 
    async function handleProductDeletion() {
       await deleteProducts([p.productId]);
@@ -532,7 +531,7 @@ const AddProductForm = ({ p }: { p: Product }) => {
 
                <Autocomplete
                   fullWidth
-                  options={Object.values(suppliers)} 
+                  options={Object.values(suppliers)}
                   getOptionLabel={(option) => option.supplierName}
                   value={
                      Object.values(suppliers).find(
@@ -549,8 +548,8 @@ const AddProductForm = ({ p }: { p: Product }) => {
                      setSupplierPhone(newValue.supplierPhoneNumber ?? "");
                      setSupplierEmail(newValue.supplierEmail ?? "");
                   }}
-                  isOptionEqualToValue={
-                     (option, value) => option.supplierId === value.supplierId 
+                  isOptionEqualToValue={(option, value) =>
+                     option.supplierId === value.supplierId
                   }
                   clearOnEscape
                   PopperComponent={(props) => (
@@ -834,9 +833,7 @@ const displayProductPage = () => {
 
          <Nav home={false} searchBar={true} />
 
-         <AddProductForm
-            p={curProduct}
-         />
+         <AddProductForm p={curProduct} />
 
          <div style={{ padding: "0 16px" }}>
             <Footer />
