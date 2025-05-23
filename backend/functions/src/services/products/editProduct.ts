@@ -92,7 +92,7 @@ export const editProduct = functions.https.onCall(
             editProductsInClient(
                clientId,
                uid,
-               prevProduct.productId,
+               prevProduct?.productId,
                productId
             )
          );

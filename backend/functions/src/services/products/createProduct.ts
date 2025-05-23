@@ -141,14 +141,12 @@ export const createProduct = functions.https.onCall(
       });
 
       // add product id to supplier
-      const addProductToSupplierPromise = () => {
-         supplierRef.set(
-            {
-               productIds: FieldValue.arrayUnion(productId),
-            },
-            { merge: true }
-         );
-      };
+      const addProductToSupplierPromise = supplierRef.set(
+         {
+            productIds: FieldValue.arrayUnion(productId),
+         },
+         { merge: true }
+      );
 
       // upload product info to firestore
       const uploadProductPromise = newProductRef
