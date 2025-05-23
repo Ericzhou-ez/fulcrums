@@ -131,6 +131,10 @@ export function ProductTable({ productList }: { productList: Product[] }) {
          data = data.filter((p) => p.clients?.includes(selectedClient));
       }
 
+      if (selectedSupplier !== "all") {
+         data = data.filter((p) => p.supplierId === selectedSupplier);
+      }
+
       data.sort((a, b) => {
          const dateA = new Date(a.updatedAt).getTime();
          const dateB = new Date(b.updatedAt).getTime();
