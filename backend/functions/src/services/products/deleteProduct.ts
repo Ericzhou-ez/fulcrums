@@ -29,33 +29,34 @@ export const deleteProducts = functions.https.onCall(
                .collection("products")
                .doc(productId);
 
-            const productSnap = await productRef.get();
-
-            if (!productSnap.exists) {
+            const snap = await productRef.get();
+            if (!snap.exists) {
                throw new functions.https.HttpsError(
                   "not-found",
                   `产品 ${productId} 不存在`
                );
             }
 
-            const productData = productSnap.data();
+            const data = snap.data() as {
+               image?: string;
+               clients?: string[];
+               supplierId?: string;
+            };
 
-            // delete existing image
-            if (productData?.image) {
-               await deleteImageByUrl(productData.image);
+            // delete firestorage image
+            if (data.image?.startsWith("gs://")) {
+               await deleteImageByUrl(data.image);
             }
 
-            // delete doc
+            // delete product doc
             await productRef.delete();
 
-            // remove product id from client and supplier product arrays
+            // remove productId from every client and the supplier
             await Promise.all([
-               removeProductFromClient(uid, productData.clientId, productId),
-               removeProductFromSupplier(
-                  uid,
-                  productData.supplier.supplierId,
-                  productId
+               ...(data.clients ?? []).map((cid) =>
+                  removeProductFromClient(uid, cid, productId)
                ),
+               removeProductFromSupplier(uid, data.supplierId, productId),
             ]);
          })
       );
@@ -82,15 +83,19 @@ const removeProductFromClient = async (
    productId: string
 ) => {
    if (!clientId) return console.warn("Missing client ID");
+
    const clientRef = db
       .collection("users")
       .doc(uid)
       .collection("clients")
       .doc(clientId);
 
-   await clientRef.update({
-      products: admin.firestore.FieldValue.arrayRemove(productId),
-   });
+   await clientRef.set(
+      {
+         productIds: admin.firestore.FieldValue.arrayRemove(productId),
+      },
+      { merge: true }
+   );
 };
 
 const removeProductFromSupplier = async (
@@ -99,13 +104,17 @@ const removeProductFromSupplier = async (
    productId: string
 ) => {
    if (!supplierId) return console.warn("Missing supplier ID");
+
    const supplierRef = db
       .collection("users")
       .doc(uid)
       .collection("suppliers")
       .doc(supplierId);
 
-   await supplierRef.update({
-      products: admin.firestore.FieldValue.arrayRemove(productId),
-   });
+   await supplierRef.set(
+      {
+         productIds: admin.firestore.FieldValue.arrayRemove(productId),
+      },
+      { merge: true }
+   );
 };

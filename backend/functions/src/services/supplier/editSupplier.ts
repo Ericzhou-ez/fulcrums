@@ -2,7 +2,7 @@ import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import { db } from "../../utils";
 
-export const addSupplier = functions.https.onCall(
+export const editSupplier = functions.https.onCall(
    async (req: functions.https.CallableRequest) => {
       const { auth, data } = req;
 
@@ -11,7 +11,7 @@ export const addSupplier = functions.https.onCall(
       }
 
       const uid = auth.uid;
-      const { supplierName, supplierAddress, supplierEmail, supplierPhone } =
+      const { supplierName, supplierAddress, supplierEmail, supplierPhone, supplierId } =
          data;
 
       const supplierData = {
@@ -19,18 +19,26 @@ export const addSupplier = functions.https.onCall(
          supplierAddress,
          supplierEmail,
          supplierPhone,
+         supplierId,
       };
 
-      const newSupplierRef = db
+      const supplierRef = db
          .collection("users")
          .doc(uid)
          .collection("suppliers")
-         .doc();
+         .doc(supplierId);
+      const supplierDoc = await supplierRef.get();
 
-      await newSupplierRef.set(
+      if (!supplierDoc.exists) {
+         throw new functions.https.HttpsError(
+            "not-found",
+            `Supplier with ID ${supplierId} not found`
+         );
+      }
+
+      await supplierRef.set(
          {
             ...supplierData,
-            supplierId: newSupplierRef.id,
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
          },
          {
@@ -38,6 +46,6 @@ export const addSupplier = functions.https.onCall(
          }
       );
 
-      return { success: true, supplierId: newSupplierRef.id };
+      return { success: true, supplierId: supplierId };
    }
 );

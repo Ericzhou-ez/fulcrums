@@ -27,7 +27,6 @@ function App() {
       return "light";
    });
    const [user, setUser] = useState<UserType | null>(null);
-
    const theme = useAppTheme(mode);
 
    return (
@@ -44,6 +43,7 @@ function App() {
                <BrowserRouter>
                   <ScrollToTop />
                   {serviceLoading && <Loading />}
+                  
                   <AppRoutes
                      loading={loading}
                      setLoading={setLoading}

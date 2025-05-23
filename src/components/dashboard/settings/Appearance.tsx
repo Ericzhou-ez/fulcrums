@@ -175,7 +175,7 @@ export function ThemeSwitch({ isDark }: any) {
                      }}
                      sx={{
                         gap: 0,
-                        bgcolor: "#f0eee6",
+                        bgcolor: isDark ? "#1d1c1f" : "#f0eee6",
                         "& .MuiFormControlLabel-root": {
                            justifyContent: "space-between",
                            p: 3,

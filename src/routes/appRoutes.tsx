@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { UserServiceProvider } from "../contexts/userServices";
 import { UserType } from "../types/types";
@@ -21,7 +21,10 @@ import Loading from "../components/core/loading";
 import { useThemeContext } from "../contexts/themeContextProvider";
 import AddProductPage from "../pages/dashboard/AddProductPage";
 import { UIStateContextProvider } from "../contexts/UIStateContextProvider";
-import { ProductSupplierClientContextProvider } from "../contexts/productSupplierClientContextProvider";
+import {
+   ProductSupplierClientContextProvider,
+   useProductSupplierClientContext,
+} from "../contexts/productSupplierClientContextProvider";
 import GlobalKeyListener, {
    GlobalCommandListener,
    GlobalHomeListener,
@@ -29,6 +32,8 @@ import GlobalKeyListener, {
    GlobalThemeListener,
 } from "../components/core/eventListeners";
 import DisplayProductPage from "../pages/dashboard/displayProductPage";
+import { Snackbar, IconButton } from "@mui/material";
+import { X as CloseIcon } from "phosphor-react";
 
 export interface AppRoutesProps {
    loading: boolean;
@@ -53,9 +58,20 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
       setOverlay(false);
       setNavOpen(false);
    };
-   const [errorMessage, setErrorMessage] = useState("");
+   const [errorMessage, setErrorMessage] = useState(""); // auth related
    const [successMessage, setSuccessMessage] = useState("");
+   const [errorMessages, setErrorMessages] = useState<string>(""); // service related
    const signedIn = !!user;
+
+   const action = (
+      <IconButton
+         size="small"
+         aria-label="close"
+         onClick={() => setErrorMessages("")}
+      >
+         <CloseIcon />
+      </IconButton>
+   );
 
    return loading ? (
       <Loading />
@@ -74,12 +90,25 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
             <ProductSupplierClientContextProvider
                serviceLoading={serviceLoading}
                setServiceLoading={setServiceLoading}
+               errorMessages={errorMessages}
+               setErrorMessages={setErrorMessages}
             >
                <GlobalKeyListener />
                <GlobalCommandListener />
                <GlobalProfileListener />
                <GlobalHomeListener />
                <GlobalThemeListener />
+
+               {errorMessages && (
+                  <Snackbar
+                     open={!!errorMessages}
+                     autoHideDuration={5000}
+                     message={errorMessages}
+                     anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                     action={action}
+                     onClose={() => setErrorMessages("")}
+                  />
+               )}
 
                <Routes>
                   <Route

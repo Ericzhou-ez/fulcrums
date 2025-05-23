@@ -35,17 +35,25 @@ import {
    ShareNetwork as ExportIcon,
 } from "phosphor-react";
 import { useThemeContext } from "../../../contexts/themeContextProvider";
-import { Clients, Product, ProductType } from "../../../types/types";
+import { Clients, Product, Supplier } from "../../../types/types";
 import { useProductSupplierClientContext } from "../../../contexts/productSupplierClientContextProvider";
 import { useUIStateContext } from "../../../contexts/UIStateContextProvider";
 import { BuildInternalProductPDF } from "../../../lib/InteralProductsPDFBuilder";
 import { ExternalPDFBuilder } from "../../../lib/externalPDFBuilder";
-import { typeOptions } from "../search/productFilter";
 import HeartComponent from "./heart";
 import Loader from "../../core/loader";
+import { exportInternalProductCSV } from "../../../lib/InternalProductCSVBuilder";
+import ExportDialog from "./exportProductModal";
+import { exportExternalProductCSV } from "../../../lib/ClientProductCsvBuilder";
 
-export function ProductTable({ productList }: { productList: ProductType[] }) {
-   const { toggleSaveUnsaveProduct, deleteProducts, clients } =
+const symbolToCurrencyCode: Record<string, string> = {
+   "¥": "CNY",
+   $: "USD",
+   "€": "EUR",
+};
+
+export function ProductTable({ productList }: { productList: Product[] }) {
+   const { toggleSaveUnsaveProduct, deleteProducts, clients, suppliers } =
       useProductSupplierClientContext();
 
    async function toggleSave(productId: string) {
@@ -55,21 +63,33 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
    const { navOpen } = useUIStateContext();
    const { isDark, isSmUp } = useThemeContext();
    const [searchTerm, setSearchTerm] = React.useState("");
-   const [category, setCategory] = React.useState("all");
+   // const [category, setCategory] = React.useState("all");
    const [selectedClient, setSelectedClient] = React.useState("all");
    const [client, setClient] = React.useState<Clients[] | undefined>(undefined);
+
+   const [supplier, setSupplier] = React.useState<Supplier[] | undefined>(
+      undefined
+   );
+   const [selectedSupplier, setSelectedSupplier] = React.useState("all");
+
    const [sortOrder, setSortOrder] = React.useState("desc");
    const [products, setProducts] = React.useState<Product[]>([]);
-   const [open, setOpen] = React.useState(false);
+
    const [pdfLoading, setPdfLoading] = React.useState(false);
    const [pdfSuccess, setPdfSuccess] = React.useState(false);
-   const [upCharge, setUpCharge] = React.useState("");
-   const [upChargeNum, setUpChargeNum] = React.useState(0);
-   const [errorMessage, setErrorMessage] = React.useState("");
+
+   const [currency, setCurrency] = React.useState("$");
    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+   const [isExportModalOpen, setIsExportModalOpen] = React.useState(false);
+   const [exportMode, setExportMode] = React.useState<"csv" | "pdf" | "">("");
 
    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorEl(event.currentTarget);
+   };
+
+   const toggleCurrency = (currency: string) => {
+      currency === "$" ? setCurrency("€") : setCurrency("$");
    };
 
    const handleClose = () => {
@@ -82,7 +102,8 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
 
    React.useEffect(() => {
       setClient(Object.values(clients));
-   }, []);
+      setSupplier(Object.values(suppliers));
+   }, [clients, suppliers]);
 
    const [selected, setSelected] = React.useState<Set<string>>(new Set());
    const [page, setPage] = React.useState(0);
@@ -96,16 +117,22 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
          data = data.filter(
             (item) =>
                item.productEnglishName.toLowerCase().includes(lowerSearch) ||
-               item.productChineseName.includes(searchTerm)
+               item.productChineseName.includes(searchTerm) ||
+               item.hsCode.includes(searchTerm)
          );
       }
 
-      if (category !== "all") {
-         data = data.filter((item) => item?.catagory === category);
-      }
+      
+      // if (category !== "all") {
+      //    data = data.filter((item) => item?.hsCode === category);
+      // }
 
       if (selectedClient !== "all") {
-         data = data.filter((p) => p.clientId === selectedClient);
+         data = data.filter((p) => p.clients?.includes(selectedClient));
+      }
+
+      if (selectedSupplier !== "all") {
+         data = data.filter((p) => p.supplierId === selectedSupplier);
       }
 
       data.sort((a, b) => {
@@ -118,7 +145,7 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
       });
 
       return data;
-   }, [products, searchTerm, category, sortOrder, selectedClient]);
+   }, [products, searchTerm, sortOrder, selectedClient, selectedSupplier]);
 
    const displayedProducts = React.useMemo(() => {
       const startIndex = page * rowsPerPage;
@@ -130,10 +157,54 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
       setSearchTerm(e.target.value);
       setPage(0);
    };
-   const handleCategoryChange = (e: any) => {
-      setCategory(e.target.value);
-      setPage(0);
-   };
+
+   function exportInternalCSV(
+      upChargeNum: number,
+      exchangeRate: number,
+      currency: string,
+      pricePerContainer: number
+   ) {
+      exportInternalProductCSV({
+         products: selectedProductsList.reduce((acc, product) => {
+            acc[product.productId] = product;
+            return acc;
+         }, {} as Record<string, Product>),
+         upCharge: upChargeNum,
+         suppliers: suppliers,
+         clients: clients,
+         exchangeRate: exchangeRate,
+         currency: currency,
+         pricePerContainer: pricePerContainer,
+      });
+
+      setIsExportModalOpen(false);
+   }
+
+   function exportClientCsv(
+      upChargeNum: number,
+      exchangeRate: number,
+      currency: string,
+      pricePerContainer: number
+   ) {
+      exportExternalProductCSV({
+         products: selectedProductsList.reduce((acc, product) => {
+            acc[product.productId] = product;
+            return acc;
+         }, {} as Record<string, Product>),
+         upCharge: upChargeNum,
+         exchangeRate: exchangeRate,
+         currency: currency,
+         pricePerContainer: pricePerContainer,
+      });
+
+      setIsExportModalOpen(false);
+   }
+
+   // const handleCategoryChange = (e: any) => {
+   //    setCategory(e.target.value);
+   //    setPage(0);
+   // };
+
    const handleSortChange = (e: any) => {
       setSortOrder(e.target.value);
       setPage(0);
@@ -143,9 +214,11 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
       const allIds = displayedProducts.map((p) => p.productId);
       setSelected(new Set(allIds));
    };
+
    const handleDeselectAll = () => {
       setSelected(new Set());
    };
+
    const handleToggleOne = (productId: string) => {
       setSelected((prev) => {
          const newSet = new Set(prev);
@@ -188,8 +261,29 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
       return products.filter((p) => selected.has(p.productId));
    }, [products, selected]);
 
-   const handleInternal = async () => {
-      if (upChargeNum < 1.01 || upChargeNum >= 10 || isNaN(upChargeNum)) return;
+   const resetExportForm = () => {
+      setIsExportModalOpen(false);
+      setPdfSuccess(false);
+
+      setCurrency("$");
+   };
+
+   const handleInternal = async (
+      upChargeNum: number,
+      conversionRateNum: number,
+      currency: string,
+      pricePerContainerNum: number
+   ) => {
+      if (
+         upChargeNum < 1.01 ||
+         upChargeNum >= 10 ||
+         isNaN(upChargeNum) ||
+         conversionRateNum <= 0 ||
+         isNaN(conversionRateNum) ||
+         pricePerContainerNum <= 0 ||
+         isNaN(pricePerContainerNum)
+      )
+         return;
 
       setPdfLoading(true);
 
@@ -197,21 +291,36 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
          products: selectedProductsList.reduce((acc, product) => {
             acc[product.productId] = product;
             return acc;
-         }, {} as Record<string, ProductType>),
+         }, {} as Record<string, Product>),
+         conversionRate: conversionRateNum,
+         currency,
          upCharge: upChargeNum,
+         pricePerContainer: pricePerContainerNum,
+         suppliers,
+         clients,
       });
 
       setPdfLoading(false);
       setPdfSuccess(true);
-
-      setTimeout(() => {
-         setOpen(false);
-         setPdfSuccess(false);
-      }, 2000);
+      setTimeout(resetExportForm, 2000);
    };
 
-   const handleClient = async () => {
-      if (upChargeNum < 1.01 || upChargeNum >= 10 || isNaN(upChargeNum)) return;
+   const handleClient = async (
+      upChargeNum: number,
+      conversionRateNum: number,
+      currency: string,
+      pricePerContainerNum: number
+   ) => {
+      if (
+         upChargeNum < 1.01 ||
+         upChargeNum >= 10 ||
+         isNaN(upChargeNum) ||
+         conversionRateNum <= 0 ||
+         isNaN(conversionRateNum) ||
+         pricePerContainerNum <= 0 ||
+         isNaN(pricePerContainerNum)
+      )
+         return;
 
       setPdfLoading(true);
 
@@ -219,18 +328,18 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
          products: selectedProductsList.reduce((acc, product) => {
             acc[product.productId] = product;
             return acc;
-         }, {} as Record<string, ProductType>),
+         }, {} as Record<string, Product>),
          upCharge: upChargeNum,
+         conversionRate: conversionRateNum,
+         currency,
+         pricePerContainer: pricePerContainerNum,
       });
 
       setPdfLoading(false);
       setPdfSuccess(true);
-
-      setTimeout(() => {
-         setOpen(false);
-         setPdfSuccess(false);
-      }, 2000);
+      setTimeout(resetExportForm, 2000);
    };
+
    return (
       <Box
          sx={{
@@ -276,7 +385,7 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
 
                <Stack
                   direction="row"
-                  gap={2}
+                  gap={1}
                   sx={{
                      alignItems: "center",
                      justifyContent: "space-between",
@@ -303,11 +412,26 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
                      <MenuItem value="all">全部客户</MenuItem>
                      {client?.map((c) => (
                         <MenuItem key={c.clientId} value={c.clientId}>
-                           {c.name}
+                           {c.companyName}
                         </MenuItem>
                      ))}
                   </Select>
                   <Select
+                     size="small"
+                     value={selectedSupplier} // "all" or a suplierName
+                     onChange={(e) => {
+                        setSelectedSupplier(e.target.value); // supplierId
+                        setPage(0);
+                     }}
+                  >
+                     <MenuItem value="all">全部供应商</MenuItem>
+                     {supplier?.map((c) => (
+                        <MenuItem key={c.supplierName} value={c.supplierId}>
+                           {c.supplierName}
+                        </MenuItem>
+                     ))}
+                  </Select>
+                  {/* <Select
                      size="small"
                      value={category}
                      onChange={handleCategoryChange}
@@ -319,11 +443,11 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
                            {option.label}
                         </MenuItem>
                      ))}
-                  </Select>
+                  </Select> */}
                   {isAnySelected && (
                      <Stack
                         direction="row"
-                        spacing={1}
+                        spacing={0.5}
                         sx={{ justifyContent: "space-between" }}
                      >
                         <IconButton onClick={handleDeleteSelected}>
@@ -338,7 +462,16 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
             </Stack>
             <Divider sx={{ mt: 5 }} />
 
-            <Box sx={{ overflowX: "auto" }}>
+            <Box
+               sx={{
+                  overflowX: "auto",
+                  "&::-webkit-scrollbar": {
+                     display: "none",
+                  },
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none",
+               }}
+            >
                <Table
                   sx={{
                      "& .MuiTableCell-root": {
@@ -375,7 +508,7 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
                            />
                         </TableCell>
                         <TableCell>产品</TableCell>
-                        <TableCell>类别</TableCell>
+                        <TableCell>HS代码</TableCell>
                         <TableCell>供应商</TableCell>
                         <TableCell>数量</TableCell>
                         <TableCell>单价</TableCell>
@@ -387,8 +520,9 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
 
                         const priceString = new Intl.NumberFormat("en-US", {
                            style: "currency",
-                           currency: "USD", // to be updated with actual currency
-                        }).format(row.unitPrice);
+                           currency:
+                              symbolToCurrencyCode[row.currency] ?? "CNY",
+                        }).format(parseFloat(row.unitPrice));
 
                         return (
                            <TableRow
@@ -475,21 +609,19 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
                               {/* Category */}
                               <TableCell>
                                  <Typography variant="inherit" noWrap>
-                                    {typeOptions.find(
-                                       (option) => option.value === row.catagory
-                                    )?.label || "---"}
+                                    {row.hsCode || "---"}
                                  </Typography>
                               </TableCell>
 
                               <TableCell>
                                  <Typography variant="inherit" noWrap>
-                                    {row.supplier.name}
+                                    {suppliers[row.supplierId]?.supplierName}
                                  </Typography>
                               </TableCell>
 
                               <TableCell>
                                  <Typography variant="inherit" noWrap>
-                                    {row.packaging}
+                                    {row.packing}
                                  </Typography>
                               </TableCell>
 
@@ -551,107 +683,18 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
             />
          </Card>
 
-         {open && (
-            <Dialog
-               open={open}
-               onClose={() => setOpen(false)}
-               PaperProps={{
-                  sx: { p: 3, borderRadius: 3, minWidth: 200 },
-               }}
-            >
-               {pdfLoading ? (
-                  <Stack direction={"column"} spacing={2} alignItems="center">
-                     <Loader />
-                     <p>下载中...</p>
-                  </Stack>
-               ) : (
-                  <div>
-                     <DialogTitle
-                        sx={{ pb: 1, fontWeight: 600, fontSize: "1.6rem" }}
-                     >
-                        请选择导出类型
-                     </DialogTitle>
-
-                     <DialogContent sx={{ pt: 0, pb: 8 }}>
-                        <Typography>
-                           您想要<strong>内部导出</strong>还是
-                           <strong>导出给客户</strong>？
-                        </Typography>
-                     </DialogContent>
-
-                     <DialogActions sx={{ pt: 0 }}>
-                        <Stack
-                           direction="column"
-                           spacing={1.5}
-                           sx={{
-                              width: "100%",
-                              justifyContent: "space-between",
-                           }}
-                        >
-                           <TextField
-                              type="number"
-                              label="加价幅度"
-                              value={upCharge}
-                              onChange={(e) => {
-                                 const val = e.target.value;
-                                 setUpCharge(val);
-
-                                 const num = parseFloat(val);
-                                 if (val === "") {
-                                    setErrorMessage("请输入数字");
-                                 } else if (
-                                    isNaN(num) ||
-                                    num < 1.01 ||
-                                    num >= 10
-                                 ) {
-                                    setErrorMessage("请输入有效的数字");
-                                 } else {
-                                    setErrorMessage("");
-                                    setUpChargeNum(num);
-                                 }
-                              }}
-                              error={!!errorMessage}
-                              helperText={errorMessage || "5% 为 1.05"}
-                           />
-                           <Button
-                              fullWidth
-                              onClick={handleClient}
-                              variant="contained"
-                              color="info"
-                              sx={{
-                                 borderRadius: 2,
-                              }}
-                           >
-                              导出给客户
-                           </Button>
-                           <Button
-                              fullWidth
-                              onClick={handleInternal}
-                              variant="outlined"
-                              color="info"
-                              sx={{
-                                 borderRadius: 2,
-                              }}
-                           >
-                              内部导出
-                           </Button>
-
-                           <Button
-                              fullWidth
-                              onClick={() => setOpen(false)}
-                              variant="text"
-                              sx={{
-                                 borderRadius: 2,
-                              }}
-                           >
-                              取消
-                           </Button>
-                        </Stack>
-                     </DialogActions>
-                  </div>
-               )}
-            </Dialog>
-         )}
+         <ExportDialog
+            open={isExportModalOpen}
+            onClose={() => setIsExportModalOpen(false)}
+            pdfLoading={pdfLoading}
+            currency={currency}
+            toggleCurrency={toggleCurrency}
+            onClientExport={handleClient}
+            onInternalExport={handleInternal}
+            exportType={exportMode}
+            onInternalCsv={exportInternalCSV}
+            onClientCsv={exportClientCsv}
+         />
 
          {pdfSuccess && (
             <Box
@@ -681,12 +724,21 @@ export function ProductTable({ productList }: { productList: ProductType[] }) {
             <MenuItem
                onClick={() => {
                   handleClose();
-                  setOpen(true);
+                  setIsExportModalOpen(true);
+                  setExportMode("pdf");
                }}
             >
                导出为PDF
             </MenuItem>
-            <MenuItem onClick={handleClose}>导出为EXCEL</MenuItem>
+            <MenuItem
+               onClick={() => {
+                  handleClose();
+                  setIsExportModalOpen(true);
+                  setExportMode("csv");
+               }}
+            >
+               导出为EXCEL
+            </MenuItem>
             <MenuItem onClick={handleClose}>分享为链接</MenuItem>
          </Menu>
       </Box>

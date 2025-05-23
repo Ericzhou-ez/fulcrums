@@ -1,14 +1,15 @@
+// src/components/dashboard/SideNav.tsx
 import * as React from "react";
 import {
    Box,
    Stack,
    Typography,
-   Link as MuiLink,
-   useTheme,
    IconButton,
+   useTheme,
+   Link as MuiLink,
    Link,
 } from "@mui/material";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import {
    CaretDown,
    CaretRight,
@@ -25,6 +26,7 @@ import {
    FileArrowUp,
    CaretDoubleLeft,
    MagnifyingGlass,
+   CodesandboxLogo,
 } from "phosphor-react";
 import Logo from "../../assets/images/logo.svg";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
@@ -42,6 +44,7 @@ const iconMap: Record<string, React.ComponentType<any>> = {
    FileArrowUp,
    CaretDoubleLeft,
    MagnifyingGlass,
+   CodesandboxLogo,
 };
 
 interface NavSubItem {
@@ -75,37 +78,27 @@ const navItems: NavGroupType[] = [
       href: "/dashboard/search",
    },
    {
-      key: "group-sourcing",
-      title: "采购",
+      key: "add-product",
+      title: "新增",
       icon: "Plus",
+      items: [],
+      href: "/dashboard/add-product",
+   },
+   {
+      key: "group-sourcing",
+      title: "产品",
+      icon: "CodesandboxLogo",
       items: [
-         {
-            key: "sourcing-add",
-            title: "新增",
-            href: "/dashboard/add-product",
-         },
          { key: "sourcing-saved", title: "已保存", href: "/dashboard/saved" },
          { key: "sourcing-recent", title: "最近", href: "/dashboard/recent" },
       ],
-      href: "",
    },
    {
-      key: "group-quotation",
+      key: "quotation",
       title: "报价",
       icon: "NotePencil",
-      items: [
-         {
-            key: "quotation-internal",
-            title: "内部报价",
-            href: "/dashboard/quotation/internal",
-         },
-         {
-            key: "quotation-external",
-            title: "客户报价",
-            href: "/dashboard/quotation/external",
-         },
-      ],
-      href: "",
+      items: [],
+      href: "/dashboard/quotation",
    },
    {
       key: "group-customs",
@@ -117,14 +110,17 @@ const navItems: NavGroupType[] = [
             title: "打包清单",
             href: "/dashboard/customs/packing",
          },
-         { key: "customs-volume", title: "装运体积", href: "/customs/volume" },
+         {
+            key: "customs-volume",
+            title: "装运体积",
+            href: "/dashboard/customs/volume",
+         },
          {
             key: "customs-declaration",
             title: "申报",
             href: "/dashboard/customs/declaration",
          },
       ],
-      href: "",
    },
 ];
 
@@ -167,7 +163,7 @@ function LinkBox({
 
 interface SideNavProps {
    navOpen: boolean;
-   setNavOpen: any;
+   setNavOpen: (open: boolean) => void;
 }
 
 export default function SideNav({ navOpen, setNavOpen }: SideNavProps) {
@@ -175,8 +171,9 @@ export default function SideNav({ navOpen, setNavOpen }: SideNavProps) {
    const isDark = theme.palette.mode === "dark";
    const textColor = isDark ? theme.palette.grey[100] : theme.palette.grey[800];
    const { navStyle } = useUIStateContext();
-   let bgColor;
+   const location = useLocation();
 
+   let bgColor: string;
    switch (navStyle) {
       case "evident":
          bgColor = "#121621";
@@ -185,141 +182,170 @@ export default function SideNav({ navOpen, setNavOpen }: SideNavProps) {
          bgColor = isDark ? "#121212" : "#fff";
          break;
       case "discrete":
+      default:
          bgColor = isDark ? theme.palette.grey[900] : theme.palette.grey[50];
-         break;
    }
 
+   if (!navOpen) return null;
+
    return (
-      <div
-         style={
-            navOpen
-               ? { transition: "all 0.2s ease-in-out" }
-               : { display: "none" }
-         }
+      <Box
          className="dashboard-side-nav"
+         sx={{
+            width: 240,
+            height: "100dvh",
+            position: "fixed",
+            top: 0,
+            left: 0,
+            overflowY: "auto",
+            backgroundColor: bgColor,
+            borderRight: `1px solid ${
+               isDark ? theme.palette.grey[800] : theme.palette.grey[300]
+            }`,
+            display: "flex",
+            flexDirection: "column",
+            p: 2,
+            zIndex: 1400,
+            boxShadow: "0 0 10px rgba(0,0,0,0.03)",
+            color: navStyle === "evident" ? "#fff" : textColor,
+         }}
       >
          <Box
             sx={{
-               width: 240,
-               height: "100vh",
-               position: "fixed",
-               top: 0,
-               left: 0,
-               overflowY: "auto",
-               backgroundColor: bgColor,
-               borderRight: `1px solid ${
-                  isDark ? theme.palette.grey[800] : theme.palette.grey[300]
-               }`,
                display: "flex",
-               flexDirection: "column",
-               p: 2,
-               zIndex: 1400,
-               boxShadow: "0 0 10px rgba(0, 0, 0, 0.03)",
-               color: navStyle === "evident" ? "#fff" : textColor,
+               alignItems: "center",
+               justifyContent: "space-between",
+               mb: 4,
+               mt: 1.5,
             }}
          >
-            <Box
+            <MuiLink
+               component={RouterLink}
+               to="/dashboard"
                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
+                  textDecoration: "none",
+                  color: "inherit",
+                  cursor: "pointer",
                   alignItems: "center",
-                  mb: 4,
-                  mt: 1.5,
+                  p: 0,
                }}
             >
-               <Link href="/dashboard" style={{ cursor: "pointer" }}>
-                  <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "center" }}>
-                     <img src={Logo} alt="Logo" width="40" height="40" />
-                     <Typography variant="h5" fontWeight="bold">
-                        Fulcrums
-                     </Typography>
-                  </Box>
-               </Link>
-               <IconButton onClick={() => setNavOpen(!navOpen)}>
-                  <CaretDoubleLeft
-                     size={20}
-                     color={navStyle === "evident" || isDark ? "#fff" : "#000"}
-                  />
-               </IconButton>
-            </Box>
-
-            <Box component="nav" sx={{ flex: 1 }}>
-               <Stack
-                  component="ul"
-                  spacing={2}
-                  sx={{ listStyle: "none", p: 0, m: 0 }}
+               <Box
+                  component="img"
+                  src={Logo}
+                  alt="Logo"
+                  width={40}
+                  height={40}
+                  sx={{ verticalAlign: "middle", flexShrink: 0 }}
+               />
+               <Typography
+                  component="span"
+                  variant="h5"
+                  fontWeight="bold"
+                  sx={{ verticalAlign: "middle", flexShrink: 0 }}
                >
-                  {navItems.map((group) => (
-                     <NavGroup group={group} key={group.key} />
-                  ))}
-               </Stack>
-            </Box>
+                  Fulcrums
+               </Typography>
+            </MuiLink>
+
+            <IconButton onClick={() => setNavOpen(false)}>
+               <CaretDoubleLeft
+                  size={20}
+                  color={navStyle === "evident" || isDark ? "#fff" : "#000"}
+               />
+            </IconButton>
          </Box>
-      </div>
+
+         <Box component="nav" sx={{ flex: 1 }}>
+            <Stack
+               component="ul"
+               spacing={1.4}
+               sx={{ listStyle: "none", p: 0, m: 0 }}
+            >
+               {navItems.map((group) => (
+                  <NavGroup
+                     key={group.key}
+                     group={group}
+                     currentPath={location.pathname}
+                  />
+               ))}
+            </Stack>
+         </Box>
+      </Box>
    );
 }
 
-function NavGroup({ group }: { group: NavGroupType }) {
-   const [open, setOpen] = React.useState(false);
-   const { title, icon, items, href } = group;
-   const IconComp = icon && iconMap[icon] ? iconMap[icon] : null;
-   const isDirectLink = href && items.length === 0;
+interface NavGroupProps {
+   group: NavGroupType;
+   currentPath: string;
+}
 
-   const handleToggle = () => {
-      if (!isDirectLink) setOpen(!open);
-   };
+function NavGroup({ group, currentPath }: NavGroupProps) {
+   const theme = useTheme();
+   const { title, icon, items = [], href } = group;
+   const IconComp = icon && iconMap[icon];
+   const isDirectLink = Boolean(href && items.length === 0);
+
+   const shouldBeOpen = items.some((it) => it.href === currentPath);
+   const [open, setOpen] = React.useState<boolean>(shouldBeOpen);
+   React.useEffect(() => {
+      setOpen(shouldBeOpen);
+   }, [shouldBeOpen]);
+
+   const isGroupActive = href === currentPath;
 
    return (
       <Box component="li">
-         <Link {...(isDirectLink ? { href } : {})}>
+         <LinkBox href={isDirectLink ? href : undefined}>
             <Box
-               onClick={handleToggle}
+               onClick={() => !isDirectLink && setOpen((o) => !o)}
                sx={{
                   p: "6px 16px",
                   borderRadius: 2,
                   display: "flex",
                   alignItems: "center",
                   gap: 1,
-                  cursor: "pointer",
-                  "&:hover": (theme: any) => ({
-                     backgroundColor: theme.palette.action.hover,
-                  }),
+                  cursor: isDirectLink ? "pointer" : "default",
+                  backgroundColor: isGroupActive ? "#f57c31" : "transparent",
+                  color: isGroupActive ? "#fff" : "inherit",
+                  "&:hover": {
+                     backgroundColor: isGroupActive
+                        ? "#f27527"
+                        : theme.palette.action.hover,
+                  },
                }}
             >
-               {IconComp && <IconComp size={20} weight="regular" />}
+               {IconComp && <IconComp size={20} />}
                <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
                   {title}
                </Typography>
-               <Box
-                  sx={{ marginLeft: "auto" }}
-                  style={isDirectLink ? { display: "none" } : {}}
-               >
-                  {open ? <CaretDown size={16} /> : <CaretRight size={16} />}
-               </Box>
+               {!isDirectLink && (
+                  <Box sx={{ ml: "auto" }}>
+                     {open ? <CaretDown size={16} /> : <CaretRight size={16} />}
+                  </Box>
+               )}
             </Box>
-         </Link>
-         {open && (
-            <Box
-               sx={{
-                  pl: 3,
-                  mt: 1,
-                  display: "flex",
-               }}
-            >
+         </LinkBox>
+
+         {open && items.length > 0 && (
+            <Box sx={{ pl: 3, mt: 1, display: "flex" }}>
                <Box
                   sx={{
-                     borderLeft: (theme) =>
-                        `2px solid ${theme.palette.divider}`,
+                     borderLeft: `2px solid ${theme.palette.divider}`,
                      pl: 2.5,
                   }}
                >
                   <Stack
                      component="ul"
-                     spacing={1.5}
-                     sx={{ listStyle: "none", m: 0, p: 0 }}
+                     spacing={0.5}
+                     sx={{ listStyle: "none", p: 0, m: 0 }}
                   >
                      {items.map((sub) => (
-                        <NavSubItem sub={sub} key={sub.key} />
+                        <NavSubItem
+                           key={sub.key}
+                           sub={sub}
+                           currentPath={currentPath}
+                        />
                      ))}
                   </Stack>
                </Box>
@@ -329,38 +355,43 @@ function NavGroup({ group }: { group: NavGroupType }) {
    );
 }
 
-function NavSubItem({
-   sub,
-}: {
-   sub: { key: string; title: string; href?: string; external?: boolean };
-}) {
+interface NavSubItemProps {
+   sub: NavSubItem;
+   currentPath: string;
+}
+
+function NavSubItem({ sub, currentPath }: NavSubItemProps) {
+   const theme = useTheme();
+   const isActive = sub.href === currentPath;
+
    return (
       <Box component="li">
-         <LinkBox
-            href={sub.href}
-            external={sub.external}
-            style={{ cursor: "pointer" }}
-            sx={{
-               p: "10px 16px",
-               borderRadius: 1,
-               display: "flex",
-               alignItems: "center",
-               textDecoration: "none",
-               color: "inherit",
-               "&:hover": (theme: any) => ({
-                  backgroundColor: theme.palette.action.hover,
-               }),
-            }}
-         >
-            <Typography
-               variant="body2"
-               sx={{ fontWeight: 500, cursor: "pointer" }}
+         <LinkBox href={sub.href} external={sub.external}>
+            <Box
+               sx={{
+                  p: "8px 12px",
+                  width: "125px",
+                  borderRadius: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  textDecoration: "none",
+
+                  backgroundColor: isActive ? "#f57c31" : "transparent",
+                  color: isActive ? "white" : "inherit",
+                  "&:hover": {
+                     backgroundColor: isActive
+                        ? "#f27527"
+                        : theme.palette.action.hover,
+                  },
+               }}
             >
-               {sub.title}
-            </Typography>
-            {sub.external && (
-               <ArrowSquareOut size={16} style={{ marginLeft: "auto" }} />
-            )}
+               <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  {sub.title}
+               </Typography>
+               {sub.external && (
+                  <ArrowSquareOut size={16} style={{ marginLeft: "auto" }} />
+               )}
+            </Box>
          </LinkBox>
       </Box>
    );

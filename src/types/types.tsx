@@ -1,11 +1,13 @@
 export type Mass = {
-   quantity: number;
-   unit: string;
+   unitMassQuantity: string;
+   unitMassUnit: string;
 };
 
 export type VolumetricDimensions = {
-   volume: number;
-   unit: "m" | "cm" | "in" | "L";
+   length: string;
+   width: string;
+   height: string;
+   packingUnit: string;
 };
 
 export type Product = {
@@ -13,85 +15,34 @@ export type Product = {
    image: string;
    productChineseName: string;
    productEnglishName: string;
-   unitPrice: number;
-   salesPrice: number;
+   unitPrice: string;
+   unitMass: Mass;
+   material: string;
+   hsCode: string;
 
-   productDimension: VolumetricDimensions;
-   mass: Mass;
-
-   packaging: number;
+   packing: string;
    packingVolume: VolumetricDimensions;
    packingMass: {
-      packingMass: number;
+      packingMassQuantity: string;
       packingMassUnit: string;
    };
 
    saved: boolean;
    updatedAt: string;
 
-   supplier: {
-      name: string;
-      phone: string;
-      address: string;
-      email: string;
-      supplierId: string;
-   };
+   supplierId: string;
 
    additionalNotes: string;
-   catagory: string;
-   client: string;
-   clientId: string;
-
-   purchaseVolume?: number;
-   salesVolume?: number;
-   currency: string;
-};
-
-export type ProductType = {
-   productId: string;
-   image: string;
-   productChineseName: string;
-   productEnglishName: string;
-   unitPrice: number;
-   salesPrice: number;
-
-   productDimension: VolumetricDimensions;
-   mass: Mass;
-
-   packaging: number;
-   packingVolume: VolumetricDimensions;
-   packingMass: {
-      packingMass: number;
-      packingMassUnit: string;
-   };
-
-   saved: boolean;
-   updatedAt: string;
-
-   supplier: {
-      name: string;
-      phone: string;
-      address: string;
-      email: string;
-      supplierId: string;
-   };
-
-   additionalNotes: string;
-   catagory: string;
-   client: string;
-   clientId: string;
-
-   purchaseVolume?: number;
-   salesVolume?: number;
+   clients: string[];
    currency: string;
 };
 
 export type Supplier = {
    supplierId: string;
-   name: string;
-   phone: string;
-   address: string;
-   email: string;
+   supplierName: string;
+   supplierPhoneNumber: string;
+   supplierAddress: string;
+   supplierEmail: string;
 };
 
 export type SupplierMapping = {
@@ -99,8 +50,15 @@ export type SupplierMapping = {
 };
 
 export type Clients = {
-   name: string;
+   address: string;
    clientId: string;
+   companyName: string;
+   contactEmail: string;
+   contactName: string;
+   contactPhoneNumber: string;
+   eoriNumber: string;
+   productIds: string[];
+   updatedAt: string;
 };
 
 export type UserType = {

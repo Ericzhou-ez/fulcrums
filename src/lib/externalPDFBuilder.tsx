@@ -1,19 +1,20 @@
-import {
-   PDFDocument,
-   StandardFonts,
-   rgb,
-   PDFImage,
-} from "pdf-lib";
+import { PDFDocument, StandardFonts, rgb, PDFImage } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
-import { ProductType } from "../types/types";
+import { Product } from "../types/types";
 import { wrapText, hasChinese } from "./helpers";
 
 export async function ExternalPDFBuilder({
    products,
    upCharge,
+   conversionRate,
+   currency,
+   pricePerContainer,
 }: {
-   products: Record<string, ProductType>;
+   products: Record<string, Product>;
    upCharge: number;
+   conversionRate: number;
+   currency: string;
+   pricePerContainer: number;
 }): Promise<void> {
    if (Object.keys(products).length === 0) return;
 
@@ -25,7 +26,7 @@ export async function ExternalPDFBuilder({
    );
 
    const pageW = 750,
-      pageH = 550,
+      pageH = 550, // standard
       margin = 5;
    const gridCols = 4,
       gridRows = 2;
@@ -33,9 +34,10 @@ export async function ExternalPDFBuilder({
    const cellH = (pageH - margin * (gridRows + 1)) / gridRows;
    const imgMaxH = 100;
    const sizeCN = 8,
-      sizeEN = 13,
-      sizeRow = 9,
-      lead = 2;
+      sizePrice = 15,
+      sizeEN = 12,
+      sizeRow = 7,
+      lead = 1;
 
    let page = pdfDoc.addPage([pageW, pageH]);
 
@@ -136,23 +138,93 @@ export async function ExternalPDFBuilder({
          yCur -= sizeCN + lead;
       });
 
-      yCur -= 12;
-      const upChargedUnitPrice = (p.unitPrice * upCharge).toFixed(2);
+      const cbm =
+         p.packingVolume.packingUnit === "cm"
+            ? (parseFloat(p.packingVolume.length) *
+                 parseFloat(p.packingVolume.width) *
+                 parseFloat(p.packingVolume.height)) /
+              1_000_000
+            : p.packingVolume.packingUnit === "m"
+            ? parseFloat(p.packingVolume.length) *
+              parseFloat(p.packingVolume.width) *
+              parseFloat(p.packingVolume.height)
+            : p.packingVolume.packingUnit === "L"
+            ? (parseFloat(p.packingVolume.length) *
+                 parseFloat(p.packingVolume.width) *
+                 parseFloat(p.packingVolume.height)) /
+              1_000
+            : 0;
+
+      const freight = ((pricePerContainer / 68) * cbm) / parseInt(p.packing);
+
+      const adjustedPrice = (
+         (parseFloat(p.unitPrice) * upCharge) / conversionRate +
+         freight
+      ).toFixed(2);
+
+      yCur -= 9;
+
+      wrapText(
+         `${currency}${parseFloat(adjustedPrice).toFixed(2)}`,
+         noto,
+         sizePrice,
+         cellW - 12
+      ).forEach((ln) => {
+         page.drawText(ln, {
+            x: x0 + 6 + 0.8,
+            y: yCur,
+            size: sizePrice,
+            font: noto,
+            color: rgb(1, 0.4, 0),
+         });
+         yCur -= sizePrice + lead;
+      });
+
+      yCur -= 5;
 
       const rows: string[][] = [
-         ["Unit Price:", `${p.currency ?? ""}${upChargedUnitPrice ?? ""}`],
-         ["Unit Mass:", `${p.mass?.quantity ?? ""}${p.mass?.unit ?? ""}`],
-         ["Packing:", String(p.packaging ?? "")],
-         [
-            "Packing Mass:",
-            `${p.packingMass?.packingMass ?? ""}${
-               p.packingMass?.packingMassUnit ?? ""
-            }`,
-         ],
-         [
-            "Packing Volume:",
-            `${(p.packingVolume?.volume).toFixed(3) ?? ""}${p.packingVolume?.unit ?? ""}`,
-         ],
+         ...(p.unitMass?.unitMassQuantity
+            ? [
+                 [
+                    "Unit Mass: ",
+                    `${p.unitMass.unitMassQuantity}${
+                       p.unitMass.unitMassUnit ?? ""
+                    }`,
+                 ],
+              ]
+            : []),
+
+         ["Material:", `${p.material ?? ""}`],
+
+         ["Packing:", p.packing ?? ""],
+
+         ...(p.packingMass?.packingMassQuantity
+            ? [
+                 [
+                    "Packing Mass:",
+                    `${p.packingMass.packingMassQuantity}${
+                       p.packingMass.packingMassUnit ?? ""
+                    }`,
+                 ],
+              ]
+            : []),
+
+         ...(p.packingVolume?.length &&
+         p.packingVolume?.width &&
+         p.packingVolume?.height
+            ? [
+                 [
+                    "Packing Volume:",
+                    `L: ${parseFloat(p.packingVolume.length).toFixed(2)}${
+                       p.packingVolume.packingUnit ?? ""
+                    }   W: ${parseFloat(p.packingVolume.width).toFixed(2)}${
+                       p.packingVolume.packingUnit ?? ""
+                    }   H: ${parseFloat(p.packingVolume.height).toFixed(2)}${
+                       p.packingVolume.packingUnit ?? ""
+                    }`,
+                 ],
+              ]
+            : []),
       ].filter(
          ([, value]) =>
             value !== undefined && value !== null && String(value).trim() !== ""
@@ -166,7 +238,7 @@ export async function ExternalPDFBuilder({
       if (yCur > y0 + 20) {
          const label = "Quantity:";
          const labelX = x0 + 6;
-         const labelY = y0 + 14; 
+         const labelY = y0 + 14;
          const inputX = labelX + latin.widthOfTextAtSize(label, sizeRow) + 6;
          const inputY = labelY - 2;
          const inputW = 70;

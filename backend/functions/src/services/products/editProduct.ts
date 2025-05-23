@@ -1,6 +1,9 @@
 import * as functions from "firebase-functions/v2";
 import { deleteImageByUrl } from "./handleDeletePhoto";
-import { db, storage } from "../../utils";
+import { db } from "../../utils";
+import { uploadBlobAsJPG } from "../lib/upload_blob_as_jpg";
+import { FieldValue } from "firebase-admin/firestore";
+import * as admin from "firebase-admin";
 
 export const editProduct = functions.https.onCall(
    async (req: functions.https.CallableRequest) => {
@@ -12,22 +15,21 @@ export const editProduct = functions.https.onCall(
 
       const uid = auth.uid;
       const {
-         image: src,
+         image,
          productChineseName,
          productEnglishName,
          unitPrice,
-         productDimension,
-         mass,
-         packaging,
-         packingMass,
-         packingVolume,
+         packing,
+         packingMass: { packingMassQuantity, packingMassUnit },
+         packingVolume: { length, width, height, packingUnit },
          saved,
          updatedAt,
-         supplier,
+         supplierId,
          additionalNotes,
-         catagory,
-         client: clientName,
+         clients,
          currency,
+         hsCode,
+         material,
          productId,
       } = data;
 
@@ -37,97 +39,169 @@ export const editProduct = functions.https.onCall(
             .doc(uid)
             .collection("products")
             .doc(productId);
-         const snapshot = await productRef.get();
-         const prevData = snapshot.data() || {};
 
-         const changedFields: Record<string, any> = {};
+         const prevProductSnapshot = await productRef.get();
 
-         // only update image if a new one is passed
-         if (src !== "none") {
-            await deleteImageByUrl(prevData.image);
+         if (!prevProductSnapshot.exists) {
+            throw new functions.https.HttpsError(
+               "not-found",
+               `产品 ${productId} 不存在`
+            );
+         }
+         const prevProduct = prevProductSnapshot.data();
 
-            const bucket = storage.bucket();
-            const storagePath = `users/${uid}/products/${productId}`;
-            const file = bucket.file(storagePath);
-            const buffer = Buffer.from(src, "base64");
-
-            await file.save(buffer, {
-               contentType: "image/jpeg",
-               metadata: {
-                  firebaseStorageDownloadTokens: productId,
-               },
-            });
-
-            const token = productId;
-            const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${
-               bucket.name
-            }/o/${encodeURIComponent(storagePath)}?alt=media&token=${token}`;
-
-            if (prevData.image !== publicUrl) changedFields.image = publicUrl;
+         if (image !== "none") {
+            await deleteImageByUrl(prevProduct.image);
+            await uploadBlobAsJPG(
+               image,
+               productId,
+               `users/${uid}/products/${productId}.jpg`
+            );
          }
 
-         if (prevData.productChineseName !== productChineseName)
-            changedFields.productChineseName = productChineseName;
+         const updatePayload = {
+            productId,
+            productChineseName,
+            productEnglishName,
+            unitPrice,
+            packing,
+            packingMass: { packingMassQuantity, packingMassUnit },
+            packingVolume: { length, width, height, packingUnit },
+            saved,
+            updatedAt,
+            supplierId,
+            additionalNotes,
+            clients,
+            currency,
+            hsCode,
+            material,
+            image:
+               image === "none"
+                  ? prevProduct.image
+                  : `https://firebasestorage.googleapis.com/v0/b/${
+                       admin.storage().bucket().name
+                    }/o/${encodeURIComponent(
+                       `users/${uid}/products/${productId}.jpg`
+                    )}?alt=media&token=${productId}`,
+         };
 
-         if (prevData.productEnglishName !== productEnglishName)
-            changedFields.productEnglishName = productEnglishName;
+         const updateProductPromise = productRef.set(updatePayload, {
+            merge: true,
+         });
 
-         if (prevData.unitPrice !== unitPrice)
-            changedFields.unitPrice = unitPrice;
-         if (prevData.packaging !== packaging)
-            changedFields.packaging = packaging;
-         if (prevData.saved !== saved) changedFields.saved = saved;
-         if (prevData.updatedAt !== updatedAt)
-            changedFields.updatedAt = updatedAt;
-         if (prevData.additionalNotes !== additionalNotes)
-            changedFields.additionalNotes = additionalNotes;
-         if (prevData.catagory !== catagory) changedFields.catagory = catagory;
-         if (prevData.client !== clientName) changedFields.client = clientName;
-         if (prevData.currency !== currency) changedFields.currency = currency;
+         // Supplier updates
+         const updateSupplierPromises = [];
 
-         if (JSON.stringify(prevData.mass || {}) !== JSON.stringify(mass)) {
-            changedFields.mass = mass;
+         if (prevProduct.supplierId !== supplierId) {
+            
+            // Remove productId from old supplier
+            if (prevProduct.supplierId) {
+               updateSupplierPromises.push(
+                  editProductsInSupplier(
+                     prevProduct.supplierId,
+                     uid,
+                     productId,
+                     true
+                  )
+               );
+            }
+            // Add productId to new supplier
+            updateSupplierPromises.push(
+               editProductsInSupplier(supplierId, uid, productId, false)
+            );
          }
 
-         if (
-            JSON.stringify(prevData.productDimension || {}) !==
-            JSON.stringify(productDimension)
-         ) {
-            changedFields.productDimension = productDimension;
-         }
+         // Client updates
+         const prevClients = prevProduct.clients || [];
+         const newClients = clients || [];
+         const clientsToAdd = newClients.filter(
+            (id) => !prevClients.includes(id)
+         );
+         const clientsToRemove = prevClients.filter(
+            (id) => !newClients.includes(id)
+         );
 
-         if (
-            JSON.stringify(prevData.packingMass || {}) !==
-            JSON.stringify(packingMass)
-         ) {
-            changedFields.packingMass = packingMass;
-         }
+         const updateClientsPromises = [
+            ...clientsToAdd.map((clientId) =>
+               editProductsInClient(clientId, uid, productId, false)
+            ),
+            ...clientsToRemove.map((clientId) =>
+               editProductsInClient(clientId, uid, productId, true)
+            ),
+         ];
 
-         if (
-            JSON.stringify(prevData.packingVolume || {}) !==
-            JSON.stringify(packingVolume)
-         ) {
-            changedFields.packingVolume = packingVolume;
-         }
+         await Promise.all([
+            updateProductPromise,
+            ...updateSupplierPromises,
+            ...updateClientsPromises,
+         ]);
 
-         if (
-            JSON.stringify(prevData.supplier || {}) !== JSON.stringify(supplier)
-         ) {
-            changedFields.supplier = supplier;
-         }
-
-         if (Object.keys(changedFields).length > 0) {
-            changedFields.productId = productId;
-            await productRef.set(changedFields, { merge: true });
-         }
-
-         return { success: true, updatedFields: Object.keys(changedFields) };
+         return { success: true };
       } catch (err) {
-         console.error(err);
+         functions.logger.error("Error editing product:", err, {
+            uid,
+            productId,
+         });
          throw new functions.https.HttpsError(
             "internal",
-            "Error in editing product"
+            `编辑产品失败: ${err.message}`
          );
       }
    }
 );
+
+async function editProductsInSupplier(
+   supplierId: string,
+   uid: string,
+   productId: string,
+   remove: boolean
+) {
+   const supplierRef = db
+      .collection("users")
+      .doc(uid)
+      .collection("suppliers")
+      .doc(supplierId);
+   const supplierDoc = await supplierRef.get();
+
+   if (!supplierDoc.exists) {
+      throw new functions.https.HttpsError(
+         "not-found",
+         `供应商 ${supplierId} 不存在`
+      );
+   }
+
+   const update = remove
+      ? { productIds: FieldValue.arrayRemove(productId) }
+      : { productIds: FieldValue.arrayUnion(productId) };
+
+   await supplierRef.update(update);
+   return { success: true };
+}
+
+async function editProductsInClient(
+   clientId: string,
+   uid: string,
+   productId: string,
+   remove: boolean
+) {
+   const clientRef = db
+      .collection("users")
+      .doc(uid)
+      .collection("clients")
+      .doc(clientId);
+   const clientDoc = await clientRef.get();
+
+   if (!clientDoc.exists) {
+      throw new functions.https.HttpsError(
+         "not-found",
+         `客户 ${clientId} 不存在`
+      );
+   }
+
+   const update = remove
+      ? { productIds: FieldValue.arrayRemove(productId) }
+      : { productIds: FieldValue.arrayUnion(productId) };
+
+   await clientRef.update(update);
+   return { success: true };
+}

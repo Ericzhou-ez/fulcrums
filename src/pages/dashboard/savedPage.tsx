@@ -18,8 +18,7 @@ import Suggestions from "../../components/dashboard/core/suggestion";
 
 const SavedPage = () => {
    const { isDark, isSmUp, isMdUp } = useThemeContext();
-   const { products, errorMessages } =
-      useProductSupplierClientContext();
+   const { products, errorMessages } = useProductSupplierClientContext();
 
    // Filter for saved products
    const savedProducts = Object.entries(products).filter(
@@ -36,19 +35,6 @@ const SavedPage = () => {
 
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
-         {errorMessages && (
-            <Box
-               sx={{
-                  position: "fixed",
-                  top: 0,
-                  zIndex: "5000",
-                  width: navOpen ? "calc(100% - 240px)" : "100%",
-               }}
-            >
-               <Alert severity="error">{errorMessages}</Alert>
-            </Box>
-         )}
-
          <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
          <Nav home={false} searchBar={true} />
 
@@ -119,19 +105,7 @@ const SavedPage = () => {
 
          <div className="gradient-divider" />
 
-         {Object.keys(products).length === 0 ? (
-            <Stack
-               direction="row"
-               gap={1.5}
-               justifyContent="center"
-               alignItems="center"
-            >
-               <Typography variant="body2" textAlign="center">
-                  拼命加载中...
-               </Typography>
-               <Loader />
-            </Stack>
-         ) : viewMode === "grid" ? (
+         {viewMode === "grid" ? (
             <div className="cards-grid">
                {savedProducts.map(([id, product]) => (
                   <ProductCard key={id} item={product} isDarkMode={isDark} />

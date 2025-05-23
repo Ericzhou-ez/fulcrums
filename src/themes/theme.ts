@@ -3,6 +3,7 @@ import { useEffect, useMemo } from "react";
 import { MuiInputBase } from "./components/input-base";
 import { MuiButton } from "./components/buttons";
 import { MuiAutocomplete } from "./components/autocomplete";
+import { MuiSnackbar, MuiSnackbarContent } from "./components/snackbar";
 
 export function useAppTheme(mode: "light" | "dark"): Theme {
    const theme = useMemo(() => {
@@ -43,6 +44,8 @@ export function useAppTheme(mode: "light" | "dark"): Theme {
             MuiInputBase,
             MuiButton,
             MuiAutocomplete,
+            MuiSnackbar,
+            MuiSnackbarContent,
          },
       });
    }, [mode]);
