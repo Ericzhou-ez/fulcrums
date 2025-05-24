@@ -23,6 +23,7 @@ export function exportExternalProductCSV({
       "Pack W",
       "Pack H",
       "Pack CBM",
+      `Unit Price (¥)`,
       `Unit Price (${currency})`,
       `Commission (${currency})`,
       `Freight Cost (${currency})`,
@@ -38,6 +39,7 @@ export function exportExternalProductCSV({
       "宽 (m)",
       "高 (m)",
       "单箱体积",
+      `单价 (¥)`,
       `单价 (${currency})`,
       `佣金 (${currency})`,
       `运费 (${currency})`,
@@ -75,14 +77,11 @@ export function exportExternalProductCSV({
 
       const oneBoxCBM = cbm(Lm, Wm, Hm);
 
-      const unitPrice = parseFloat(p.unitPrice ?? "0") / exchangeRate;
-      const commission = unitPrice ? (upCharge - 1) * unitPrice : 0;
-      const freightCost =
-         oneBoxCBM && p.packing
-            ? (pricePerContainer / 68) *
-              (parseFloat(oneBoxCBM) / parseInt(p.packing))
-            : 0;
-      const totalPrice = unitPrice + commission + freightCost;
+      const unitPriceLocal = parseFloat(p.unitPrice) / exchangeRate;
+      const commission = (upCharge - 1) * unitPriceLocal;
+      const oneBoxCbm = parseFloat(oneBoxCBM) / parseInt(p.packing);
+      const freight = (pricePerContainer / 68) * oneBoxCbm;
+      const salesPrice = unitPriceLocal + commission + freight;
 
       return [
          p.productChineseName ?? "",
@@ -92,11 +91,12 @@ export function exportExternalProductCSV({
          isNaN(Wm) ? "" : Wm.toFixed(2),
          isNaN(Hm) ? "" : Hm.toFixed(2),
          oneBoxCBM,
-         unitPrice ? unitPrice.toFixed(2) : "",
+         p.unitPrice,
+         unitPriceLocal ? unitPriceLocal.toFixed(2) : "",
          commission ? commission.toFixed(2) : "",
-         freightCost ? freightCost.toFixed(2) : "",
-         totalPrice ? totalPrice.toFixed(2) : "",
-         p.packingMass
+         freight ? freight.toFixed(2) : "",
+         salesPrice ? salesPrice.toFixed(4) : "",
+         p.packingMass.packingMassQuantity
             ? `${parseFloat(p.packingMass?.packingMassQuantity).toFixed(3)}${
                  p.packingMass?.packingMassUnit
               }`

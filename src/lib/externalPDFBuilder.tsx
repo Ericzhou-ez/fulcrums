@@ -155,18 +155,17 @@ export async function ExternalPDFBuilder({
               1_000
             : 0;
 
-      const freight = ((pricePerContainer / 68) * cbm) / parseInt(p.packing);
-
-      const adjustedPrice = (
-         (parseFloat(p.unitPrice) * upCharge) / conversionRate +
-         freight
-      ).toFixed(2);
+      const unitPriceLocal = parseFloat(p.unitPrice) / conversionRate;
+      const commission = (upCharge - 1) * unitPriceLocal;
+      const oneBoxCbm = cbm / parseInt(p.packing); 
+      const freight = (pricePerContainer / 68) * oneBoxCbm;
+      const salesPrice = unitPriceLocal + commission + freight;
 
       yCur -= 9;
 
       wrapText(
-         `${currency}${parseFloat(adjustedPrice).toFixed(2)}`,
-         noto,
+         `Exw: ${currency}${salesPrice.toFixed(4)}`,
+         latin,
          sizePrice,
          cellW - 12
       ).forEach((ln) => {
@@ -174,7 +173,7 @@ export async function ExternalPDFBuilder({
             x: x0 + 6 + 0.8,
             y: yCur,
             size: sizePrice,
-            font: noto,
+            font: latin,
             color: rgb(1, 0.4, 0),
          });
          yCur -= sizePrice + lead;
@@ -183,6 +182,12 @@ export async function ExternalPDFBuilder({
       yCur -= 5;
 
       const rows: string[][] = [
+         [
+            "UnitPrice:",
+            `¥${p.unitPrice ?? ""}  ${currency}${unitPriceLocal.toFixed(2)}`,
+         ],
+         ["Freight:", `${currency ?? ""}${freight.toFixed(2)}`],
+         ["Commission:", `${currency ?? ""}${commission.toFixed(2)}`],
          ...(p.unitMass?.unitMassQuantity
             ? [
                  [

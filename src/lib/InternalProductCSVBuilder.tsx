@@ -32,6 +32,7 @@ export function exportInternalProductCSV({
       "Pack H",
       "Pack CBM",
       "TTL CBM",
+      "Unit Price (¥)",
       `Unit Price (${currency})`,
       `Commission (${currency})`,
       `Freight Cost (${currency})`,
@@ -59,6 +60,7 @@ export function exportInternalProductCSV({
       "高 (m)",
       "单箱体积",
       "总体积",
+      `单价 (¥)`,
       `单价 (${currency})`,
       `佣金 (${currency})`,
       `运费 (${currency})`,
@@ -87,10 +89,24 @@ export function exportInternalProductCSV({
       }
    };
 
-   const cbm = (l?: number, w?: number, h?: number) =>
-      l && w && h ? (l * w * h).toFixed(3) : "";
-
    const rows = Object.values(products).map((p) => {
+      const cbm =
+         p.packingVolume.packingUnit === "cm"
+            ? (parseFloat(p.packingVolume.length) *
+                 parseFloat(p.packingVolume.width) *
+                 parseFloat(p.packingVolume.height)) /
+              1_000_000
+            : p.packingVolume.packingUnit === "m"
+            ? parseFloat(p.packingVolume.length) *
+              parseFloat(p.packingVolume.width) *
+              parseFloat(p.packingVolume.height)
+            : p.packingVolume.packingUnit === "L"
+            ? (parseFloat(p.packingVolume.length) *
+                 parseFloat(p.packingVolume.width) *
+                 parseFloat(p.packingVolume.height)) /
+              1_000
+            : 0;
+
       const unitPV = p.packingVolume?.packingUnit as
          | "m"
          | "cm"
@@ -101,16 +117,11 @@ export function exportInternalProductCSV({
       const Wm = toMeters(parseFloat(p.packingVolume?.width ?? ""), unitPV);
       const Hm = toMeters(parseFloat(p.packingVolume?.height ?? ""), unitPV);
 
-      const oneBoxCBM = cbm(Lm, Wm, Hm);
-
-      const unitPrice = parseFloat(p.unitPrice ?? "0") / exchangeRate;
-      const commission = ((upCharge - 1) * unitPrice).toFixed(2);
-
-      const freightCost =
-         (pricePerContainer / 68) *
-         (parseFloat(oneBoxCBM) / parseInt(p.packing));
-
-      const totalUnitPrice = unitPrice + parseFloat(commission) + freightCost;
+      const unitPriceLocal = parseFloat(p.unitPrice) / exchangeRate;
+      const commission = (upCharge - 1) * unitPriceLocal;
+      const oneBoxCbm = cbm / parseInt(p.packing);
+      const freight = (pricePerContainer / 68) * oneBoxCbm;
+      const salesPrice = unitPriceLocal + commission + freight;
 
       return [
          "",
@@ -123,13 +134,14 @@ export function exportInternalProductCSV({
          isNaN(Lm) ? "" : Lm.toFixed(2),
          isNaN(Wm) ? "" : Wm.toFixed(2),
          isNaN(Hm) ? "" : Hm.toFixed(2),
-         oneBoxCBM,
+         oneBoxCbm.toFixed(2),
          "",
-         unitPrice ? unitPrice.toFixed(2) : "",
-         commission,
-         freightCost.toFixed(2),
-         totalUnitPrice.toFixed(2),
-         p.packingMass
+         p.unitPrice,
+         unitPriceLocal ? unitPriceLocal.toFixed(2) : "",
+         commission.toFixed(2),
+         freight.toFixed(2),
+         salesPrice.toFixed(4),
+         p.packingMass.packingMassQuantity
             ? `${parseFloat(p.packingMass?.packingMassQuantity).toFixed(3)}${
                  p.packingMass?.packingMassUnit
               }`

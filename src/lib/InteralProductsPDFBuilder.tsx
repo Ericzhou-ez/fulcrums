@@ -159,23 +159,20 @@ export async function BuildInternalProductPDF({
               1_000
             : 0;
 
-      const upChargedPrice = (parseFloat(p.unitPrice) * upCharge).toFixed(2);
-
-      const freight = ((pricePerContainer / 68) * cbm) / parseInt(p.packing);
-
-      const adjustedPrice = (
-         (parseFloat(p.unitPrice) * upCharge) / conversionRate +
-         freight
-      ).toFixed(2);
+      const unitPriceLocal = parseFloat(p.unitPrice) / conversionRate;
+      const commission = (upCharge - 1) * unitPriceLocal;
+      const oneBoxCbm = cbm / parseInt(p.packing);
+      const freight = (pricePerContainer / 68) * oneBoxCbm;
+      const salesPrice = unitPriceLocal + commission + freight;
 
       const rows: string[][] = [
-         ["UnitPrice:", `${p.currency ?? ""}${p.unitPrice ?? ""}`],
          [
-            "SalesPrice:",
-            `${currency ?? ""}${adjustedPrice ?? ""} ${p.currency ?? ""}${
-               upChargedPrice ?? ""
-            }`,
+            "UnitPrice:",
+            `¥${p.unitPrice ?? ""}  ${currency}${unitPriceLocal.toFixed(2)}`,
          ],
+         ["Freight:", `${currency ?? ""}${freight.toFixed(2)}`],
+         ["Commission:", `${currency ?? ""}${commission.toFixed(2)}`],
+         ["Sales Price:", `${currency ?? ""}${salesPrice.toFixed(4)}`],
          ["Packing:", String(p.packing ?? "")],
          ...(p.packingMass?.packingMassQuantity
             ? [
