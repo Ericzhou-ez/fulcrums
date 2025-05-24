@@ -91,7 +91,7 @@ export function exportExternalProductCSV({
          isNaN(Wm) ? "" : Wm.toFixed(2),
          isNaN(Hm) ? "" : Hm.toFixed(2),
          oneBoxCBM,
-         p.unitPrice,
+         parseFloat(p.unitPrice).toFixed(2),
          unitPriceLocal ? unitPriceLocal.toFixed(2) : "",
          commission ? commission.toFixed(2) : "",
          freight ? freight.toFixed(2) : "",

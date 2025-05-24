@@ -184,7 +184,9 @@ export async function ExternalPDFBuilder({
       const rows: string[][] = [
          [
             "UnitPrice:",
-            `¥${p.unitPrice ?? ""}  ${currency}${unitPriceLocal.toFixed(2)}`,
+            `¥${
+               parseFloat(p.unitPrice).toFixed(2) ?? ""
+            }  ${currency}${unitPriceLocal.toFixed(2)}`,
          ],
          ["Freight:", `${currency ?? ""}${freight.toFixed(2)}`],
          ["Commission:", `${currency ?? ""}${commission.toFixed(2)}`],
