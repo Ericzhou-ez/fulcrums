@@ -4,13 +4,16 @@ import React, {
    useState,
    ReactNode,
    useEffect,
+   useMemo,
 } from "react";
 import { Product, Supplier, Clients } from "../types/types";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { getDocs, collection, onSnapshot } from "firebase/firestore";
 import { db } from "../configs/firebase";
+import { db as DexieDataBase } from "../lib/dexieUtils";
 import { useAuth } from "./authContexts";
 import { useNavigate } from "react-router";
+import { useLiveQuery } from "dexie-react-hooks";
 
 export type ProductSupplierClientContextType = {
    addProduct: (product: any) => Promise<void>;
@@ -75,10 +78,57 @@ export const ProductSupplierClientContextProvider = ({
    const [deletedClient, setDeletedClient] = useState(false);
 
    const [products, setProducts] = useState<{ [key: string]: Product }>({});
+
    const [clients, setClients] = useState<{ [key: string]: Clients }>({});
+   const [firestoreClients, setFirestoreClients] = useState<{ [key: string]: Clients }>({});
+
    const [suppliers, setSuppliers] = useState<{ [key: string]: Supplier }>({});
+   const [firestoreSuppliers, setFirestoreSuppliers] = useState<{
+      [key: string]: Supplier;
+   }>({});
+
    const functions = getFunctions();
    const navigate = useNavigate();
+
+   const dexieClients = useLiveQuery(() => DexieDataBase.clients.toArray(), []);
+   const dexieSuppliers = useLiveQuery(
+      () => DexieDataBase.suppliers.toArray(),
+      []
+   );
+
+   // listen to dexie changes and merge with firestore clients
+   useEffect(() => {
+      if (!dexieClients) {
+         return;
+      }
+
+      const merged = { ...firestoreClients };
+
+      dexieClients.forEach((client) => {
+         if (!merged[client.clientId]) {
+            merged[client.clientId] = client;
+         }
+      });
+
+      setClients(merged);
+
+   }, [dexieClients, firestoreClients]); 
+   
+   useEffect(() => {
+      if (!dexieSuppliers) {
+         return;
+      }
+
+      const merged = { ...firestoreSuppliers };
+
+      dexieSuppliers.forEach((supplier) => {
+         if (!merged[supplier.supplierId]) {
+            merged[supplier.supplierId] = supplier;
+         }
+      });
+
+      setSuppliers(merged);
+   }, [dexieSuppliers, firestoreSuppliers]);  
 
    // listen to firestore product change
    useEffect(() => {
@@ -152,7 +202,7 @@ export const ProductSupplierClientContextProvider = ({
                map[c.clientId] = c; // keyed by clientId
             });
 
-            setClients(map);
+            setFirestoreClients(map);
          },
          (err) => {
             console.error("Firestore listener error (clients):", err);
@@ -192,7 +242,7 @@ export const ProductSupplierClientContextProvider = ({
                map[c.supplierId] = c;
             });
 
-            setSuppliers(map);
+            setFirestoreSuppliers(map);
          },
          (err) => {
             console.error("Firestore listener error (suppliers):", err);

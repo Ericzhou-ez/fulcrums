@@ -14,7 +14,7 @@ class FulcrumsDatabase extends Dexie {
          products:
             "productId,productChineseName,productEnglishName,unitPrice,material,hsCode,packing,saved,updatedAt,supplierId,currency",
          suppliers:
-            "supplierId,supplierName,supplierPhoneNumber,supplierAddress,supplierEmail",
+            "supplierId,supplierName,supplierPhone,supplierAddress,supplierEmail",
          clients:
             "clientId,companyName,contactEmail,contactName,contactPhoneNumber,eoriNumber,updatedAt",
       });
@@ -53,7 +53,9 @@ export async function addRecord<T extends TableEntityMap[TableName]>(
 ): Promise<string> {
    try {
       const recordWithId = ensureId(tableName, record);
-      return await db.table(tableName).add(recordWithId) as string;
+      return (await db
+         .table(tableName)
+         .add({ ...recordWithId, upDatedAt: new Date().toString() })) as string;
    } catch (error) {
       console.error(`Error adding record to ${tableName}:`, error);
       throw new Error(`Failed to add record to ${tableName}`);
@@ -140,6 +142,26 @@ export async function getProductCount(): Promise<number> {
    } catch (error) {
       console.error("Error retrieving product count:", error);
       throw new Error("Failed to retrieve product count");
+   }
+}
+
+export async function getSupplierCount(): Promise<number> {
+   try {
+      const suppliers = await db.suppliers.toArray();
+      return suppliers.length;
+   } catch (error) {
+      console.error("Error retrieving supplier count:", error);
+      throw new Error("Failed to retrieve supplier count");
+   }
+}
+
+export async function getClientCount(): Promise<number> {
+   try {
+      const clients = await db.clients.toArray();
+      return clients.length;
+   } catch (error) {
+      console.error("Error retrieving client count:", error);
+      throw new Error("Failed to retrieve client count");
    }
 }
 

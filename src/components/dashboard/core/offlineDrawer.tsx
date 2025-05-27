@@ -26,14 +26,17 @@ import {
    Grid,
    Stack,
    InputAdornment,
+   Tooltip,
 } from "@mui/material";
 import {
    CloudSlash,
    Package,
    ArrowLeft,
    X as DeleteIcon,
+   ArrowsClockwise,
+   CheckCircle,
 } from "phosphor-react";
-import { getProductCount, deleteRecord, db } from "../../../lib/dexieUtils";
+import { deleteRecord, db } from "../../../lib/dexieUtils";
 import getBase64FromBlobUrl from "../../../lib/blob-to-blob64";
 import { Product, Supplier, Clients } from "../../../types/types";
 import { useLiveQuery } from "dexie-react-hooks";
@@ -48,8 +51,13 @@ interface OfflineDrawerProps {
 export function OfflineDrawer({ isOnline }: OfflineDrawerProps) {
    const [showCloud, setShowCloud] = useState(true);
    const [open, setOpen] = useState(false);
+   const [syncState, setSyncState] = useState<"idle" | "syncing" | "done">(
+      "idle"
+   );
 
-  const productCount = useLiveQuery(() => db.products.count(), []);
+   const productCount = useLiveQuery(() => db.products.count(), []);
+   const supplierCount = useLiveQuery(() => db.suppliers.count(), []);
+   const clientCount = useLiveQuery(() => db.clients.count(), []);
 
    useEffect(() => {
       if (!isOnline) {
@@ -59,45 +67,105 @@ export function OfflineDrawer({ isOnline }: OfflineDrawerProps) {
       setShowCloud(true);
    }, [isOnline]);
 
-   if (isOnline && !open) return null;
+   const startSync = () => {
+      if (syncState !== "idle") return;
+
+      setSyncState("syncing");
+
+      // TODO: replace setTimeout with real sync promise
+      setTimeout(() => setSyncState("done"), 2500);
+   };
+
+   const showSync =
+      isOnline && (productCount! > 0 || supplierCount! > 0 || clientCount! > 0);
 
    return (
       <>
-         <Grow in>
-            <Box
-               onClick={() => setOpen(true)}
-               sx={{
-                  position: "fixed",
-                  bottom: 16,
-                  right: 16,
-                  display: "flex",
-                  alignItems: "center",
-                  px: 1.25,
-                  py: 0.75,
-                  borderRadius: 999,
-                  boxShadow: 4,
-                  bgcolor: (t) => t.palette.background.default,
-                  cursor: "pointer",
-                  zIndex: 30,
-               }}
+         {showSync && (
+            <Tooltip
+               title={
+                  syncState === "idle"
+                     ? "同步到云端"
+                     : syncState === "syncing"
+                     ? "同步中…"
+                     : "已完成"
+               }
             >
-               <Collapse in={showCloud} orientation="horizontal" timeout={400}>
-                  <CloudSlash size={20} weight="fill" />
-               </Collapse>
+               <IconButton
+                  onClick={startSync}
+                  color={syncState === "done" ? "success" : "primary"}
+                  sx={{
+                     position: "fixed",
+                     bottom: 16,
+                     right: 16,
+                     zIndex: 40,
+                     border: "0.5px solid",
+                     bgcolor: "background.paper",
+                     animation:
+                        syncState === "syncing"
+                           ? "spin 1s linear infinite"
+                           : "none",
+                     "@keyframes spin": {
+                        to: { transform: "rotate(360deg)" },
+                     },
+                  }}
+               >
+                  {syncState === "done" ? (
+                     <CheckCircle size={26} weight="fill" />
+                  ) : (
+                     <ArrowsClockwise size={26} weight="bold" />
+                  )}
+               </IconButton>
+            </Tooltip>
+         )}
 
-               <Collapse in={!showCloud} orientation="horizontal" timeout={400}>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                     <Package size={18} weight="fill" />
-                     <Typography
-                        variant="caption"
-                        sx={{ fontWeight: 700, fontSize: "0.75rem" }}
+         {!showSync && (
+            <Grow in>
+               <Box
+                  onClick={() => setOpen(true)}
+                  sx={{
+                     position: "fixed",
+                     bottom: 16,
+                     right: 16,
+                     display: "flex",
+                     alignItems: "center",
+                     px: 1.25,
+                     py: 0.75,
+                     borderRadius: 999,
+                     boxShadow: 4,
+                     bgcolor: "background.paper",
+                     cursor: "pointer",
+                     zIndex: 30,
+                  }}
+               >
+                  <Collapse
+                     in={showCloud}
+                     orientation="horizontal"
+                     timeout={400}
+                  >
+                     <CloudSlash size={20} weight="fill" />
+                  </Collapse>
+
+                  <Collapse
+                     in={!showCloud}
+                     orientation="horizontal"
+                     timeout={400}
+                  >
+                     <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
                      >
-                        {productCount ?? "…"}
-                     </Typography>
-                  </Box>
-               </Collapse>
-            </Box>
-         </Grow>
+                        <Package size={18} weight="fill" />
+                        <Typography
+                           variant="caption"
+                           sx={{ fontWeight: 700, fontSize: "0.75rem" }}
+                        >
+                           {productCount ?? "…"}
+                        </Typography>
+                     </Box>
+                  </Collapse>
+               </Box>
+            </Grow>
+         )}
 
          <EntityDrawer open={open} onClose={() => setOpen(false)} />
       </>
@@ -163,7 +231,7 @@ function EntityDrawer({ open, onClose }: EntityDrawerProps) {
          ModalProps={{ keepMounted: true, disableScrollLock: false }}
          PaperProps={{
             sx: {
-               height: "90vh",
+               height: "90dvh",
                borderTopLeftRadius: 16,
                borderTopRightRadius: 16,
             },
@@ -187,7 +255,7 @@ function EntityDrawer({ open, onClose }: EntityDrawerProps) {
 
          <Box
             sx={{
-               height: "90vh",
+               height: "90dvh",
                overflowY: "auto",
                p: 1.5,
                scrollbarWidth: "none",

@@ -71,7 +71,7 @@ const NewSupplierModal: React.FC<Props> = ({ open, onClose, isOnline }) => {
             supplierName,
             supplierAddress,
             supplierEmail,
-            supplierPhoneNumber: supplierPhone,
+            supplierPhone,
          });
 
          setErrorMessages(`添加${supplierName}成功`)
@@ -96,6 +96,7 @@ const NewSupplierModal: React.FC<Props> = ({ open, onClose, isOnline }) => {
       setSelectedSupplier(null);
       setSupplierAddress("");
       setSupplierPhone("");
+      setSupplierEmail("");
    };
 
    return (

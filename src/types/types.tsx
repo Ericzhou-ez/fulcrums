@@ -40,7 +40,7 @@ export type Product = {
 export type Supplier = {
    supplierId: string;
    supplierName: string;
-   supplierPhoneNumber: string;
+   supplierPhone: string;
    supplierAddress: string;
    supplierEmail: string;
 };
