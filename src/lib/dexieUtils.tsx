@@ -2,7 +2,6 @@ import Dexie, { Table } from "dexie";
 import { v4 as uuidv4 } from "uuid";
 import { Product, Supplier, Clients } from "../types/types";
 
-// Initialize Dexie database
 class FulcrumsDatabase extends Dexie {
    products!: Table<Product, string>;
    suppliers!: Table<Supplier, string>;
@@ -10,7 +9,8 @@ class FulcrumsDatabase extends Dexie {
 
    constructor() {
       super("FulcrumsDatabase");
-      this.version(1).stores({
+
+      this.version(3).stores({
          products:
             "productId,productChineseName,productEnglishName,unitPrice,material,hsCode,packing,saved,updatedAt,supplierId,currency",
          suppliers:
@@ -23,17 +23,13 @@ class FulcrumsDatabase extends Dexie {
 
 const db = new FulcrumsDatabase();
 
-// Map table names to their corresponding entity types
 type TableEntityMap = {
    products: Product;
    suppliers: Supplier;
    clients: Clients;
 };
-
-// Generic type for table names
 type TableName = keyof TableEntityMap;
 
-// Utility to ensure ID is provided or generated
 function ensureId<T extends TableEntityMap[TableName]>(
    tableName: TableName,
    record: Partial<T>
@@ -57,8 +53,7 @@ export async function addRecord<T extends TableEntityMap[TableName]>(
 ): Promise<string> {
    try {
       const recordWithId = ensureId(tableName, record);
-      return await db.table(tableName).add(recordWithId);
-      
+      return await db.table(tableName).add(recordWithId) as string;
    } catch (error) {
       console.error(`Error adding record to ${tableName}:`, error);
       throw new Error(`Failed to add record to ${tableName}`);
@@ -148,5 +143,4 @@ export async function getProductCount(): Promise<number> {
    }
 }
 
-// Export database instance for advanced queries
 export { db };

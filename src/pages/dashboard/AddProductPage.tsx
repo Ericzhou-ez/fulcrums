@@ -172,30 +172,6 @@ const AddProductForm = ({ isOnline }: { isOnline: boolean }) => {
       CNYtoEURO: 0.1269832,
    });
 
-   const toggleCurrency = () => {
-      const base = parseFloat(unitPrice);
-      let converted = 0;
-      let newCurrency = currency;
-      const USDtoEURO = forexRates.CNYtoEURO / forexRates.CNYtoUSD;
-      const EUROtoCNY = 1 / forexRates.CNYtoEURO;
-
-      if (currency === "¥") {
-         // Convert from CNY to USD
-         converted = base * forexRates.CNYtoUSD;
-         newCurrency = "$";
-      } else if (currency === "$") {
-         // Convert from USD to EUR
-         converted = base * USDtoEURO;
-         newCurrency = "€";
-      } else if (currency === "€") {
-         // Convert from EUR to CNY
-         converted = base * EUROtoCNY;
-         newCurrency = "¥";
-      }
-      setUnitPrice(converted.toFixed(2));
-      setCurrency(newCurrency);
-   };
-
    const togglePackingUnit = () => {
       setPackingMassUnit((prev) => (prev === "kg" ? "g" : "kg"));
    };
@@ -959,11 +935,12 @@ const AddProductForm = ({ isOnline }: { isOnline: boolean }) => {
             </Box>
          )}
 
-         <NewClientModal open={isClientModalOpen} onClose={closeClientModal} />
+         <NewClientModal open={isClientModalOpen} onClose={closeClientModal} isOnline={isOnline} />
 
          <NewSupplierModal
             open={isSupplierModalOpen}
             onClose={closeSupplierModal}
+            isOnline={isOnline}
          />
 
          <OfflineDrawer isOnline={isOnline} />

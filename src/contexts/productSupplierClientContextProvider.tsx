@@ -26,6 +26,8 @@ export type ProductSupplierClientContextType = {
    getSuppliers: () => Promise<Object>;
    toggleSaveUnsaveProduct: (productId: string) => Promise<void>;
    setAddedProduct: React.Dispatch<React.SetStateAction<boolean>>;
+   setAddedClient: React.Dispatch<React.SetStateAction<boolean>>;
+   setAddedSupplier: React.Dispatch<React.SetStateAction<boolean>>;
    addedProduct: boolean;
    editedProduct: boolean;
    deletedProduct: boolean;
@@ -401,6 +403,8 @@ export const ProductSupplierClientContextProvider = ({
             toggleSaveUnsaveProduct,
             addedProduct,
             setAddedProduct,
+            setAddedClient,
+            setAddedSupplier,
             editedProduct,
             deletedProduct,
             addedSupplier,

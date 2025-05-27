@@ -1,8 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* ──────────────────────────────────────────────────────────── */
-/*  Offline‑indicator FAB  +  80 vh bottom drawer (Dexie)       */
-/*  Full‑field editor, image upload (base‑64), slim UI          */
-/* ──────────────────────────────────────────────────────────── */
+
 import {
    useState,
    useEffect,
@@ -26,33 +23,33 @@ import {
    TextField,
    Button,
    IconButton,
-   Avatar,
+   Grid,
+   Stack,
+   InputAdornment,
 } from "@mui/material";
-import { CloudSlash, Package, ArrowLeft } from "phosphor-react";
 import {
-   getProductCount,
-   getAllRecords,
-   updateRecord,
-   db,
-} from "../../../lib/dexieUtils";
+   CloudSlash,
+   Package,
+   ArrowLeft,
+   X as DeleteIcon,
+} from "phosphor-react";
+import { getProductCount, deleteRecord, db } from "../../../lib/dexieUtils";
 import getBase64FromBlobUrl from "../../../lib/blob-to-blob64";
 import { Product, Supplier, Clients } from "../../../types/types";
+import { useLiveQuery } from "dexie-react-hooks";
 
 /* ──────────────────────────────────────────────────────────── */
-/*  MAIN FLOATING BUTTON + DRAWER                               */
+/*  MAIN                                                        */
 /* ──────────────────────────────────────────────────────────── */
 interface OfflineDrawerProps {
    isOnline: boolean;
 }
 
 export function OfflineDrawer({ isOnline }: OfflineDrawerProps) {
-   const [count, setCount] = useState<number | null>(null);
    const [showCloud, setShowCloud] = useState(true);
    const [open, setOpen] = useState(false);
 
-   useEffect(() => {
-      getProductCount().then(setCount).catch(console.error);
-   }, []);
+  const productCount = useLiveQuery(() => db.products.count(), []);
 
    useEffect(() => {
       if (!isOnline) {
@@ -62,11 +59,10 @@ export function OfflineDrawer({ isOnline }: OfflineDrawerProps) {
       setShowCloud(true);
    }, [isOnline]);
 
-   if (isOnline) return null;
+   if (isOnline && !open) return null;
 
    return (
       <>
-         {/* FAB */}
          <Grow in>
             <Box
                onClick={() => setOpen(true)}
@@ -82,7 +78,7 @@ export function OfflineDrawer({ isOnline }: OfflineDrawerProps) {
                   boxShadow: 4,
                   bgcolor: (t) => t.palette.background.default,
                   cursor: "pointer",
-                  zIndex: 1300,
+                  zIndex: 30,
                }}
             >
                <Collapse in={showCloud} orientation="horizontal" timeout={400}>
@@ -96,7 +92,7 @@ export function OfflineDrawer({ isOnline }: OfflineDrawerProps) {
                         variant="caption"
                         sx={{ fontWeight: 700, fontSize: "0.75rem" }}
                      >
-                        {count ?? "…"}
+                        {productCount ?? "…"}
                      </Typography>
                   </Box>
                </Collapse>
@@ -109,7 +105,7 @@ export function OfflineDrawer({ isOnline }: OfflineDrawerProps) {
 }
 
 /* ──────────────────────────────────────────────────────────── */
-/*  DRAWER (tabs → list → detail)                               */
+/*  DRAWER                                                      */
 /* ──────────────────────────────────────────────────────────── */
 type TabKey = "products" | "suppliers" | "clients";
 
@@ -117,7 +113,6 @@ interface EntityDrawerProps {
    open: boolean;
    onClose: () => void;
 }
-
 function EntityDrawer({ open, onClose }: EntityDrawerProps) {
    const [tab, setTab] = useState<TabKey>("products");
    const [view, setView] = useState<"list" | "detail">("list");
@@ -125,47 +120,39 @@ function EntityDrawer({ open, onClose }: EntityDrawerProps) {
       null
    );
 
-   const [products, setProducts] = useState<Product[] | null>(null);
-   const [suppliers, setSuppliers] = useState<Supplier[] | null>(null);
-   const [clients, setClients] = useState<Clients[] | null>(null);
+   const products = useLiveQuery(() => db.products.toArray(), []);
+   const suppliers = useLiveQuery(() => db.suppliers.toArray(), []);
+   const clients = useLiveQuery(() => db.clients.toArray(), []);
 
-   useEffect(() => {
-      const load = async () => {
-         switch (tab) {
-            case "products":
-               if (!products) setProducts(await getAllRecords("products"));
-               break;
-            case "suppliers":
-               if (!suppliers) setSuppliers(await getAllRecords("suppliers"));
-               break;
-            case "clients":
-               if (!clients) setClients(await getAllRecords("clients"));
-               break;
-         }
-      };
-      load().catch(console.error);
-   }, [tab]);
-
-   /* ---------- save helper ---------- */
-   const handleSave = async (updated: any) => {
+   const handleSave = async (updated: any, close = false) => {
       const table =
          tab === "products"
             ? "products"
             : tab === "suppliers"
             ? "suppliers"
             : "clients";
-      const idField = idKey(table);
 
-      await db.table(table).put(updated); 
+      await db.table(table).put(updated);
 
-      // ← pull fresh list from Dexie so React gets new object refs
-      const fresh = await getAllRecords(table as any);
+      if (close) setView("list");
+   };
 
-      if (table === "products") setProducts(fresh as Product[]);
-      if (table === "suppliers") setSuppliers(fresh as Supplier[]);
-      if (table === "clients") setClients(fresh as Clients[]);
+   const handleDelete = async (item: Product | Supplier | Clients) => {
+      const table =
+         tab === "products"
+            ? "products"
+            : tab === "suppliers"
+            ? "suppliers"
+            : "clients";
 
-      setView("list");
+      const id =
+         table === "products"
+            ? (item as Product).productId
+            : table === "suppliers"
+            ? (item as Supplier).supplierId
+            : (item as Clients).clientId;
+
+      await deleteRecord(table as any, id);
    };
 
    return (
@@ -173,6 +160,7 @@ function EntityDrawer({ open, onClose }: EntityDrawerProps) {
          anchor="bottom"
          open={open}
          onClose={onClose}
+         ModalProps={{ keepMounted: true, disableScrollLock: false }}
          PaperProps={{
             sx: {
                height: "90vh",
@@ -191,18 +179,26 @@ function EntityDrawer({ open, onClose }: EntityDrawerProps) {
                variant="fullWidth"
                sx={{ borderBottom: 1, borderColor: "divider", pt: 1 }}
             >
-               <Tab label="Products" value="products" />
-               <Tab label="Suppliers" value="suppliers" />
-               <Tab label="Clients" value="clients" />
+               <Tab label="产品" value="products" />
+               <Tab label="供应商" value="suppliers" />
+               <Tab label="客户" value="clients" />
             </Tabs>
          )}
 
-         <Box sx={{ height: "90vh", overflowY: "auto", p: 1.5 }}>
+         <Box
+            sx={{
+               height: "90vh",
+               overflowY: "auto",
+               p: 1.5,
+               scrollbarWidth: "none",
+               "&::-webkit-scrollbar": { display: "none" },
+            }}
+         >
             {view === "list" && (
                <>
                   {tab === "products" && (
                      <EntityList<Product>
-                        loading={!products}
+                        loading={products === undefined}
                         items={products ?? []}
                         primary={(p) =>
                            p.productChineseName || p.productEnglishName
@@ -217,32 +213,35 @@ function EntityDrawer({ open, onClose }: EntityDrawerProps) {
                            setSelect(p);
                            setView("detail");
                         }}
+                        onDelete={handleDelete}
                      />
                   )}
 
                   {tab === "suppliers" && (
                      <EntityList<Supplier>
-                        loading={!suppliers}
+                        loading={suppliers === undefined}
                         items={suppliers ?? []}
                         primary={(s) => s.supplierName}
-                        secondary={(s) => s.supplierPhoneNumber ?? ""}
+                        secondary={(s) => s.supplierAddress ?? ""}
                         onSelect={(s) => {
                            setSelect(s);
                            setView("detail");
                         }}
+                        onDelete={handleDelete}
                      />
                   )}
 
                   {tab === "clients" && (
                      <EntityList<Clients>
-                        loading={!clients}
+                        loading={clients === undefined}
                         items={clients ?? []}
                         primary={(c) => c.companyName}
-                        secondary={(c) => c.contactEmail ?? ""}
+                        secondary={(c) => c.contactName ?? ""}
                         onSelect={(c) => {
                            setSelect(c);
                            setView("detail");
                         }}
+                        onDelete={handleDelete}
                      />
                   )}
                </>
@@ -271,6 +270,7 @@ interface EntityListProps<T> {
    secondary?: (item: T) => string;
    avatarSrc?: (item: T) => string | undefined;
    onSelect: (item: T) => void;
+   onDelete: (item: T) => void;
 }
 
 function EntityList<T>({
@@ -280,6 +280,7 @@ function EntityList<T>({
    secondary,
    avatarSrc,
    onSelect,
+   onDelete,
 }: EntityListProps<T>) {
    if (loading)
       return (
@@ -295,7 +296,7 @@ function EntityList<T>({
             color="text.secondary"
             sx={{ py: 3, textAlign: "center" }}
          >
-            No data.
+            没有信息。
          </Typography>
       );
 
@@ -311,7 +312,7 @@ function EntityList<T>({
                      "&:hover": { bgcolor: "action.hover" },
                      gap: 1,
                      px: 1,
-                     py: 0.5,
+                     py: 1,
                   }}
                >
                   {avatarSrc && avatarSrc(item) && (
@@ -333,12 +334,24 @@ function EntityList<T>({
                      primary={primary(item)}
                      secondary={secondary ? secondary(item) : undefined}
                      primaryTypographyProps={{
-                        fontSize: "0.85rem",
+                        fontSize: "0.95rem",
                         fontWeight: 600,
                      }}
-                     secondaryTypographyProps={{ fontSize: "0.75rem" }}
+                     secondaryTypographyProps={{ fontSize: "0.85rem" }}
                   />
+
+                  <IconButton
+                     edge="end"
+                     size="small"
+                     onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(item);
+                     }}
+                  >
+                     <DeleteIcon fontSize="small" />
+                  </IconButton>
                </ListItem>
+
                {idx < items.length - 1 && <Divider component="li" />}
             </Fragment>
          ))}
@@ -347,7 +360,7 @@ function EntityList<T>({
 }
 
 /* ──────────────────────────────────────────────────────────── */
-/*  DETAIL / EDIT FORM                                          */
+/*           EDIT FORM                                          */
 /* ──────────────────────────────────────────────────────────── */
 interface DetailFormProps {
    item: Product | Supplier | Clients;
@@ -357,92 +370,145 @@ interface DetailFormProps {
 }
 
 function DetailForm({ item, tab, onBack, onSave }: DetailFormProps) {
-   // deep copy so we don’t mutate the list item
    const [form, setForm] = useState<Record<string, any>>({ ...item });
-   const [saving, setSaving] = useState(false);
 
-   /* ---------- helpers ---------- */
+   /* ---------------- helpers ---------------- */
    const ensureDataUrl = (b64: string) =>
       b64.startsWith("data:image") ? b64 : `data:image/png;base64,${b64}`;
 
+   const getDeep = (obj: any, path: string) =>
+      path.split(".").reduce((acc, k) => (acc ? acc[k] : undefined), obj);
+
+   const setDeep = (obj: any, path: string, value: any) => {
+      const parts = path.split(".");
+      const last = parts.pop()!;
+      const next = { ...obj };
+      let cur = next;
+      for (const p of parts) {
+         cur[p] = { ...(cur[p] ?? {}) };
+         cur = cur[p];
+      }
+      cur[last] = value;
+      return next;
+   };
+
+   /** update state + persist immediately */
+   const saveNow = (updated: Record<string, any>) => {
+      setForm(updated);
+      onSave(updated);
+   };
+
    const handleChange = (key: string) => (e: ChangeEvent<HTMLInputElement>) =>
-      setForm({ ...form, [key]: e.target.value });
+      saveNow(setDeep(form, key, e.target.value));
 
    const handleFile: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
+
       const blobUrl = URL.createObjectURL(file);
       const b64 = await getBase64FromBlobUrl(blobUrl);
-      const base64 = b64 ? ensureDataUrl(b64) : "";
+      URL.revokeObjectURL(blobUrl);
 
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
-      setForm({ ...form, productImage: base64 });
+      saveNow({ ...form, image: ensureDataUrl(b64 ?? "") });
    };
 
-   /* ---------- meta per entity ---------- */
+   const adornmentsFor = (key: string) => {
+      if (key === "unitPrice") {
+         return {
+            startAdornment: <InputAdornment position="start">¥</InputAdornment>,
+         };
+      }
+
+      if (key === "packingMass.packingMassQuantity") {
+         const unit = getDeep(form, "packingMass.packingMassUnit") ?? "kg";
+         return {
+            endAdornment: (
+               <InputAdornment position="end">{unit}</InputAdornment>
+            ),
+         };
+      }
+
+      return undefined;
+   };
+
+   /* ---------------- meta per entity ---------------- */
    const FIELDS: Record<
       TabKey,
       { key: string; label: string; type?: string }[]
    > = {
       products: [
-         { key: "productChineseName", label: "Chinese Name" },
-         { key: "productEnglishName", label: "English Name" },
-         { key: "unitPrice", label: "Unit Price", type: "number" },
-         { key: "currency", label: "Currency" },
-         { key: "material", label: "Material" },
-         { key: "hsCode", label: "HS Code" },
-         { key: "packing", label: "Packing" },
-         { key: "productImage", label: "Image", type: "file" },
+         { key: "productChineseName", label: "产品中文名" },
+         { key: "productEnglishName", label: "产品英文名" },
+         { key: "unitPrice", label: "单位价格", type: "number" },
+         { key: "hsCode", label: "HS编码" },
+         { key: "material", label: "材料" },
+         { key: "packing", label: "包装", type: "number" },
+
+         { key: "packingVolume.length", label: "长", type: "number" },
+         { key: "packingVolume.width", label: "宽", type: "number" },
+         { key: "packingVolume.height", label: "高", type: "number" },
+         {
+            key: "packingMass.packingMassQuantity",
+            label: "包装重量",
+            type: "number",
+         },
       ],
       suppliers: [
-         { key: "supplierName", label: "Name" },
-         { key: "supplierPhoneNumber", label: "Phone" },
-         { key: "supplierAddress", label: "Address" },
-         { key: "supplierEmail", label: "Email" },
+         { key: "supplierName", label: "供应商名称" },
+         { key: "supplierPhoneNumber", label: "电话", type: "number" },
+         { key: "supplierAddress", label: "地址" },
+         { key: "supplierEmail", label: "邮箱" },
       ],
       clients: [
-         { key: "companyName", label: "Company" },
-         { key: "contactName", label: "Contact" },
-         { key: "contactPhoneNumber", label: "Phone" },
-         { key: "contactEmail", label: "Email" },
-         { key: "eoriNumber", label: "EORI" },
+         { key: "companyName", label: "公司全称" },
+         { key: "address", label: "完整地址" },
+         { key: "contactName", label: "联系人" },
+         { key: "contactPhoneNumber", label: "电话号码", type: "number" },
+         { key: "contactEmail", label: "电子邮件地址" },
+         { key: "eoriNumber", label: "EORI 编号" },
+         { key: "vatNumber", label: "VAT 增值税号" },
       ],
    };
 
-   /* ---------- save ---------- */
-   const submit = async () => {
-      setSaving(true);
-      await onSave(form); // parent will `.put()` entire record
-      setSaving(false);
-   };
+   const dimensionKeys = [
+      "packingVolume.length",
+      "packingVolume.width",
+      "packingVolume.height",
+   ];
 
-   /* ---------- UI ---------- */
    return (
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 1.25 }}>
-         {/* Preview first so you can’t miss it */}
-         {form.productImage && (
-            <Box
-               component="img"
-               src={ensureDataUrl(form.productImage)}
-               alt="preview"
-               sx={{ width: "100%", borderRadius: 1, mb: 1 }}
-            />
-         )}
-
-         <IconButton onClick={onBack} size="small">
-            <ArrowLeft size={20} />
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+         <IconButton
+            onClick={onBack}
+            size="small"
+            sx={{
+               position: "fixed",
+               height: 35,
+               width: 35,
+               m: 1.5,
+               zIndex: 1000,
+            }}
+         >
+            <ArrowLeft />
          </IconButton>
 
-         {FIELDS[tab].map(({ key, label, type }) =>
-            type === "file" ? (
+         {form.image && (
+            <Box sx={{ position: "relative", width: "100%", mb: 1 }}>
+               <Box
+                  component="img"
+                  src={ensureDataUrl(form.image)}
+                  alt="preview"
+                  sx={{ width: "100%", borderRadius: 3 }}
+               />
+
                <Button
-                  key={key}
-                  variant="outlined"
-                  component="label"
+                  variant="contained"
                   size="small"
-                  sx={{ alignSelf: "flex-start" }}
+                  component="label"
+                  color="info"
+                  sx={{ position: "absolute", bottom: 12, right: 8 }}
                >
-                  {form.productImage ? "Replace image" : "Upload image"}
+                  更换图片
                   <input
                      type="file"
                      accept="image/*"
@@ -450,38 +516,60 @@ function DetailForm({ item, tab, onBack, onSave }: DetailFormProps) {
                      onChange={handleFile}
                   />
                </Button>
-            ) : (
-               <TextField
-                  key={key}
-                  label={label}
-                  type={type ?? "text"}
-                  value={form[key] ?? ""}
-                  onChange={handleChange(key)}
-                  fullWidth
-                  size="small"
-               />
-            )
+            </Box>
          )}
 
-         <Button
-            variant="contained"
-            size="small"
-            onClick={submit}
-            disabled={saving}
-            sx={{ alignSelf: "flex-end" }}
-         >
-            {saving ? "Saving…" : "Save"}
-         </Button>
+         <Box mt={tab !== "products" ? 8 : 2}>
+            {FIELDS[tab]
+               .filter(({ key }) => !dimensionKeys.includes(key))
+               .map(({ key, label, type }) => (
+                  <TextField
+                     key={key}
+                     label={label}
+                     type={type ?? "text"}
+                     value={getDeep(form, key) ?? ""}
+                     onChange={handleChange(key)}
+                     fullWidth
+                     margin="normal"
+                     size="small"
+                     InputProps={adornmentsFor(key)}
+                  />
+               ))}
+
+            <Stack
+               direction={"row"}
+               sx={{
+                  display: "flex",
+                  alignContent: "center",
+                  alignItems: "center",
+               }}
+               gap={1.5}
+            >
+               {tab === "products" && (
+                  <Grid container spacing={1} sx={{ mt: 1 }}>
+                     {[
+                        { key: "packingVolume.length", label: "长" },
+                        { key: "packingVolume.width", label: "宽" },
+                        { key: "packingVolume.height", label: "高" },
+                     ].map(({ key, label }) => (
+                        <Grid item xs={4} key={key}>
+                           <TextField
+                              label={label}
+                              type="number"
+                              value={getDeep(form, key) ?? ""}
+                              onChange={handleChange(key)}
+                              fullWidth
+                              size="small"
+                           />
+                        </Grid>
+                     ))}
+                  </Grid>
+               )}
+               <p>{getDeep(form, "packingVolume.packingUnit")}</p>
+            </Stack>
+         </Box>
       </Box>
    );
-}
-/* ──────────────────────────────────────────────────────────── */
-function idKey(table: string) {
-   return table === "products"
-      ? "productId"
-      : table === "suppliers"
-      ? "supplierId"
-      : "clientId";
 }
 
 function ensureDataUrl(str?: string) {

@@ -17,15 +17,17 @@ import { useTheme } from "@mui/material/styles";
 import { X } from "phosphor-react";
 import ProductandCompanyData from "../../../data/products_companies.json";
 import { useProductSupplierClientContext } from "../../../contexts/productSupplierClientContextProvider";
+import { addRecord } from "../../../lib/dexieUtils";
 
 interface Props {
    open: boolean;
    onClose: () => void;
+   isOnline: boolean;
 }
 
-const NewSupplierModal: React.FC<Props> = ({ open, onClose }) => {
+const NewSupplierModal: React.FC<Props> = ({ open, onClose, isOnline }) => {
    const theme = useTheme();
-   const { addSupplier } = useProductSupplierClientContext();
+   const { addSupplier, setErrorMessages } = useProductSupplierClientContext();
 
    const [supplierName, setSupplierName] = useState<string>("");
    const [selectedSupplier, setSelectedSupplier] = useState<string | null>(
@@ -63,6 +65,20 @@ const NewSupplierModal: React.FC<Props> = ({ open, onClose }) => {
 
    const handleSave = () => {
       if (!canSave) return;
+
+      if (!isOnline) {
+         addRecord("suppliers", {
+            supplierName,
+            supplierAddress,
+            supplierEmail,
+            supplierPhoneNumber: supplierPhone,
+         });
+
+         setErrorMessages(`添加${supplierName}成功`)
+         handleReset();
+         onClose();
+         return;
+      }
 
       addSupplier({
          supplierName,
