@@ -38,8 +38,9 @@ import {
 } from "phosphor-react";
 import { deleteRecord, db } from "../../../lib/dexieUtils";
 import getBase64FromBlobUrl from "../../../lib/blob-to-blob64";
-import { Product, Supplier, Clients } from "../../../types/types";
+import { Product, Supplier, Clients, SyncPayload } from "../../../types/types";
 import { useLiveQuery } from "dexie-react-hooks";
+import { useProductSupplierClientContext } from "../../../contexts/productSupplierClientContextProvider";
 
 /* ──────────────────────────────────────────────────────────── */
 /*  MAIN                                                        */
@@ -49,11 +50,11 @@ interface OfflineDrawerProps {
 }
 
 export function OfflineDrawer({ isOnline }: OfflineDrawerProps) {
+   const { setErrorMessages, syncState, syncAll } =
+      useProductSupplierClientContext();
+
    const [showCloud, setShowCloud] = useState(true);
    const [open, setOpen] = useState(false);
-   const [syncState, setSyncState] = useState<"idle" | "syncing" | "done">(
-      "idle"
-   );
 
    const productCount = useLiveQuery(() => db.products.count(), []);
    const supplierCount = useLiveQuery(() => db.suppliers.count(), []);
@@ -67,17 +68,27 @@ export function OfflineDrawer({ isOnline }: OfflineDrawerProps) {
       setShowCloud(true);
    }, [isOnline]);
 
-   const startSync = () => {
+   const startSync = async () => {
       if (syncState !== "idle") return;
 
-      setSyncState("syncing");
+      const [products, suppliers, clients] = await Promise.all([
+         db.products.toArray(),
+         db.suppliers.toArray(),
+         db.clients.toArray(),
+      ]);
 
-      // TODO: replace setTimeout with real sync promise
-      setTimeout(() => setSyncState("done"), 2500);
+      const payload: SyncPayload = { products, suppliers, clients };
+
+      await syncAll(payload);
    };
 
    const showSync =
       isOnline && (productCount! > 0 || supplierCount! > 0 || clientCount! > 0);
+
+   if (productCount! > 120 || supplierCount! > 50 || clientCount! > 50) {
+      setErrorMessages("产品，客户，或供应商数量以达到极限。");
+      return;
+   }
 
    return (
       <>
@@ -119,7 +130,7 @@ export function OfflineDrawer({ isOnline }: OfflineDrawerProps) {
             </Tooltip>
          )}
 
-         {!showSync && (
+         {(!showSync && !isOnline)  && (
             <Grow in>
                <Box
                   onClick={() => setOpen(true)}
@@ -152,7 +163,11 @@ export function OfflineDrawer({ isOnline }: OfflineDrawerProps) {
                      timeout={400}
                   >
                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
+                        sx={{
+                           display: "flex",
+                           alignItems: "center",
+                           gap: 0.5,
+                        }}
                      >
                         <Package size={18} weight="fill" />
                         <Typography
@@ -386,7 +401,7 @@ function EntityList<T>({
                   {avatarSrc && avatarSrc(item) && (
                      <Box
                         component="img"
-                        src={ensureDataUrl(avatarSrc(item))}
+                        src={avatarSrc(item)}
                         alt="thumb"
                         sx={{
                            width: 64,
@@ -469,17 +484,22 @@ function DetailForm({ item, tab, onBack, onSave }: DetailFormProps) {
    const handleChange = (key: string) => (e: ChangeEvent<HTMLInputElement>) =>
       saveNow(setDeep(form, key, e.target.value));
 
-   const handleFile: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
+   const handleFile: React.ChangeEventHandler<HTMLInputElement> = (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
 
-      const blobUrl = URL.createObjectURL(file);
-      const b64 = await getBase64FromBlobUrl(blobUrl);
-      URL.revokeObjectURL(blobUrl);
+      const reader = new FileReader();
 
-      saveNow({ ...form, image: ensureDataUrl(b64 ?? "") });
+      reader.onloadend = () => {
+         const result = reader.result;
+         if (typeof result === "string") {
+            saveNow({ ...form, image: result });
+         }
+      };
+
+      reader.readAsDataURL(file); 
    };
-
+   
    const adornmentsFor = (key: string) => {
       if (key === "unitPrice") {
          return {
@@ -638,9 +658,4 @@ function DetailForm({ item, tab, onBack, onSave }: DetailFormProps) {
          </Box>
       </Box>
    );
-}
-
-function ensureDataUrl(str?: string) {
-   if (!str) return "";
-   return str.startsWith("data:image") ? str : `data:image/png;base64,${str}`;
 }

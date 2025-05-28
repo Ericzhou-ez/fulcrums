@@ -60,26 +60,3 @@ export type Clients = {
    productIds: string[];
    updatedAt: string;
 };
-
-export type UserType = {
-   createdAt: string;
-   name: string | null;
-   email: string | null;
-   photo: string | null;
-   role: string | "user";
-   uid: string | null;
-};
-
-export type AuthContextType = {
-   user: UserType | null;
-   loading: boolean;
-   setUser: React.Dispatch<React.SetStateAction<UserType | null>>;
-   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-   signedIn: boolean;
-};
-
-export type SyncPayload = {
-   products: Product[];
-   suppliers: Supplier[];
-   clients: Clients[];
-};

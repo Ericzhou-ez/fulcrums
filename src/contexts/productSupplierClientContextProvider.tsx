@@ -6,7 +6,7 @@ import React, {
    useEffect,
    useMemo,
 } from "react";
-import { Product, Supplier, Clients } from "../types/types";
+import { Product, Supplier, Clients, SyncPayload } from "../types/types";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { getDocs, collection, onSnapshot } from "firebase/firestore";
 import { db } from "../configs/firebase";
@@ -46,6 +46,8 @@ export type ProductSupplierClientContextType = {
    clients: { [key: string]: any };
    errorMessages: string;
    setErrorMessages: React.Dispatch<React.SetStateAction<string>>;
+   syncAll: (payload: SyncPayload) => Promise<void>;
+   syncState: "idle" | "syncing" | "done";
 };
 
 const ProductSupplierClientContext = createContext<
@@ -76,11 +78,16 @@ export const ProductSupplierClientContextProvider = ({
    const [addedClient, setAddedClient] = useState(false);
    const [editedClient, setEditedClient] = useState(false);
    const [deletedClient, setDeletedClient] = useState(false);
+   const [syncState, setSyncState] = useState<"idle" | "syncing" | "done">(
+      "idle"
+   );
 
    const [products, setProducts] = useState<{ [key: string]: Product }>({});
 
    const [clients, setClients] = useState<{ [key: string]: Clients }>({});
-   const [firestoreClients, setFirestoreClients] = useState<{ [key: string]: Clients }>({});
+   const [firestoreClients, setFirestoreClients] = useState<{
+      [key: string]: Clients;
+   }>({});
 
    const [suppliers, setSuppliers] = useState<{ [key: string]: Supplier }>({});
    const [firestoreSuppliers, setFirestoreSuppliers] = useState<{
@@ -111,9 +118,8 @@ export const ProductSupplierClientContextProvider = ({
       });
 
       setClients(merged);
+   }, [dexieClients, firestoreClients]);
 
-   }, [dexieClients, firestoreClients]); 
-   
    useEffect(() => {
       if (!dexieSuppliers) {
          return;
@@ -128,7 +134,7 @@ export const ProductSupplierClientContextProvider = ({
       });
 
       setSuppliers(merged);
-   }, [dexieSuppliers, firestoreSuppliers]);  
+   }, [dexieSuppliers, firestoreSuppliers]);
 
    // listen to firestore product change
    useEffect(() => {
@@ -436,6 +442,40 @@ export const ProductSupplierClientContextProvider = ({
       }
    }
 
+   async function syncAll(payload: SyncPayload) {
+      try {
+         setSyncState("syncing");
+
+         const syncAllFn = httpsCallable<SyncPayload, { success: boolean }>(
+            getFunctions(),
+            "syncAll"
+         );
+
+         const { data } = await syncAllFn(payload);
+
+         if (data?.success) {
+            await Promise.all([
+               DexieDataBase.products.clear(),
+               DexieDataBase.suppliers.clear(),
+               DexieDataBase.clients.clear(),
+            ]);
+
+            setSyncState("done");
+            setErrorMessages("同步成功")
+         } else {
+            setErrorMessages("信息可能破坏了。");
+            setSyncState("idle");
+            throw new Error("Cloud function returned failure");
+         }
+      } catch (err: any) {
+         console.error("SyncAll failed:", err);
+         setErrorMessages(
+            err.message || "同步失败，请稍后重试；信息可能破坏了。"
+         );
+         setSyncState("idle");
+      }
+   }
+
    return (
       <ProductSupplierClientContext.Provider
          value={{
@@ -469,6 +509,8 @@ export const ProductSupplierClientContextProvider = ({
             clients,
             errorMessages,
             setErrorMessages,
+            syncAll,
+            syncState,
          }}
       >
          {children}
