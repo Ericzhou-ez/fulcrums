@@ -87,7 +87,7 @@ export function OfflineDrawer({ isOnline }: OfflineDrawerProps) {
 
    if (productCount! > 120 || supplierCount! > 50 || clientCount! > 50) {
       setErrorMessages("产品，客户，或供应商数量以达到极限。");
-      return;
+      return null;
    }
 
    return (
