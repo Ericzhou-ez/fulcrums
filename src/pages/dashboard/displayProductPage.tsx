@@ -142,8 +142,6 @@ const AddProductForm = ({ p }: { p: Product }) => {
       });
    }
 
-   console.log(p);
-
    async function handleProductDeletion() {
       await deleteProducts([p.productId]);
       return;
@@ -234,7 +232,7 @@ const AddProductForm = ({ p }: { p: Product }) => {
       setSupplierName(supplierDetails.supplierName);
       setSupplierNameInput(supplierDetails.supplierName);
       setSupplierAddress(supplierDetails.supplierAddress ?? "");
-      setSupplierPhone(supplierDetails.supplierPhoneNumber ?? "");
+      setSupplierPhone(supplierDetails.supplierPhone ?? "");
       setSupplierEmail(supplierDetails.supplierEmail ?? "");
    }, [suppliers, p.supplierId]);
    return (
@@ -545,7 +543,7 @@ const AddProductForm = ({ p }: { p: Product }) => {
                      setSupplierName(newValue.supplierName);
                      setSupplierNameInput(newValue.supplierName);
                      setSupplierAddress(newValue.supplierAddress ?? "");
-                     setSupplierPhone(newValue.supplierPhoneNumber ?? "");
+                     setSupplierPhone(newValue.supplierPhone ?? "");
                      setSupplierEmail(newValue.supplierEmail ?? "");
                   }}
                   isOptionEqualToValue={(option, value) =>

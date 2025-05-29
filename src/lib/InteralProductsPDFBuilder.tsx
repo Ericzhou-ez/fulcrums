@@ -207,7 +207,7 @@ export async function BuildInternalProductPDF({
             p.clients.map((id) => clients[id].companyName).join(", ") ?? "",
          ],
          ["Supplier:", suppliers[p.supplierId]?.supplierName ?? ""],
-         ["Phone", suppliers[p.supplierId]?.supplierPhoneNumber ?? ""],
+         ["Phone", suppliers[p.supplierId]?.supplierPhone ?? ""],
          ["Email", suppliers[p.supplierId]?.supplierEmail ?? ""],
          ["Address:", suppliers[p.supplierId]?.supplierAddress ?? ""],
          ["Additional Notes:", p.additionalNotes ?? ""],

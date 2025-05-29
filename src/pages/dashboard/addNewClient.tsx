@@ -12,10 +12,12 @@ import {
    useTheme,
 } from "@mui/material";
 import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
+import { addRecord } from "../../lib/dexieUtils";
 
 interface NewClientModalProps {
    open: boolean;
    onClose: () => void;
+   isOnline: boolean;
 }
 
 export interface ClientForm {
@@ -52,12 +54,25 @@ const fieldMeta: Array<{
    { key: "vatNumber", label: "VAT 增值税号" },
 ];
 
-const NewClientModal: React.FC<NewClientModalProps> = ({ open, onClose }) => {
+const NewClientModal: React.FC<NewClientModalProps> = ({
+   open,
+   onClose,
+   isOnline,
+}) => {
    const theme = useTheme();
    const [form, setForm] = React.useState<ClientForm>(emptyForm);
-   const { addClient } = useProductSupplierClientContext();
+   const { addClient, setErrorMessages } = useProductSupplierClientContext();
 
    const handleSave = () => {
+      if (!isOnline) {
+         addRecord("clients", form);
+
+         setErrorMessages(`添加${form.companyName}成功`);
+         setForm(emptyForm);
+         onClose();
+         return;
+      }
+
       addClient(form);
 
       setForm(emptyForm);

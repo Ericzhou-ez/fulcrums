@@ -113,6 +113,7 @@ const Footer = () => {
    return (
       <footer
          className="footer-container"
+         id="footer"
          style={{ position: "relative", paddingBottom: "25px" }}
       >
          <div className="footer">

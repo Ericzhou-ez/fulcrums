@@ -12,7 +12,7 @@ import {
    Stack,
    Popper,
 } from "@mui/material";
-import { Exam, PlusCircle, X } from "phosphor-react";
+import { PlusCircle, X } from "phosphor-react";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import SideNav from "../../components/dashboard/dashboardNav";
@@ -28,8 +28,10 @@ import MultipleSelectChip from "../../components/core/multiselectWithChip";
 import getBase64FromBlobUrl from "../../lib/blob-to-blob64";
 import NewSupplierModal from "../../components/dashboard/supplier/addNewSupplierModal";
 import { getSupplierIdByName } from "../../lib/supplierHelpers";
+import { OfflineDrawer } from "../../components/dashboard/core/offlineDrawer";
+import { addRecord } from "../../lib/dexieUtils";
 
-const AddProductForm = () => {
+const AddProductForm = ({ isOnline }: { isOnline: boolean }) => {
    const { navOpen } = useUIStateContext();
    const { isMdUp } = useThemeContext();
 
@@ -105,6 +107,38 @@ const AddProductForm = () => {
          return;
       }
 
+      if (!isOnline) {
+         addRecord("products", {
+            image: base64String,
+            productChineseName: productChineseName,
+            productEnglishName: productEnglishName,
+            unitPrice: unitPrice,
+            packing: packing,
+            packingVolume: {
+               length: packingLength,
+               width: packingWidth,
+               height: packingHeight,
+               packingUnit: packingDimensionUnit,
+            },
+            packingMass: {
+               packingMassQuantity: packingMass,
+               packingMassUnit: packingMassUnit,
+            },
+            saved: saved,
+            updatedAt: new Date().toISOString(),
+            supplierId: supplierId,
+            additionalNotes: additionalNotes,
+            clients: selectedClient || [],
+            currency: currency,
+            hsCode: hsCode,
+            material: material,
+         });
+
+         console.log("Product added to IndexedDB");
+         setAddedProduct(true);
+         return;
+      }
+
       await addProduct({
          image: base64String,
          productChineseName: productChineseName,
@@ -137,30 +171,6 @@ const AddProductForm = () => {
       CNYtoUSD: 0.1381677,
       CNYtoEURO: 0.1269832,
    });
-
-   const toggleCurrency = () => {
-      const base = parseFloat(unitPrice);
-      let converted = 0;
-      let newCurrency = currency;
-      const USDtoEURO = forexRates.CNYtoEURO / forexRates.CNYtoUSD;
-      const EUROtoCNY = 1 / forexRates.CNYtoEURO;
-
-      if (currency === "¥") {
-         // Convert from CNY to USD
-         converted = base * forexRates.CNYtoUSD;
-         newCurrency = "$";
-      } else if (currency === "$") {
-         // Convert from USD to EUR
-         converted = base * USDtoEURO;
-         newCurrency = "€";
-      } else if (currency === "€") {
-         // Convert from EUR to CNY
-         converted = base * EUROtoCNY;
-         newCurrency = "¥";
-      }
-      setUnitPrice(converted.toFixed(2));
-      setCurrency(newCurrency);
-   };
 
    const togglePackingUnit = () => {
       setPackingMassUnit((prev) => (prev === "kg" ? "g" : "kg"));
@@ -274,7 +284,8 @@ const AddProductForm = () => {
          missing.push("包装尺寸");
       }
       if (!supplierName) missing.push("供应商名称");
-      if (selectedClient?.length === 0 || selectedClient === null) missing.push("客户");
+      if (selectedClient?.length === 0 || selectedClient === null)
+         missing.push("客户");
       if (src === ProductDefaultImage) missing.push("产品图片");
 
       setIsFormComplete(missing.length ? "请填写" + missing.join(", ") : true);
@@ -296,7 +307,7 @@ const AddProductForm = () => {
          setTimeout(() => {
             resetPage();
             setAddedProduct(false);
-            setSubmittingForm(false); 
+            setSubmittingForm(false);
          }, 2000);
       }
    }, [isFormComplete, addedProduct]);
@@ -453,9 +464,7 @@ const AddProductForm = () => {
                      InputProps={{
                         startAdornment: (
                            <InputAdornment position="start">
-                              <IconButton
-                                 color="primary"
-                              >
+                              <IconButton color="primary">
                                  <Typography>{currency}</Typography>
                               </IconButton>
                            </InputAdornment>
@@ -885,6 +894,7 @@ const AddProductForm = () => {
                保存产品
             </Button>
          </Box>
+
          {isFormComplete === true && (
             <button
                onClick={() => handleAddProduct()}
@@ -925,11 +935,16 @@ const AddProductForm = () => {
             </Box>
          )}
 
-         <NewClientModal open={isClientModalOpen} onClose={closeClientModal} />
+         <NewClientModal open={isClientModalOpen} onClose={closeClientModal} isOnline={isOnline} />
+
          <NewSupplierModal
             open={isSupplierModalOpen}
             onClose={closeSupplierModal}
+            isOnline={isOnline}
          />
+
+         <OfflineDrawer isOnline={isOnline} />
+
       </React.Fragment>
    );
 };
@@ -937,6 +952,21 @@ const AddProductForm = () => {
 const AddProductPage = () => {
    const { navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles } =
       useUIStateContext();
+
+   const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+   useEffect(() => {
+      const handleOnline = () => setIsOnline(true);
+      const handleOffline = () => setIsOnline(false);
+
+      window.addEventListener("online", handleOnline);
+      window.addEventListener("offline", handleOffline);
+
+      return () => {
+         window.removeEventListener("online", handleOnline);
+         window.removeEventListener("offline", handleOffline);
+      };
+   }, []);
 
    useEffect(() => {
       document.title = "Fulcrums | 添加产品";
@@ -948,7 +978,7 @@ const AddProductPage = () => {
 
          <Nav home={false} searchBar={true} />
 
-         <AddProductForm />
+         <AddProductForm isOnline={isOnline} />
 
          <div style={{ padding: "0 16px" }}>
             <Footer />
