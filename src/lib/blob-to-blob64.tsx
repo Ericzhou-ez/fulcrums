@@ -5,7 +5,7 @@ export default async function getBase64FromBlobUrl(
       const res = await fetch(blobUrl);
       if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
 
-      const contentType = res.headers.get("Content-Type") || "image/png";
+      const contentType = res.headers.get("Content-Type") || "image/jpeg";
       const buf = await res.arrayBuffer();
 
       let binary = "";

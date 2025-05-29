@@ -543,7 +543,7 @@ const AddProductForm = ({ p }: { p: Product }) => {
                      setSupplierName(newValue.supplierName);
                      setSupplierNameInput(newValue.supplierName);
                      setSupplierAddress(newValue.supplierAddress ?? "");
-                     setSupplierPhone(newValue.supplierPhoneNumber ?? "");
+                     setSupplierPhone(newValue.supplierPhone ?? "");
                      setSupplierEmail(newValue.supplierEmail ?? "");
                   }}
                   isOptionEqualToValue={(option, value) =>

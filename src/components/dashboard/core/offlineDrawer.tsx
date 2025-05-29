@@ -573,7 +573,7 @@ function DetailForm({ item, tab, onBack, onSave }: DetailFormProps) {
       ],
       suppliers: [
          { key: "supplierName", label: "供应商名称" },
-         { key: "supplierPhoneNumber", label: "电话", type: "number" },
+         { key: "supplierPhone", label: "电话", type: "number" },
          { key: "supplierAddress", label: "地址" },
          { key: "supplierEmail", label: "邮箱" },
       ],
