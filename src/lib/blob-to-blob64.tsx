@@ -1,8 +1,11 @@
-export default async function getBase64FromBlobUrl(blobUrl: string) {
+export default async function getBase64FromBlobUrl(
+   blobUrl: string
+): Promise<string | undefined> {
    try {
       const res = await fetch(blobUrl);
       if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
 
+      const contentType = res.headers.get("Content-Type") || "image/png";
       const buf = await res.arrayBuffer();
 
       let binary = "";
@@ -13,8 +16,9 @@ export default async function getBase64FromBlobUrl(blobUrl: string) {
          binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
       }
 
-      return btoa(binary);
+      const base64 = btoa(binary);
+      return `data:${contentType};base64,${base64}`;
    } catch (err: any) {
-      console.error("Error in blob -> base 64 conversion: " + err);
+      console.error("Error in blob conversion to base64:", err);
    }
 }

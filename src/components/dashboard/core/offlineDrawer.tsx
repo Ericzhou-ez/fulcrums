@@ -42,6 +42,36 @@ import { Product, Supplier, Clients, SyncPayload } from "../../../types/types";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useProductSupplierClientContext } from "../../../contexts/productSupplierClientContextProvider";
 
+const ensureDataUrl = (b64: string) => {
+   if (!b64) return "";
+
+   if (b64.startsWith("data:image") || b64.startsWith("http")) return b64;
+
+   const signatures: { [sig: string]: string } = {
+      "/9j/": "image/jpeg",
+      iVBOR: "image/png",
+      UklGR: "image/webp",
+      AAABAA: "image/x-icon",
+      R0lGOD: "image/gif",
+      fLaC: "audio/flac",
+      SUkq: "image/tiff",
+      ftyp: "image/heic", 
+   };
+
+   const head = b64.slice(0, 16); 
+   let mime = "image/png"; 
+
+   for (const sig in signatures) {
+      if (head.includes(sig)) {
+         mime = signatures[sig];
+         break;
+      }
+   }
+
+   return `data:${mime};base64,${b64}`;
+};
+
+
 /* ──────────────────────────────────────────────────────────── */
 /*  MAIN                                                        */
 /* ──────────────────────────────────────────────────────────── */
@@ -249,6 +279,7 @@ function EntityDrawer({ open, onClose }: EntityDrawerProps) {
                height: "90dvh",
                borderTopLeftRadius: 16,
                borderTopRightRadius: 16,
+               bgcolor: "var(--background-color)",
             },
          }}
       >
@@ -260,7 +291,7 @@ function EntityDrawer({ open, onClose }: EntityDrawerProps) {
                   setView("list");
                }}
                variant="fullWidth"
-               sx={{ borderBottom: 1, borderColor: "divider", pt: 1 }}
+               sx={{ bgcolor: "var(--background-secondary-color)", pt: 1 }}
             >
                <Tab label="产品" value="products" />
                <Tab label="供应商" value="suppliers" />
@@ -275,6 +306,7 @@ function EntityDrawer({ open, onClose }: EntityDrawerProps) {
                p: 1.5,
                scrollbarWidth: "none",
                "&::-webkit-scrollbar": { display: "none" },
+               bgcolor: "var(--background-color)",
             }}
          >
             {view === "list" && (
@@ -291,7 +323,7 @@ function EntityDrawer({ open, onClose }: EntityDrawerProps) {
                               p.material ?? ""
                            }`
                         }
-                        avatarSrc={(p) => p.image}
+                        avatarSrc={(p) => ensureDataUrl(p.image)}
                         onSelect={(p) => {
                            setSelect(p);
                            setView("detail");
@@ -402,7 +434,7 @@ function EntityList<T>({
                      <Box
                         component="img"
                         src={avatarSrc(item)}
-                        alt="thumb"
+                        alt="产品"
                         sx={{
                            width: 64,
                            height: 64,
@@ -456,8 +488,6 @@ function DetailForm({ item, tab, onBack, onSave }: DetailFormProps) {
    const [form, setForm] = useState<Record<string, any>>({ ...item });
 
    /* ---------------- helpers ---------------- */
-   const ensureDataUrl = (b64: string) =>
-      b64.startsWith("data:image") ? b64 : `data:image/png;base64,${b64}`;
 
    const getDeep = (obj: any, path: string) =>
       path.split(".").reduce((acc, k) => (acc ? acc[k] : undefined), obj);
