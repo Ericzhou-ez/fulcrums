@@ -55,7 +55,7 @@ export async function addRecord<T extends TableEntityMap[TableName]>(
       const recordWithId = ensureId(tableName, record);
       return (await db
          .table(tableName)
-         .add({ ...recordWithId, updatedAt: new Date().toString() })) as string;
+         .add({ ...recordWithId, updatedAt: new Date().toISOString() })) as string;
    } catch (error) {
       console.error(`Error adding record to ${tableName}:`, error);
       throw new Error(`Failed to add record to ${tableName}`);

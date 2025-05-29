@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
    Box,
    Card,
@@ -23,13 +23,28 @@ import {
    XAxis,
    YAxis,
 } from "recharts";
+import { useProductSupplierClientContext } from "../../../contexts/productSupplierClientContextProvider";
 
 export function QuickStats10() {
    const theme = useTheme();
+   const { products } = useProductSupplierClientContext();
+
+   const [productCount, setProductCount] = useState(0);
+
+   useEffect(() => {
+      const cutoff = Date.now() - 24 * 60 * 60 * 1_000;
+
+      const count = Object.values(products).reduce((acc, p) => {
+         const t = Date.parse(p.updatedAt as any);
+         return !isNaN(t) && t >= cutoff ? acc + 1 : acc;
+      }, 0);
+
+      setProductCount(count);
+   }, [products]);
 
    return (
       <Box
-         sx={{ bgcolor: theme.palette.background.default, borderRadius: 5, }}
+         sx={{ bgcolor: theme.palette.background.default, borderRadius: 5 }}
          className="dashboard-card-display"
       >
          <Card
@@ -70,7 +85,7 @@ export function QuickStats10() {
                               产品
                            </Typography>
                            <Typography variant="h5">
-                              {new Intl.NumberFormat("en-US").format(200)}
+                              {new Intl.NumberFormat("en-US").format(productCount)}
                            </Typography>
                         </div>
                      </Stack>
@@ -351,4 +366,3 @@ function TooltipContent({ active, payload }: TooltipState) {
       </Paper>
    );
 }
-

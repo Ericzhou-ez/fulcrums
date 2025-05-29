@@ -1,6 +1,5 @@
-import React from "react";
 import { Stack, Box, Typography, Button, Link } from "@mui/material";
-import { Theme, useTheme } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import DescriptionLight from "../../../assets/icons/description-light.svg";
 import DescriptionDark from "../../../assets/icons/description-dark.svg";
 import RecentLight from "../../../assets/icons/recent-light.svg";
@@ -10,7 +9,6 @@ import Footer from "../../core/footer";
 import { QuickStats10, Chart1 } from "./performance";
 import { Documentation, Help } from "./help";
 import { useProductSupplierClientContext } from "../../../contexts/productSupplierClientContextProvider";
-import { useEffect } from "react";
 
 const sampleData = [
    { name: "Jan", v1: 34, v2: 3000 },
