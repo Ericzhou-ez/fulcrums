@@ -308,7 +308,7 @@ const AddProductForm = ({ isOnline }: { isOnline: boolean }) => {
             resetPage();
             setAddedProduct(false);
             setSubmittingForm(false);
-         }, 2000);
+         }, 800);
       }
    }, [isFormComplete, addedProduct]);
 

@@ -44,7 +44,9 @@ export const deleteProducts = functions.https.onCall(
             };
 
             // delete firestorage image
-            if (data.image?.startsWith("gs://")) {
+            if (
+               data.image?.startsWith("https://firebasestorage.googleapis.com")
+            ) {
                await deleteImageByUrl(data.image);
             }
 

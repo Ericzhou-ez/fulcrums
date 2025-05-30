@@ -3,18 +3,28 @@ import { storage } from "../../utils";
 
 export async function deleteImageByUrl(publicUrl: string) {
    try {
-      // extract path 
-      const match = decodeURIComponent(publicUrl).match(/\/o\/(.+)\?alt/);
-      const filePath = match?.[1];
+      const url = new URL(publicUrl);
+      const encodedPath = url.pathname.split("/o/")[1];
+      if (!encodedPath) throw new Error("Invalid Firebase Storage URL");
 
-      if (!filePath) {
-         throw new Error("invalid firebase Storage URL");
-      }
+      const filePath = decodeURIComponent(encodedPath).replace(/^\//, ""); // converts %2F to /
 
       const bucket = storage.bucket();
-      await bucket.file(filePath).delete();
+      const file = bucket.file(filePath);
+      const [exists] = await file.exists();
+      if (!exists) {
+         logger.error("File does not exist:", filePath);
+         return;
+      }
 
+      await file.delete();
+
+      logger.info("File deleted:", filePath);
    } catch (err) {
-      logger.error("error deleting file:", err);
+      logger.error("Deletion failed:", {
+         message: (err as Error).message,
+         stack: (err as Error).stack,
+         publicUrl,
+      });
    }
 }
