@@ -123,6 +123,7 @@ function SearchBar({ isDark, searchBar }: { isDark: boolean; searchBar: any }) {
             display: searchBar ? "flex" : "none",
             justifyContent: "center",
             position: "relative",
+            minWidth: 0,
          }}
       >
          <Box
@@ -135,6 +136,7 @@ function SearchBar({ isDark, searchBar }: { isDark: boolean; searchBar: any }) {
                alignItems: "center",
                boxShadow: "0 3px 10px rgba(46, 24, 1, 0.08)",
                background: "rgba(236, 236, 236, 0.15)",
+               minWidth: 0,
             }}
          >
             <input
@@ -142,6 +144,9 @@ function SearchBar({ isDark, searchBar }: { isDark: boolean; searchBar: any }) {
                placeholder="筛选产品名称或ID"
                aria-autocomplete="list"
                style={{
+                  overflow: "hidden",
+                  minWidth: 0,
+                  maxWidth: "none",
                   flex: 1,
                   padding: "2px",
                   fontSize: "16px",
@@ -167,7 +172,6 @@ function SearchBar({ isDark, searchBar }: { isDark: boolean; searchBar: any }) {
                open={isFocused}
                anchorEl={anchorRef.current}
                placement="bottom-start"
-               modifiers={[{ name: "offset", options: { offset: [0, 1] } }]}
                sx={{
                   zIndex: 9999,
                   width: isMdUp ? anchorRef.current?.clientWidth : "95%",
@@ -293,7 +297,7 @@ function SearchBar({ isDark, searchBar }: { isDark: boolean; searchBar: any }) {
                                                 sx={{
                                                    "&:hover": {
                                                       textDecoration:
-                                                         "underline", 
+                                                         "underline",
                                                    },
                                                    fontSize: "15px",
                                                    fontWeight: 600,

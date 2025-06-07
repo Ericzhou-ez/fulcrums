@@ -41,7 +41,8 @@
       opacity: 0 !important;
    }
    .nav-dash {
-      gap: 10px !important;
+      padding: 12px 8px !important;
+      gap: 5px !important;
    }
    .search-bar-container {
       margin-right: 10px !important;
