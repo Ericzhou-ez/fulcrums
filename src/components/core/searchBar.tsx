@@ -122,7 +122,6 @@ function SearchBar({ isDark, searchBar }: { isDark: boolean; searchBar: any }) {
             width: "100%",
             display: searchBar ? "flex" : "none",
             justifyContent: "center",
-            mr: "16px",
             position: "relative",
          }}
       >
