@@ -40,17 +40,17 @@ const AddProductForm = ({ isOnline }: { isOnline: boolean }) => {
    const [productChineseName, setProductChineseName] = useState("");
    const [productEnglishName, setProductEnglishName] = useState("");
    const [unitPrice, setUnitPrice] = useState("");
-   const [currency, setCurrency] = useState("¥"); // 切换：$, €, ¥
+   const [currency, setCurrency] = useState("¥");
    const [hsCode, sethsCode] = useState("");
    const [material, setMaterial] = useState("");
 
    const [packingMass, setPackingMass] = useState("");
-   const [packingMassUnit, setPackingMassUnit] = useState("g"); // 切换 kg <-> g
+   const [packingMassUnit, setPackingMassUnit] = useState("kg"); // 切换 kg <-> g
    const [packing, setPacking] = useState("");
    const [packingLength, setPackingLength] = useState("");
    const [packingWidth, setPackingWidth] = useState("");
    const [packingHeight, setPackingHeight] = useState("");
-   const [packingDimensionUnit, setPackingDimensionUnit] = useState("cm"); // 切换 cm <-> m
+   const [packingDimensionUnit, setPackingDimensionUnit] = useState("m"); // 切换 cm <-> m
 
    const [supplierName, setSupplierName] = useState("");
    const [supplierAddress, setSupplierAddress] = useState("");
@@ -464,9 +464,7 @@ const AddProductForm = ({ isOnline }: { isOnline: boolean }) => {
                      InputProps={{
                         startAdornment: (
                            <InputAdornment position="start">
-                              <IconButton color="primary">
-                                 <Typography>{currency}</Typography>
-                              </IconButton>
+                              <Typography>{currency}</Typography>
                            </InputAdornment>
                         ),
                         endAdornment: unitPrice && (
@@ -935,7 +933,11 @@ const AddProductForm = ({ isOnline }: { isOnline: boolean }) => {
             </Box>
          )}
 
-         <NewClientModal open={isClientModalOpen} onClose={closeClientModal} isOnline={isOnline} />
+         <NewClientModal
+            open={isClientModalOpen}
+            onClose={closeClientModal}
+            isOnline={isOnline}
+         />
 
          <NewSupplierModal
             open={isSupplierModalOpen}
@@ -944,7 +946,6 @@ const AddProductForm = ({ isOnline }: { isOnline: boolean }) => {
          />
 
          <OfflineDrawer isOnline={isOnline} />
-
       </React.Fragment>
    );
 };

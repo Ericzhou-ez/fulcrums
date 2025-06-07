@@ -1,4 +1,5 @@
 // ____helpers____
+import { Clients } from "../types/types";
 
 /**
  * Detect if a string contains at least one CJK character.
@@ -27,4 +28,17 @@ export function wrapText(text: string, font: any, size: number, maxWidth: number
       if (idx === parts.length - 1 && line) lines.push(line);
    });
    return lines;
+}
+
+export function getClientsFromIds(
+   clientIds: string[] | undefined,
+   allClients: Record<string, Clients> | undefined
+): Clients[] {
+   if (!clientIds || !allClients) {
+      return [];
+   }
+
+   return clientIds
+      .map((id) => allClients[id])
+      .filter((client): client is Clients => client !== undefined);
 }

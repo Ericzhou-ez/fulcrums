@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { MagnifyingGlass } from "phosphor-react";
+import { MagnifyingGlass, CaretLeft, CaretRight } from "phosphor-react";
 import Tooltip from "@mui/material/Tooltip";
 import Popper from "@mui/material/Popper";
 import Paper from "@mui/material/Paper";
@@ -7,11 +7,12 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
-import { Box, Stack } from "@mui/material";
+import { Box, Stack, IconButton } from "@mui/material";
 import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
 import { Clients, Product, Supplier } from "../../types/types";
 import { getSupplierFromId } from "../../lib/supplierHelpers";
 import { useThemeContext } from "../../contexts/themeContextProvider";
+import { getClientsFromIds } from "../../lib/helpers";
 
 type SearchOption =
    | { type: "header"; label: string }
@@ -19,7 +20,15 @@ type SearchOption =
    | { type: "product"; label: string; data: Product }
    | { type: "supplier"; label: string; data: Supplier }
    | { type: "client"; label: string; data: Clients }
-   | { type: "noResults"; label: string };
+   | { type: "noResults"; label: string }
+   | {
+        type: "pagination";
+        category: "products" | "suppliers" | "clients";
+        total: number;
+        currentStart: number;
+     };
+
+const PAGE_SIZE = 5;
 
 function SearchBar({ isDark, searchBar }: { isDark: boolean; searchBar: any }) {
    const { products, suppliers, clients } = useProductSupplierClientContext();
@@ -28,7 +37,16 @@ function SearchBar({ isDark, searchBar }: { isDark: boolean; searchBar: any }) {
    const [searchTerm, setSearchTerm] = useState("");
    const [options, setOptions] = useState<SearchOption[]>([]);
    const [isFocused, setIsFocused] = useState(false);
+   const [pagination, setPagination] = useState({
+      products: 0,
+      suppliers: 0,
+      clients: 0,
+   });
    const anchorRef = useRef<HTMLDivElement>(null);
+
+   useEffect(() => {
+      setPagination({ products: 0, suppliers: 0, clients: 0 });
+   }, [searchTerm]);
 
    useEffect(() => {
       const newOptions: SearchOption[] = [];
@@ -37,19 +55,42 @@ function SearchBar({ isDark, searchBar }: { isDark: boolean; searchBar: any }) {
       const suppliersArray = Object.values(suppliers || {});
       const clientsArray = Object.values(clients || {});
 
-      const filteredProducts = productsArray.filter((product: Product) =>
-         searchTerm
-            ? product.productChineseName
-                 ?.toLowerCase()
-                 .includes(searchTerm.toLowerCase()) ||
-              product.productEnglishName
-                 ?.toLowerCase()
-                 .includes(searchTerm.toLowerCase()) ||
-              product.productId
-                 ?.toLowerCase()
-                 .includes(searchTerm.toLowerCase())
-            : true
-      ) as Product[];
+      const filteredProducts = productsArray.filter((product: Product) => {
+         if (!searchTerm) return true;
+
+         const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+         if (
+            product.productChineseName
+               ?.toLowerCase()
+               .includes(lowerCaseSearchTerm) ||
+            product.productEnglishName
+               ?.toLowerCase()
+               .includes(lowerCaseSearchTerm) ||
+            product.productId?.toLowerCase().includes(lowerCaseSearchTerm)
+         ) {
+            return true;
+         }
+
+         // Check associated supplier name
+         const supplier = getSupplierFromId(product.supplierId, suppliers);
+         if (
+            supplier?.supplierName?.toLowerCase().includes(lowerCaseSearchTerm)
+         ) {
+            return true;
+         }
+
+         const associatedClients = getClientsFromIds(product.clients, clients);
+         if (
+            associatedClients.some((client) =>
+               client.companyName?.toLowerCase().includes(lowerCaseSearchTerm)
+            )
+         ) {
+            return true;
+         }
+
+         return false; 
+      }) as Product[];
 
       const filteredSuppliers = suppliersArray.filter((supplier: Supplier) =>
          searchTerm
@@ -80,40 +121,76 @@ function SearchBar({ isDark, searchBar }: { isDark: boolean; searchBar: any }) {
       } else {
          if (filteredProducts.length > 0) {
             newOptions.push({ type: "header", label: "产品" });
-            filteredProducts.forEach((product) =>
+            const start = pagination.products;
+            const paginated = filteredProducts.slice(start, start + PAGE_SIZE);
+            paginated.forEach((product) =>
                newOptions.push({
                   type: "product",
                   label: product.productChineseName,
                   data: product,
                })
             );
+            if (filteredProducts.length > PAGE_SIZE) {
+               newOptions.push({
+                  type: "pagination",
+                  category: "products",
+                  total: filteredProducts.length,
+                  currentStart: start,
+               });
+            }
             newOptions.push({ type: "divider" });
          }
+
          if (filteredSuppliers.length > 0) {
             newOptions.push({ type: "header", label: "供应商" });
-            filteredSuppliers.forEach((supplier) =>
+            const start = pagination.suppliers;
+            const paginated = filteredSuppliers.slice(start, start + PAGE_SIZE);
+            paginated.forEach((supplier) =>
                newOptions.push({
                   type: "supplier",
                   label: supplier.supplierName,
                   data: supplier,
                })
             );
+            if (filteredSuppliers.length > PAGE_SIZE) {
+               newOptions.push({
+                  type: "pagination",
+                  category: "suppliers",
+                  total: filteredSuppliers.length,
+                  currentStart: start,
+               });
+            }
             newOptions.push({ type: "divider" });
          }
+
          if (filteredClients.length > 0) {
             newOptions.push({ type: "header", label: "客户" });
-            filteredClients.forEach((client) =>
+            const start = pagination.clients;
+            const paginated = filteredClients.slice(start, start + PAGE_SIZE);
+            paginated.forEach((client) =>
                newOptions.push({
                   type: "client",
                   label: client.companyName,
                   data: client,
                })
             );
+            if (filteredClients.length > PAGE_SIZE) {
+               newOptions.push({
+                  type: "pagination",
+                  category: "clients",
+                  total: filteredClients.length,
+                  currentStart: start,
+               });
+            }
          }
       }
 
+      if (newOptions[newOptions.length - 1]?.type === "divider") {
+         newOptions.pop();
+      }
+
       setOptions(newOptions);
-   }, [searchTerm, products, suppliers, clients]);
+   }, [searchTerm, products, suppliers, clients, pagination]);
 
    return (
       <Box
@@ -179,7 +256,7 @@ function SearchBar({ isDark, searchBar }: { isDark: boolean; searchBar: any }) {
                      ? {}
                      : {
                           left: "50% !important",
-                          transform: "translate(-50%, 15%) !important",
+                          transform: "translate(-50%, 14%) !important",
                        }),
                }}
             >
@@ -188,7 +265,7 @@ function SearchBar({ isDark, searchBar }: { isDark: boolean; searchBar: any }) {
                   sx={{
                      backgroundColor: isDark ? "#0f0f0f" : "#fff",
                      color: isDark ? "#fff" : "#000",
-                     height: "300px",
+                     maxHeight: "400px", // Increased height for pagination
                      overflowY: "auto",
                      borderRadius: "12px",
                      mt: 1,
@@ -237,6 +314,90 @@ function SearchBar({ isDark, searchBar }: { isDark: boolean; searchBar: any }) {
                                  <Typography sx={{ fontSize: "14px" }}>
                                     {option.label}
                                  </Typography>
+                              </ListItem>
+                           );
+                        }
+
+                        if (option.type === "pagination") {
+                           const { category, total, currentStart } = option;
+
+                           const handlePrev = () => {
+                              setPagination((prev) => ({
+                                 ...prev,
+                                 [category]: prev[category] - PAGE_SIZE,
+                              }));
+                           };
+
+                           const handleNext = () => {
+                              setPagination((prev) => ({
+                                 ...prev,
+                                 [category]: prev[category] + PAGE_SIZE,
+                              }));
+                           };
+
+                           const showPrev = currentStart > 0;
+                           const showNext = currentStart + PAGE_SIZE < total;
+
+                           return (
+                              <ListItem
+                                 key={index}
+                                 sx={{ justifyContent: "center", py: 0.5 }}
+                                 onMouseDown={(e) => e.preventDefault()}
+                              >
+                                 <Stack
+                                    direction="row"
+                                    alignItems="center"
+                                    spacing={2}
+                                 >
+                                    <Tooltip title="上一页">
+                                       <span>
+                                          <IconButton
+                                             onClick={handlePrev}
+                                             disabled={!showPrev}
+                                             size="small"
+                                          >
+                                             <CaretLeft
+                                                color={
+                                                   !showPrev
+                                                      ? "grey"
+                                                      : isDark
+                                                      ? "#fff"
+                                                      : "#000"
+                                                }
+                                             />
+                                          </IconButton>
+                                       </span>
+                                    </Tooltip>
+                                    <Typography
+                                       variant="caption"
+                                       sx={{
+                                          color: isDark ? "#aaaaaa" : "#6b7280",
+                                       }}
+                                    >
+                                       {`${
+                                          currentStart / PAGE_SIZE + 1
+                                       } / ${Math.ceil(total / PAGE_SIZE)}`}
+                                    </Typography>
+                                    <Tooltip title="下一页">
+                                       <span>
+                                          <IconButton
+                                             onClick={handleNext}
+                                             disabled={!showNext}
+                                             size="small"
+                                          >
+                                             <CaretRight
+                                                color={
+                                                   !showNext
+                                                      ? "grey"
+                                                      : isDark
+                                                      ? "#fff"
+                                                      : "#000"
+                                                }
+                                             />
+                                          </IconButton>
+                                       </span>
+                                    </Tooltip>
+                                 </Stack>
                               </ListItem>
                            );
                         }
