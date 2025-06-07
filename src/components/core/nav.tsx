@@ -14,6 +14,8 @@ import { MagnifyingGlass, List } from "phosphor-react";
 import { useAuth } from "../../contexts/authContexts";
 import { ProfileModal } from "./floatingSettings";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
+import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
+import SearchBar from "./searchBar";
 
 interface NavProps {
    home: boolean;
@@ -55,7 +57,7 @@ const Nav: React.FC<NavProps> = ({ home, searchBar }) => {
                   ? undefined
                   : isDark
                   ? "rgba(1, 0, 1, 0.8)"
-                  : "rgba(250, 250, 250, 0.8)"
+                  : "rgba(250, 250, 250, 0.8)",
             }}
          >
             {/* Menu Icon */}
@@ -152,22 +154,24 @@ interface SearchBarProps {
    searchBar: boolean;
 }
 
-function SearchBar({ isDark, searchBar }: SearchBarProps) {
-   return (
-      <div
-         className="search-bar-container"
-         style={searchBar ? {} : { display: "none" }}
-      >
-         <input
-            type="text"
-            placeholder="筛选产品名称或ID"
-            className="search-input"
-         />
-         <Tooltip title="搜索">
-            <button className="search-btn">
-               <MagnifyingGlass size={18} color={isDark ? "#fff" : "#000"} />
-            </button>
-         </Tooltip>
-      </div>
-   );
-}
+// function SearchBar({ isDark, searchBar }: SearchBarProps) {
+//    const { products, suppliers, clients } = useProductSupplierClientContext();
+
+//    return (
+//       <div
+//          className="search-bar-container"
+//          style={searchBar ? {} : { display: "none" }}
+//       >
+//          <input
+//             type="text"
+//             placeholder="筛选产品名称或ID"
+//             className="search-input"
+//          />
+//          <Tooltip title="搜索">
+//             <button className="search-btn">
+//                <MagnifyingGlass size={18} color={isDark ? "#fff" : "#000"} />
+//             </button>
+//          </Tooltip>
+//       </div>
+//    );
+// }
