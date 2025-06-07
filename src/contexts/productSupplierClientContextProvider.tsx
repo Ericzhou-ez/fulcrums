@@ -31,6 +31,7 @@ export type ProductSupplierClientContextType = {
    setAddedProduct: React.Dispatch<React.SetStateAction<boolean>>;
    setAddedClient: React.Dispatch<React.SetStateAction<boolean>>;
    setAddedSupplier: React.Dispatch<React.SetStateAction<boolean>>;
+   setDeletedClient: React.Dispatch<React.SetStateAction<boolean>>;
    addedProduct: boolean;
    editedProduct: boolean;
    deletedProduct: boolean;
@@ -389,8 +390,22 @@ export const ProductSupplierClientContextProvider = ({
    };
 
    const deleteClient = async (clientId: string) => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setDeletedClient(true);
+      try {
+         setServiceLoading(true);
+
+         const deleteProducts = httpsCallable(functions, "deleteClient");
+         const response: any = await deleteProducts({
+            clientId: clientId,
+         });
+
+         if (response.data.success) {
+            setServiceLoading(false);
+            setDeletedClient(true);
+         }
+      } catch (err) {
+         console.error("error in deletion", err);
+         setServiceLoading(false);
+      }
    };
 
    async function getClients(): Promise<Object> {
@@ -461,7 +476,7 @@ export const ProductSupplierClientContextProvider = ({
             ]);
 
             setSyncState("done");
-            setErrorMessages("同步成功")
+            setErrorMessages("同步成功");
          } else {
             setErrorMessages("信息可能破坏了。");
             setSyncState("idle");
@@ -488,6 +503,7 @@ export const ProductSupplierClientContextProvider = ({
             addClient,
             editClient,
             deleteClient,
+            setDeletedClient,
             getClients,
             getSuppliers,
             toggleSaveUnsaveProduct,

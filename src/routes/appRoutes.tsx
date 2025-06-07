@@ -34,6 +34,7 @@ import GlobalKeyListener, {
 import DisplayProductPage from "../pages/dashboard/displayProductPage";
 import { Snackbar, IconButton } from "@mui/material";
 import { X as CloseIcon } from "phosphor-react";
+import ClientsPage from "../pages/dashboard/clientsPage";
 
 export interface AppRoutesProps {
    loading: boolean;
@@ -198,6 +199,14 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                      element={
                         <PrivateRoute>
                            <SavedPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/dashboard/clients"
+                     element={
+                        <PrivateRoute>
+                           <ClientsPage />
                         </PrivateRoute>
                      }
                   />

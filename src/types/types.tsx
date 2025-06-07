@@ -57,6 +57,7 @@ export type Clients = {
    contactName: string;
    contactPhoneNumber: string;
    eoriNumber: string;
+   vatNumber: string;
    productIds: string[];
    updatedAt: string;
 };
