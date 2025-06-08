@@ -29,97 +29,75 @@ import SideNav from "../../components/dashboard/dashboardNav";
 import "../../styles/quotation.css";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
 import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
-import { Clients } from "../../types/types";
+import { Supplier } from "../../types/types";
 import { useThemeContext } from "../../contexts/themeContextProvider";
-import NewClientModal from "./addNewClient";
+import NewSupplierModal from "../../components/dashboard/supplier/addNewSupplierModal";
 
-interface EditClientModalProps {
+interface EditSupplierModalProps {
    open: boolean;
    onClose: () => void;
-   clientToEdit: Clients | null;
+   supplierToEdit: Supplier | null;
 }
 
-interface ClientForm {
-   companyName: string;
-   address: string;
-   contactName: string;
-   contactPhoneNumber: string;
-   contactEmail: string;
-   eoriNumber: string;
-   vatNumber: string;
+interface SupplierForm {
+   supplierName: string;
+   supplierAddress: string;
+   supplierEmail: string;
+   supplierPhone: string;
 }
 
-const EditClientModal: React.FC<EditClientModalProps> = ({
+const EditSupplierModal: React.FC<EditSupplierModalProps> = ({
    open,
    onClose,
-   clientToEdit,
+   supplierToEdit,
 }) => {
    const theme = useTheme();
-   const { editClient } = useProductSupplierClientContext();
+   const { editSupplier } = useProductSupplierClientContext();
 
-   const [form, setForm] = useState<ClientForm>({
-      companyName: "",
-      address: "",
-      contactName: "",
-      contactPhoneNumber: "",
-      contactEmail: "",
-      eoriNumber: "",
-      vatNumber: "",
+   const [form, setForm] = useState<SupplierForm>({
+      supplierName: "",
+      supplierAddress: "",
+      supplierEmail: "",
+      supplierPhone: "",
    });
 
-   const [originalForm, setOriginalForm] = useState<ClientForm | null>(null);
+   const [originalForm, setOriginalForm] = useState<SupplierForm | null>(null);
 
    useEffect(() => {
-      if (open && clientToEdit) {
-         const initialFormState: ClientForm = {
-            companyName: clientToEdit.companyName || "",
-            address: clientToEdit.address || "",
-            contactName: clientToEdit.contactName || "",
-            contactPhoneNumber: clientToEdit.contactPhoneNumber || "",
-            contactEmail: clientToEdit.contactEmail || "",
-            eoriNumber: clientToEdit.eoriNumber || "",
-            vatNumber: clientToEdit.vatNumber || "",
+      if (open && supplierToEdit) {
+         const initialFormState: SupplierForm = {
+            supplierName: supplierToEdit.supplierName || "",
+            supplierAddress: supplierToEdit.supplierAddress || "",
+            supplierEmail: supplierToEdit.supplierEmail || "",
+            supplierPhone: supplierToEdit.supplierPhone || "",
          };
          setForm(initialFormState);
          setOriginalForm(initialFormState);
       } else if (!open) {
-         // Reset form and originalForm when modal closes
          setForm({
-            companyName: "",
-            address: "",
-            contactName: "",
-            contactPhoneNumber: "",
-            contactEmail: "",
-            eoriNumber: "",
-            vatNumber: "",
+            supplierName: "",
+            supplierAddress: "",
+            supplierEmail: "",
+            supplierPhone: "",
          });
          setOriginalForm(null);
       }
-   }, [open, clientToEdit]);
+   }, [open, supplierToEdit]);
 
    const handleSave = () => {
-      if (!clientToEdit) return;
+      if (!supplierToEdit) return;
 
       const payloadToSend = {
-         clientId: clientToEdit.clientId,
-         companyName: form.companyName,
-         address: form.address,
-         contactName: form.contactName,
-         contactPhoneNumber: form.contactPhoneNumber,
-         contactEmail: form.contactEmail,
-         eoriNumber: form.eoriNumber,
-         vatNumber: form.vatNumber,
-         updatedAt: new Date().toISOString(),
+         ...supplierToEdit,
+         ...form,
       };
 
-      console.log("Payload to send:", payloadToSend);
-
-      editClient(payloadToSend);
+      editSupplier(payloadToSend);
       onClose();
    };
 
    const handleChange =
-      (key: keyof ClientForm) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      (key: keyof SupplierForm) => (e: React.ChangeEvent<HTMLInputElement>) => {
          const value = e.target.value ?? "";
          setForm((prev) => ({ ...prev, [key]: value }));
       };
@@ -128,24 +106,17 @@ const EditClientModal: React.FC<EditClientModalProps> = ({
       return typeof str === "string" ? str.trim() : "";
    };
 
-   const hasRequiredFields =
-      safeTrim(form.companyName).length > 0 &&
-      safeTrim(form.address).length > 0 &&
-      safeTrim(form.contactName).length > 0 &&
-      safeTrim(form.contactPhoneNumber).length > 0;
+   const hasRequiredFields = safeTrim(form.supplierName).length > 0;
 
    const isChanged = useMemo(() => {
       if (!originalForm) return false;
-
       return (
-         safeTrim(form.companyName) !== safeTrim(originalForm.companyName) ||
-         safeTrim(form.address) !== safeTrim(originalForm.address) ||
-         safeTrim(form.contactName) !== safeTrim(originalForm.contactName) ||
-         safeTrim(form.contactPhoneNumber) !==
-            safeTrim(originalForm.contactPhoneNumber) ||
-         safeTrim(form.contactEmail) !== safeTrim(originalForm.contactEmail) ||
-         safeTrim(form.eoriNumber) !== safeTrim(originalForm.eoriNumber) ||
-         safeTrim(form.vatNumber) !== safeTrim(originalForm.vatNumber)
+         safeTrim(form.supplierName) !== safeTrim(originalForm.supplierName) ||
+         safeTrim(form.supplierAddress) !==
+            safeTrim(originalForm.supplierAddress) ||
+         safeTrim(form.supplierEmail) !==
+            safeTrim(originalForm.supplierEmail) ||
+         safeTrim(form.supplierPhone) !== safeTrim(originalForm.supplierPhone)
       );
    }, [form, originalForm]);
 
@@ -176,89 +147,44 @@ const EditClientModal: React.FC<EditClientModalProps> = ({
                fontWeight: 700,
                pb: 1,
                mt: 2,
-               fontSize: { xs: "2rem", sm: "2.2rem" },
+               fontSize: { xs: "1.8rem", sm: "2.2rem" },
             }}
          >
-            编辑客户
+            编辑供应商
          </DialogTitle>
          <DialogContent>
-            <Stack spacing={2.5} mt={4}>
+            <Stack spacing={2} mt={4}>
                <TextField
-                  size="small"
+                  fullWidth
                   required
-                  label="公司全称"
-                  value={form.companyName}
-                  onChange={handleChange("companyName")}
-                  error={!safeTrim(form.companyName).length && open}
+                  label="供应商名称"
+                  value={form.supplierName}
+                  onChange={handleChange("supplierName")}
+                  error={!safeTrim(form.supplierName).length && open}
                   helperText={
-                     !safeTrim(form.companyName).length && open
-                        ? "公司全称是必填项"
+                     !safeTrim(form.supplierName).length && open
+                        ? "供应商名称是必填项"
                         : ""
                   }
                />
                <TextField
-                  size="small"
-                  required
-                  label="完整地址"
-                  value={form.address}
-                  onChange={handleChange("address")}
-                  error={!safeTrim(form.address).length && open}
-                  helperText={
-                     !safeTrim(form.address).length && open
-                        ? "完整地址是必填项"
-                        : ""
-                  }
-               />
-               <TextField
-                  size="small"
-                  required
-                  label="联系人"
-                  value={form.contactName}
-                  onChange={handleChange("contactName")}
-                  error={!safeTrim(form.contactName).length && open}
-                  helperText={
-                     !safeTrim(form.contactName).length && open
-                        ? "联系人是必填项"
-                        : ""
-                  }
+                  fullWidth
+                  label="供应商地址"
+                  value={form.supplierAddress}
+                  onChange={handleChange("supplierAddress")}
                />
                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                   <TextField
                      fullWidth
-                     size="small"
-                     required
-                     label="电话号码"
-                     value={form.contactPhoneNumber}
-                     onChange={handleChange("contactPhoneNumber")}
-                     error={!safeTrim(form.contactPhoneNumber).length && open}
-                     helperText={
-                        !safeTrim(form.contactPhoneNumber).length && open
-                           ? "电话号码是必填项"
-                           : ""
-                     }
+                     label="供应商电话"
+                     value={form.supplierPhone}
+                     onChange={handleChange("supplierPhone")}
                   />
                   <TextField
                      fullWidth
-                     size="small"
-                     label="电子邮件地址"
-                     value={form.contactEmail}
-                     onChange={handleChange("contactEmail")}
-                  />
-               </Stack>
-               <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-                  <TextField
-                     fullWidth
-                     size="small"
-                     label="VAT 增值税号"
-                     value={form.vatNumber}
-                     onChange={handleChange("vatNumber")}
-                  />
-                  <TextField
-                     fullWidth
-                     size="small"
-                     label="EORI 编号"
-                     value={form.eoriNumber}
-                     onChange={handleChange("eoriNumber")}
+                     label="供应商邮箱"
+                     value={form.supplierEmail}
+                     onChange={handleChange("supplierEmail")}
                   />
                </Stack>
             </Stack>
@@ -287,66 +213,65 @@ const EditClientModal: React.FC<EditClientModalProps> = ({
    );
 };
 
-const ClientsPage = () => {
-   const { clients, products, deleteClient, deletedClient, setDeletedClient } =
-      useProductSupplierClientContext();
+const SuppliersPage = () => {
+   const {
+      suppliers,
+      products,
+      deleteSupplier,
+      deletedSupplier,
+      editedSupplier,
+   } = useProductSupplierClientContext();
    const { navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles } =
       useUIStateContext();
    const { isDark } = useThemeContext();
 
    const [error, setError] = useState<string | null>(null);
    const [success, setSuccess] = useState<string | null>(null);
-   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
+   const [isSupplierModalOpen, setIsSupplierModalOpen] = useState(false);
    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-   const [clientToEdit, setClientToEdit] = useState<Clients | null>(null);
-
-   const toggleClientModal = (): void => {
-      setIsClientModalOpen((prev) => !prev);
-   };
+   const [supplierToEdit, setSupplierToEdit] = useState<Supplier | null>(null);
 
    useEffect(() => {
-      document.title = "Fulcrums | 客户管理";
+      document.title = "Fulcrums | 供应商管理";
    }, []);
 
-   const clientsArray = useMemo(
-      () => (clients ? Object.values(clients) : []),
-      [clients]
+   const suppliersArray = useMemo(
+      () => (suppliers ? Object.values(suppliers) : []),
+      [suppliers]
    );
    const productsArray = useMemo(
       () => (products ? Object.values(products) : []),
       [products]
    );
 
-   const handleDeleteClient = (clientToDelete: Clients) => {
-      const isAssociated = productsArray.some((p) =>
-         p.clients?.includes(clientToDelete.clientId)
+   const handleDeleteSupplier = (supplierToDelete: Supplier) => {
+      const isAssociated = productsArray.some(
+         (p) => p.supplierId === supplierToDelete.supplierId
       );
 
       if (isAssociated) {
-         setError("该客户有关联产品，无法删除。");
+         setError("该供应商有关联产品，无法删除。");
       } else {
-         deleteClient(clientToDelete.clientId);
+         deleteSupplier(supplierToDelete.supplierId);
       }
    };
 
-   const handleEditClient = (client: Clients) => {
-      setClientToEdit(client);
+   const handleEditSupplier = (supplier: Supplier) => {
+      setSupplierToEdit(supplier);
       setIsEditModalOpen(true);
    };
 
    useEffect(() => {
-      if (deletedClient) {
-         setSuccess("客户已成功删除。");
-         const timer = setTimeout(() => {
-            setDeletedClient(false);
-         }, 3000);
-         return () => clearTimeout(timer);
+      if (deletedSupplier) {
+         setSuccess("供应商已成功删除。");
       }
-   }, [deletedClient, setDeletedClient]);
+   }, [deletedSupplier]);
 
-   const handleAddClient = () => {
-      toggleClientModal();
-   };
+   useEffect(() => {
+      if (editedSupplier) {
+         setSuccess("供应商已成功更新。");
+      }
+   }, [editedSupplier]);
 
    const borderColor = isDark ? "rgba(255, 255, 255, 0.12)" : "#e0e0e0";
    return (
@@ -376,7 +301,7 @@ const ClientsPage = () => {
                         },
                      }}
                   >
-                     客户管理
+                     供应商管理
                   </Typography>
                </div>
                <Button
@@ -384,7 +309,7 @@ const ClientsPage = () => {
                   color="primary"
                   size="small"
                   startIcon={<Plus />}
-                  onClick={handleAddClient}
+                  onClick={() => setIsSupplierModalOpen(true)}
                >
                   添加
                </Button>
@@ -404,9 +329,9 @@ const ClientsPage = () => {
                <TableContainer>
                   <Table
                      sx={{
-                        minWidth: 1000,
+                        minWidth: 800,
                      }}
-                     aria-label="clients table"
+                     aria-label="suppliers table"
                   >
                      <TableHead
                         sx={{
@@ -421,34 +346,7 @@ const ClientsPage = () => {
                                  borderBottom: `1px solid ${borderColor}`,
                               }}
                            >
-                              公司名称
-                           </TableCell>
-                           <TableCell
-                              sx={{
-                                 fontWeight: 600,
-                                 color: "text.secondary",
-                                 borderBottom: `1px solid ${borderColor}`,
-                              }}
-                           >
-                              联系人
-                           </TableCell>
-                           <TableCell
-                              sx={{
-                                 fontWeight: 600,
-                                 color: "text.secondary",
-                                 borderBottom: `1px solid ${borderColor}`,
-                              }}
-                           >
-                              联系电话
-                           </TableCell>
-                           <TableCell
-                              sx={{
-                                 fontWeight: 600,
-                                 color: "text.secondary",
-                                 borderBottom: `1px solid ${borderColor}`,
-                              }}
-                           >
-                              联系邮箱
+                              供应商名称
                            </TableCell>
                            <TableCell
                               sx={{
@@ -466,7 +364,7 @@ const ClientsPage = () => {
                                  borderBottom: `1px solid ${borderColor}`,
                               }}
                            >
-                              VAT号
+                              电话
                            </TableCell>
                            <TableCell
                               sx={{
@@ -475,7 +373,7 @@ const ClientsPage = () => {
                                  borderBottom: `1px solid ${borderColor}`,
                               }}
                            >
-                              EORI号
+                              邮箱
                            </TableCell>
                            <TableCell
                               align="right"
@@ -488,9 +386,9 @@ const ClientsPage = () => {
                         </TableRow>
                      </TableHead>
                      <TableBody>
-                        {clientsArray.map((client) => (
+                        {suppliersArray.map((supplier) => (
                            <TableRow
-                              key={client.clientId}
+                              key={supplier.supplierId}
                               sx={{
                                  "&:last-child td, &:last-child th": {
                                     border: 0,
@@ -507,18 +405,11 @@ const ClientsPage = () => {
                                  scope="row"
                                  sx={{
                                     borderBottom: `1px solid ${borderColor}`,
+                                    fontWeight: 600,
+                                    color: "text.primary",
                                  }}
                               >
-                                 <Typography
-                                    variant="body1"
-                                    sx={{
-                                       fontWeight: 600,
-                                       cursor: "pointer",
-                                       color: "text.primary",
-                                    }}
-                                 >
-                                    {client.companyName}
-                                 </Typography>
+                                 {supplier.supplierName}
                               </TableCell>
                               <TableCell
                                  sx={{
@@ -526,7 +417,7 @@ const ClientsPage = () => {
                                     color: "text.secondary",
                                  }}
                               >
-                                 {client.contactName}
+                                 {supplier.supplierAddress}
                               </TableCell>
                               <TableCell
                                  sx={{
@@ -534,7 +425,7 @@ const ClientsPage = () => {
                                     color: "text.secondary",
                                  }}
                               >
-                                 {client.contactPhoneNumber}
+                                 {supplier.supplierPhone}
                               </TableCell>
                               <TableCell
                                  sx={{
@@ -542,31 +433,7 @@ const ClientsPage = () => {
                                     color: "text.secondary",
                                  }}
                               >
-                                 {client.contactEmail}
-                              </TableCell>
-                              <TableCell
-                                 sx={{
-                                    borderBottom: `1px solid ${borderColor}`,
-                                    color: "text.secondary",
-                                 }}
-                              >
-                                 {client.address}
-                              </TableCell>
-                              <TableCell
-                                 sx={{
-                                    borderBottom: `1px solid ${borderColor}`,
-                                    color: "text.secondary",
-                                 }}
-                              >
-                                 {client.vatNumber}
-                              </TableCell>
-                              <TableCell
-                                 sx={{
-                                    borderBottom: `1px solid ${borderColor}`,
-                                    color: "text.secondary",
-                                 }}
-                              >
-                                 {client.eoriNumber}
+                                 {supplier.supplierEmail}
                               </TableCell>
                               <TableCell
                                  align="right"
@@ -577,7 +444,7 @@ const ClientsPage = () => {
                                  <Tooltip title="删除">
                                     <IconButton
                                        onClick={() =>
-                                          handleDeleteClient(client)
+                                          handleDeleteSupplier(supplier)
                                        }
                                     >
                                        <Trash />
@@ -585,7 +452,9 @@ const ClientsPage = () => {
                                  </Tooltip>
                                  <Tooltip title="编辑">
                                     <IconButton
-                                       onClick={() => handleEditClient(client)}
+                                       onClick={() =>
+                                          handleEditSupplier(supplier)
+                                       }
                                     >
                                        <PencilSimple />
                                     </IconButton>
@@ -615,16 +484,16 @@ const ClientsPage = () => {
             ></div>
          )}
 
-         <NewClientModal
-            open={isClientModalOpen}
-            onClose={toggleClientModal}
-            isOnline={true}
-         />
-
-         <EditClientModal
+         <EditSupplierModal
             open={isEditModalOpen}
             onClose={() => setIsEditModalOpen(false)}
-            clientToEdit={clientToEdit}
+            supplierToEdit={supplierToEdit}
+         />
+
+         <NewSupplierModal
+            open={isSupplierModalOpen}
+            onClose={() => setIsSupplierModalOpen(false)}
+            isOnline={true}
          />
 
          <Snackbar
@@ -653,4 +522,4 @@ const ClientsPage = () => {
    );
 };
 
-export default ClientsPage;
+export default SuppliersPage;

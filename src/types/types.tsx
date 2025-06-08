@@ -43,6 +43,7 @@ export type Supplier = {
    supplierPhone: string;
    supplierAddress: string;
    supplierEmail: string;
+   productIds: string[];
 };
 
 export type SupplierMapping = {

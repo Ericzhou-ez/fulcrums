@@ -69,22 +69,28 @@ export const ProductSupplierClientContextProvider = ({
    setErrorMessages: React.Dispatch<React.SetStateAction<string>>;
 }) => {
    const { user } = useAuth();
+
    const uid = user?.uid;
    const [addedProduct, setAddedProduct] = useState(false);
    const [editedProduct, setEditedProduct] = useState(false);
    const [deletedProduct, setDeletedProduct] = useState(false);
+   const [firestoreProducts, setFirestoreProducts] = useState<{
+      [key: string]: Product;
+   }>({});
+
    const [addedSupplier, setAddedSupplier] = useState(false);
    const [editedSupplier, setEditedSupplier] = useState(false);
    const [deletedSupplier, setDeletedSupplier] = useState(false);
+
    const [addedClient, setAddedClient] = useState(false);
    const [editedClient, setEditedClient] = useState(false);
    const [deletedClient, setDeletedClient] = useState(false);
+
    const [syncState, setSyncState] = useState<"idle" | "syncing" | "done">(
       "idle"
    );
 
-   const [products, setProducts] = useState<{ [key: string]: Product }>({});
-
+   // const [products, setProducts] = useState<{ [key: string]: Product }>({});
    const [clients, setClients] = useState<{ [key: string]: Clients }>({});
    const [firestoreClients, setFirestoreClients] = useState<{
       [key: string]: Clients;
@@ -159,7 +165,7 @@ export const ProductSupplierClientContextProvider = ({
                products[product.productId] = product;
             });
 
-            setProducts(products);
+            setFirestoreProducts(products);
             setServiceLoading(false);
          },
          (error) => {
@@ -193,6 +199,38 @@ export const ProductSupplierClientContextProvider = ({
          unsub();
       };
    }, [user?.uid]);
+
+   const products = useMemo(() => {
+      // Create lookup maps for efficient mapping
+      const productToSupplierMap = new Map<string, string>();
+      Object.values(suppliers).forEach((supplier) => {
+         supplier.productIds?.forEach((productId) => {
+            productToSupplierMap.set(productId, supplier.supplierId);
+         });
+      });
+
+      const productToClientsMap = new Map<string, string[]>();
+      Object.values(clients).forEach((client) => {
+         client.productIds?.forEach((productId) => {
+            if (!productToClientsMap.has(productId)) {
+               productToClientsMap.set(productId, []);
+            }
+            productToClientsMap.get(productId)?.push(client.clientId);
+         });
+      });
+
+      const augmentedProducts: { [key: string]: Product } = {};
+      for (const productId in firestoreProducts) {
+         const product = firestoreProducts[productId];
+         augmentedProducts[productId] = {
+            ...product,
+            supplierId: productToSupplierMap.get(productId) || "",
+            clients: productToClientsMap.get(productId) || [],
+         };
+      }
+
+      return augmentedProducts;
+   }, [firestoreProducts, clients, suppliers]);
 
    // listen to firestore client changes
    useEffect(() => {
@@ -350,13 +388,40 @@ export const ProductSupplierClientContextProvider = ({
    };
 
    const editSupplier = async (supplier: any) => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setEditedSupplier(true);
+      try {
+         setServiceLoading(true);
+
+         const editSupplier = httpsCallable(functions, "editSupplier");
+         const response: any = await editSupplier(supplier);
+
+         if (response.data.success) {
+            setServiceLoading(false);
+            setEditedSupplier(true);
+            setErrorMessages("供应商更新成功。");
+         }
+      } catch (err) {
+         console.error("error in edit " + supplier, err);
+         setServiceLoading(false);
+      }
    };
 
    const deleteSupplier = async (supplierId: string) => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setDeletedSupplier(true);
+      try {
+         setServiceLoading(true);
+
+         const deleteSupplier = httpsCallable(functions, "deleteSupplier");
+         const response: any = await deleteSupplier({
+            supplierId
+         });
+
+         if (response.data.success) {
+            setServiceLoading(false);
+            setDeletedSupplier(true);
+         }
+      } catch (err) {
+         console.error("error in deletion", err);
+         setServiceLoading(false);
+      }
    };
 
    const addClient = async (client: any) => {
@@ -385,8 +450,21 @@ export const ProductSupplierClientContextProvider = ({
    };
 
    const editClient = async (client: any) => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setEditedClient(true);
+      try {
+         setServiceLoading(true);
+
+         const editClient = httpsCallable(functions, "editClient");
+         const response: any = await editClient(client);
+
+         if (response.data.success) {
+            setServiceLoading(false);
+            setEditedClient(true);
+            setErrorMessages("客户更新成功。");
+         }
+      } catch (err) {
+         console.error("error in edit " + client, err);
+         setServiceLoading(false);
+      }
    };
 
    const deleteClient = async (clientId: string) => {

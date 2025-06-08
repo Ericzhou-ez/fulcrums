@@ -18,13 +18,8 @@ import SearchPage from "../pages/dashboard/searchPage";
 import SettingPage from "../pages/dashboard/settingsPage";
 import ContactPage from "../pages/marketing/contactPage";
 import Loading from "../components/core/loading";
-import { useThemeContext } from "../contexts/themeContextProvider";
 import AddProductPage from "../pages/dashboard/AddProductPage";
-import { UIStateContextProvider } from "../contexts/UIStateContextProvider";
-import {
-   ProductSupplierClientContextProvider,
-   useProductSupplierClientContext,
-} from "../contexts/productSupplierClientContextProvider";
+import { ProductSupplierClientContextProvider } from "../contexts/productSupplierClientContextProvider";
 import GlobalKeyListener, {
    GlobalCommandListener,
    GlobalHomeListener,
@@ -35,6 +30,7 @@ import DisplayProductPage from "../pages/dashboard/displayProductPage";
 import { Snackbar, IconButton } from "@mui/material";
 import { X as CloseIcon } from "phosphor-react";
 import ClientsPage from "../pages/dashboard/clientsPage";
+import SuppliersPage from "../pages/dashboard/suppliersPage";
 
 export interface AppRoutesProps {
    loading: boolean;
@@ -52,13 +48,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
    user,
    setUser,
 }) => {
-   const { isMdUp } = useThemeContext();
-   const [navOpen, setNavOpen] = useState(() => isMdUp);
-   const [overlay, setOverlay] = useState(() => !isMdUp);
-   const closeOverlay = () => {
-      setOverlay(false);
-      setNavOpen(false);
-   };
    const [errorMessage, setErrorMessage] = useState(""); // auth related
    const [successMessage, setSuccessMessage] = useState("");
    const [errorMessages, setErrorMessages] = useState<string>(""); // service related
@@ -87,134 +76,140 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
          successMessage={successMessage}
          setSuccessMessage={setSuccessMessage}
       >
-         <UIStateContextProvider>
-            <ProductSupplierClientContextProvider
-               serviceLoading={serviceLoading}
-               setServiceLoading={setServiceLoading}
-               errorMessages={errorMessages}
-               setErrorMessages={setErrorMessages}
-            >
-               <GlobalKeyListener />
-               <GlobalCommandListener />
-               <GlobalProfileListener />
-               <GlobalHomeListener />
-               <GlobalThemeListener />
+         <ProductSupplierClientContextProvider
+            serviceLoading={serviceLoading}
+            setServiceLoading={setServiceLoading}
+            errorMessages={errorMessages}
+            setErrorMessages={setErrorMessages}
+         >
+            <GlobalKeyListener />
+            <GlobalCommandListener />
+            <GlobalProfileListener />
+            <GlobalHomeListener />
+            <GlobalThemeListener />
 
-               {errorMessages && (
-                  <Snackbar
-                     open={!!errorMessages}
-                     autoHideDuration={5000}
-                     message={errorMessages}
-                     anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                     action={action}
-                     onClose={() => setErrorMessages("")}
-                  />
-               )}
+            {errorMessages && (
+               <Snackbar
+                  open={!!errorMessages}
+                  autoHideDuration={5000}
+                  message={errorMessages}
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                  action={action}
+                  onClose={() => setErrorMessages("")}
+               />
+            )}
 
-               <Routes>
-                  <Route
-                     path="/signin"
-                     element={
-                        loading ? (
-                           <Loading />
-                        ) : signedIn ? (
-                           <Navigate to="/dashboard" />
-                        ) : (
-                           <SignInPage />
-                        )
-                     }
-                  />
-                  <Route path="/components" element={<Components />} />
-                  <Route path="/" element={<Home />} />
-                  <Route path="/terms" element={<TermsOfServicePage />} />
-                  <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/privacy" element={<PrivacyPolicyPage />} />
+            <Routes>
+               <Route
+                  path="/signin"
+                  element={
+                     loading ? (
+                        <Loading />
+                     ) : signedIn ? (
+                        <Navigate to="/dashboard" />
+                     ) : (
+                        <SignInPage />
+                     )
+                  }
+               />
+               <Route path="/components" element={<Components />} />
+               <Route path="/" element={<Home />} />
+               <Route path="/terms" element={<TermsOfServicePage />} />
+               <Route path="/contact" element={<ContactPage />} />
+               <Route path="/privacy" element={<PrivacyPolicyPage />} />
 
-                  <Route
-                     path="/product/:productId"
-                     element={
-                        <PrivateRoute>
-                           <DisplayProductPage />
-                        </PrivateRoute>
-                     }
-                  />
-                  <Route
-                     path="/dashboard"
-                     element={
-                        <PrivateRoute>
-                           <Dashboard />
-                        </PrivateRoute>
-                     }
-                  />
-                  <Route
-                     path="/dashboard/settings"
-                     element={
-                        <PrivateRoute>
-                           <SettingPage />
-                        </PrivateRoute>
-                     }
-                  />
-                  <Route
-                     path="/dashboard/quotation/internal"
-                     element={
-                        <PrivateRoute>
-                           <InternalQuotationPage />
-                        </PrivateRoute>
-                     }
-                  />
-                  <Route
-                     path="/dashboard/quotation/external"
-                     element={
-                        <PrivateRoute>
-                           <ExternalQuotationPage />
-                        </PrivateRoute>
-                     }
-                  />
-                  <Route
-                     path="/dashboard/add-product"
-                     element={
-                        <PrivateRoute>
-                           <AddProductPage />
-                        </PrivateRoute>
-                     }
-                  />
-                  <Route
-                     path="/dashboard/search"
-                     element={
-                        <PrivateRoute>
-                           <SearchPage />
-                        </PrivateRoute>
-                     }
-                  />
-                  <Route
-                     path="/dashboard/recent"
-                     element={
-                        <PrivateRoute>
-                           <RecentProductsPage />
-                        </PrivateRoute>
-                     }
-                  />
-                  <Route
-                     path="/dashboard/saved"
-                     element={
-                        <PrivateRoute>
-                           <SavedPage />
-                        </PrivateRoute>
-                     }
-                  />
-                  <Route
-                     path="/dashboard/clients"
-                     element={
-                        <PrivateRoute>
-                           <ClientsPage />
-                        </PrivateRoute>
-                     }
-                  />
+               <Route
+                  path="/product/:productId"
+                  element={
+                     <PrivateRoute>
+                        <DisplayProductPage />
+                     </PrivateRoute>
+                  }
+               />
+               <Route
+                  path="/dashboard"
+                  element={
+                     <PrivateRoute>
+                        <Dashboard />
+                     </PrivateRoute>
+                  }
+               />
+               <Route
+                  path="/dashboard/settings"
+                  element={
+                     <PrivateRoute>
+                        <SettingPage />
+                     </PrivateRoute>
+                  }
+               />
+               <Route
+                  path="/dashboard/quotation/internal"
+                  element={
+                     <PrivateRoute>
+                        <InternalQuotationPage />
+                     </PrivateRoute>
+                  }
+               />
+               <Route
+                  path="/dashboard/quotation/external"
+                  element={
+                     <PrivateRoute>
+                        <ExternalQuotationPage />
+                     </PrivateRoute>
+                  }
+               />
+               <Route
+                  path="/dashboard/add-product"
+                  element={
+                     <PrivateRoute>
+                        <AddProductPage />
+                     </PrivateRoute>
+                  }
+               />
+               <Route
+                  path="/dashboard/search"
+                  element={
+                     <PrivateRoute>
+                        <SearchPage />
+                     </PrivateRoute>
+                  }
+               />
+               <Route
+                  path="/dashboard/recent"
+                  element={
+                     <PrivateRoute>
+                        <RecentProductsPage />
+                     </PrivateRoute>
+                  }
+               />
+               <Route
+                  path="/dashboard/saved"
+                  element={
+                     <PrivateRoute>
+                        <SavedPage />
+                     </PrivateRoute>
+                  }
+               />
+               <Route
+                  path="/dashboard/clients"
+                  element={
+                     <PrivateRoute>
+                        <ClientsPage />
+                     </PrivateRoute>
+                  }
+               />
+               <Route
+                  path="/dashboard/suppliers"
+                  element={
+                     <PrivateRoute>
+                        <SuppliersPage />
+                     </PrivateRoute>
+                  }
+               />
 
-                  <Route path="*" element={<NotFoundPage />} />
-               </Routes>
-            </ProductSupplierClientContextProvider>
-         </UIStateContextProvider>
+               <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+         </ProductSupplierClientContextProvider>
       </UserServiceProvider>
    );
 };

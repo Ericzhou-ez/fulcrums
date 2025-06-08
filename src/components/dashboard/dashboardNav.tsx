@@ -1,4 +1,3 @@
-// src/components/dashboard/SideNav.tsx
 import * as React from "react";
 import {
    Box,
@@ -7,7 +6,6 @@ import {
    IconButton,
    useTheme,
    Link as MuiLink,
-   Link,
 } from "@mui/material";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import {
@@ -27,9 +25,12 @@ import {
    CaretDoubleLeft,
    MagnifyingGlass,
    CodesandboxLogo,
+   ShoppingBagOpen,
+   Table,
 } from "phosphor-react";
 import Logo from "../../assets/images/logo.svg";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
+import { useThemeContext } from "../../contexts/themeContextProvider";
 
 const iconMap: Record<string, React.ComponentType<any>> = {
    House,
@@ -45,6 +46,8 @@ const iconMap: Record<string, React.ComponentType<any>> = {
    CaretDoubleLeft,
    MagnifyingGlass,
    CodesandboxLogo,
+   ShoppingBagOpen,
+   Table,
 };
 
 interface NavSubItem {
@@ -92,6 +95,27 @@ const navItems: NavGroupType[] = [
          { key: "sourcing-saved", title: "已保存", href: "/dashboard/saved" },
          { key: "sourcing-recent", title: "最近", href: "/dashboard/recent" },
       ],
+   },
+   {
+      key: "client-management",
+      title: "客户",
+      icon: "Users",
+      items: [],
+      href: "/dashboard/clients",
+   },
+   {
+      key: "supplier-management",
+      title: "供应商",
+      icon: "ShoppingBagOpen",
+      items: [],
+      href: "/dashboard/suppliers",
+   },
+   {
+      key: "purchasing-order",
+      title: "订单",
+      icon: "Table",
+      items: [],
+      href: "/dashboard/purchasing-order",
    },
    {
       key: "quotation",
@@ -169,8 +193,10 @@ interface SideNavProps {
 export default function SideNav({ navOpen, setNavOpen }: SideNavProps) {
    const theme = useTheme();
    const isDark = theme.palette.mode === "dark";
-   const textColor = isDark ? theme.palette.grey[100] : theme.palette.grey[800];
    const { navStyle } = useUIStateContext();
+   const { isPhoneUp } = useThemeContext();
+
+   const textColor = isDark ? theme.palette.grey[100] : theme.palette.grey[800];
    const location = useLocation();
 
    let bgColor: string;
@@ -192,7 +218,8 @@ export default function SideNav({ navOpen, setNavOpen }: SideNavProps) {
       <Box
          className="dashboard-side-nav"
          sx={{
-            width: 240,
+            width: isPhoneUp ? 240 : "80vw",
+            maxWidth: "400px",
             height: "100dvh",
             position: "fixed",
             top: 0,
