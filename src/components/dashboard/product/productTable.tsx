@@ -20,6 +20,7 @@ import {
    TablePagination,
    Alert,
    Menu,
+   Zoom,
 } from "@mui/material";
 import {
    Image as ImageIcon,
@@ -27,6 +28,7 @@ import {
    PencilSimple as PencilSimpleIcon,
    Trash as TrashIcon,
    ShareNetwork as ExportIcon,
+   CheckCircle
 } from "phosphor-react";
 import { useThemeContext } from "../../../contexts/themeContextProvider";
 import { Clients, Product, Supplier } from "../../../types/types";
@@ -39,6 +41,7 @@ import Loader from "../../core/loader";
 import { exportInternalProductCSV } from "../../../lib/InternalProductCSVBuilder";
 import ExportDialog from "./exportProductModal";
 import { exportExternalProductCSV } from "../../../lib/ClientProductCsvBuilder";
+import TimeAgoTypography from "./timeAgoTypography";
 
 const symbolToCurrencyCode: Record<string, string> = {
    "¥": "CNY",
@@ -116,7 +119,6 @@ export function ProductTable({ productList }: { productList: Product[] }) {
          );
       }
 
-      
       // if (category !== "all") {
       //    data = data.filter((item) => item?.hsCode === category);
       // }
@@ -205,7 +207,7 @@ export function ProductTable({ productList }: { productList: Product[] }) {
    };
 
    const handleSelectAll = () => {
-      const allIds = displayedProducts.map((p) => p.productId);
+      const allIds = filteredProducts.map((p) => p.productId);
       setSelected(new Set(allIds));
    };
 
@@ -502,10 +504,11 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                            />
                         </TableCell>
                         <TableCell>产品</TableCell>
-                        <TableCell>HS代码</TableCell>
                         <TableCell>供应商</TableCell>
                         <TableCell>数量</TableCell>
                         <TableCell>单价</TableCell>
+                        <TableCell>上次更新</TableCell>
+                        <TableCell></TableCell>
                      </TableRow>
                   </TableHead>
                   <TableBody>
@@ -600,15 +603,9 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                                     </Box>
                                  </Stack>
                               </TableCell>
-                              {/* Category */}
-                              <TableCell>
-                                 <Typography variant="inherit" noWrap>
-                                    {row.hsCode || "---"}
-                                 </Typography>
-                              </TableCell>
 
                               <TableCell>
-                                 <Typography variant="inherit" noWrap>
+                                 <Typography variant="inherit">
                                     {suppliers[row.supplierId]?.supplierName}
                                  </Typography>
                               </TableCell>
@@ -620,14 +617,21 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                               </TableCell>
 
                               <TableCell>
+                                 <Typography variant="inherit">
+                                    {priceString}
+                                 </Typography>
+                              </TableCell>
+
+                              <TableCell>
+                                 <TimeAgoTypography timestamp={row.updatedAt} />
+                              </TableCell>
+
+                              <TableCell>
                                  <Stack
                                     direction="row"
                                     justifyContent="space-between"
                                     alignItems="center"
                                  >
-                                    <Typography variant="inherit">
-                                       {priceString}
-                                    </Typography>
                                     <Stack direction="row">
                                        <a href={`/product/${row.productId}`}>
                                           <IconButton>
@@ -666,7 +670,7 @@ export function ProductTable({ productList }: { productList: Product[] }) {
             </Box>
 
             <TablePagination
-               rowsPerPageOptions={[10, 20, 50]}
+               rowsPerPageOptions={[5, 20, 50]}
                component="div"
                count={filteredProducts.length}
                rowsPerPage={rowsPerPage}
@@ -735,6 +739,42 @@ export function ProductTable({ productList }: { productList: Product[] }) {
             </MenuItem>
             <MenuItem onClick={handleClose}>分享为链接</MenuItem>
          </Menu>
+
+         <Zoom in={isAnySelected}>
+            <Box
+               sx={{
+                  position: "fixed",
+                  bottom: { xs: 24, md: 32 },
+                  right: { xs: 24, md: 32 },
+                  zIndex: 1300, 
+                  backgroundColor: isDark
+                     ? "rgba(40, 40, 40, 0.6)"
+                     : "rgba(255, 255, 255, 0.7)",
+                  backdropFilter: "blur(10px)",
+                  border: `1px solid ${
+                     isDark
+                        ? "rgba(255, 255, 255, 0.2)"
+                        : "rgba(255, 255, 255, 0.8)"
+                  }`,
+                  borderRadius: "50px", 
+                  boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.15)",
+                  py: 1,
+                  px: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+               }}
+            >
+               <CheckCircle
+                  color={isDark ? "#66bb6a" : "#2e7d32"} 
+                  weight="fill"
+                  size={20}
+               />
+               <Typography variant="body1" fontWeight={500}>
+                  已选择 {selected.size} 项
+               </Typography>
+            </Box>
+         </Zoom>
       </Box>
    );
 }

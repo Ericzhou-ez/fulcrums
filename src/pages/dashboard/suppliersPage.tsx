@@ -32,6 +32,7 @@ import { useProductSupplierClientContext } from "../../contexts/productSupplierC
 import { Supplier } from "../../types/types";
 import { useThemeContext } from "../../contexts/themeContextProvider";
 import NewSupplierModal from "../../components/dashboard/supplier/addNewSupplierModal";
+import TimeAgoTypography from "../../components/dashboard/product/timeAgoTypography";
 
 interface EditSupplierModalProps {
    open: boolean;
@@ -220,6 +221,8 @@ const SuppliersPage = () => {
       deleteSupplier,
       deletedSupplier,
       editedSupplier,
+      setDeletedSupplier,
+      setEditedSupplier,
    } = useProductSupplierClientContext();
    const { navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles } =
       useUIStateContext();
@@ -265,12 +268,20 @@ const SuppliersPage = () => {
       if (deletedSupplier) {
          setSuccess("供应商已成功删除。");
       }
+
+      setTimeout(() => {
+         setDeletedSupplier(false);
+      }, 3000);
    }, [deletedSupplier]);
 
    useEffect(() => {
       if (editedSupplier) {
          setSuccess("供应商已成功更新。");
       }
+
+      setTimeout(() => {
+         setEditedSupplier(false);
+      }, 3000);
    }, [editedSupplier]);
 
    const borderColor = isDark ? "rgba(255, 255, 255, 0.12)" : "#e0e0e0";
@@ -344,6 +355,7 @@ const SuppliersPage = () => {
                                  fontWeight: 600,
                                  color: "text.secondary",
                                  borderBottom: `1px solid ${borderColor}`,
+                                 textWrap: "nowrap",
                               }}
                            >
                               供应商名称
@@ -353,6 +365,7 @@ const SuppliersPage = () => {
                                  fontWeight: 600,
                                  color: "text.secondary",
                                  borderBottom: `1px solid ${borderColor}`,
+                                 textWrap: "nowrap",
                               }}
                            >
                               地址
@@ -362,6 +375,7 @@ const SuppliersPage = () => {
                                  fontWeight: 600,
                                  color: "text.secondary",
                                  borderBottom: `1px solid ${borderColor}`,
+                                 textWrap: "nowrap",
                               }}
                            >
                               电话
@@ -371,9 +385,20 @@ const SuppliersPage = () => {
                                  fontWeight: 600,
                                  color: "text.secondary",
                                  borderBottom: `1px solid ${borderColor}`,
+                                 textWrap: "nowrap",
                               }}
                            >
                               邮箱
+                           </TableCell>
+                           <TableCell
+                              sx={{
+                                 fontWeight: 600,
+                                 color: "text.secondary",
+                                 borderBottom: `1px solid ${borderColor}`,
+                                 textWrap: "nowrap",
+                              }}
+                           >
+                              上次更新
                            </TableCell>
                            <TableCell
                               align="right"
@@ -435,6 +460,16 @@ const SuppliersPage = () => {
                                  }}
                               >
                                  {supplier.supplierEmail}
+                              </TableCell>
+                              <TableCell
+                                 sx={{
+                                    borderBottom: `1px solid ${borderColor}`,
+                                    color: "text.secondary",
+                                 }}
+                              >
+                                 <TimeAgoTypography
+                                    timestamp={supplier.updatedAt}
+                                 />
                               </TableCell>
                               <TableCell
                                  align="right"

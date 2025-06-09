@@ -40,6 +40,9 @@ export type ProductSupplierClientContextType = {
    setAddedClient: React.Dispatch<React.SetStateAction<boolean>>;
    setAddedSupplier: React.Dispatch<React.SetStateAction<boolean>>;
    setDeletedClient: React.Dispatch<React.SetStateAction<boolean>>;
+   setDeletedSupplier: React.Dispatch<React.SetStateAction<boolean>>;
+   setEditedSupplier: React.Dispatch<React.SetStateAction<boolean>>;
+   setEditedClient: React.Dispatch<React.SetStateAction<boolean>>;
    addedProduct: boolean;
    editedProduct: boolean;
    deletedProduct: boolean;
@@ -405,7 +408,6 @@ export const ProductSupplierClientContextProvider = ({
          if (response.data.success) {
             setServiceLoading(false);
             setEditedSupplier(true);
-            setErrorMessages("供应商更新成功。");
          }
       } catch (err) {
          console.error("error in edit " + supplier, err);
@@ -419,7 +421,7 @@ export const ProductSupplierClientContextProvider = ({
 
          const deleteSupplier = httpsCallable(functions, "deleteSupplier");
          const response: any = await deleteSupplier({
-            supplierId
+            supplierId,
          });
 
          if (response.data.success) {
@@ -467,7 +469,6 @@ export const ProductSupplierClientContextProvider = ({
          if (response.data.success) {
             setServiceLoading(false);
             setEditedClient(true);
-            setErrorMessages("客户更新成功。");
          }
       } catch (err) {
          console.error("error in edit " + client, err);
@@ -494,7 +495,10 @@ export const ProductSupplierClientContextProvider = ({
       }
    };
 
-   const deleteClientProducts = async (productIdsToRemove: string [], clientId: string) => {
+   const deleteClientProducts = async (
+      productIdsToRemove: string[],
+      clientId: string
+   ) => {
       try {
          setServiceLoading(true);
 
@@ -518,7 +522,10 @@ export const ProductSupplierClientContextProvider = ({
       }
    };
 
-   const addClientProducts = async (productIdsToAdd: string [], clientId: string) => {
+   const addClientProducts = async (
+      productIdsToAdd: string[],
+      clientId: string
+   ) => {
       try {
          setServiceLoading(true);
 
@@ -663,6 +670,9 @@ export const ProductSupplierClientContextProvider = ({
             syncState,
             addClientProducts,
             deleteClientProducts,
+            setDeletedSupplier,
+            setEditedSupplier,
+            setEditedClient,
          }}
       >
          {children}

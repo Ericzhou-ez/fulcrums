@@ -14,7 +14,6 @@ import {
    Button,
    Alert,
    IconButton,
-   Tooltip,
    Drawer,
    TextField,
    InputAdornment,
@@ -30,7 +29,6 @@ import { useUIStateContext } from "../../../contexts/UIStateContextProvider";
 import { useProductSupplierClientContext } from "../../../contexts/productSupplierClientContextProvider";
 import { Product, Supplier } from "../../../types/types";
 import { AssignedProductsTable } from "./clientProductTable";
-import { useThemeContext } from "../../../contexts/themeContextProvider";
 
 // --- Drawer for Adding Products ---
 interface ProductAssignmentDrawerProps {
@@ -50,7 +48,6 @@ const ProductAssignmentDrawer: React.FC<ProductAssignmentDrawerProps> = ({
    assignedProductIds,
    suppliers,
 }) => {
-   const { isDark } = useThemeContext();
    const [selected, setSelected] = useState<Set<string>>(new Set());
    const [page, setPage] = useState(0);
    const [rowsPerPage, setRowsPerPage] = useState(10);

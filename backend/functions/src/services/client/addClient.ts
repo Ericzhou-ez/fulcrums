@@ -1,4 +1,3 @@
-import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import { db } from "../../utils";
 
@@ -57,7 +56,7 @@ export const addClient = functions.https.onCall(
          {
             ...clientData,
             clientId: newClientRef.id,
-            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            updatedAt: new Date().toISOString(),
          },
          {
             merge: true,

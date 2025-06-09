@@ -32,6 +32,7 @@ import { useProductSupplierClientContext } from "../../contexts/productSupplierC
 import { Clients } from "../../types/types";
 import { useThemeContext } from "../../contexts/themeContextProvider";
 import NewClientModal from "./addNewClient";
+import TimeAgoTypography from "../../components/dashboard/product/timeAgoTypography";
 
 interface EditClientModalProps {
    open: boolean;
@@ -111,8 +112,6 @@ const EditClientModal: React.FC<EditClientModalProps> = ({
          vatNumber: form.vatNumber,
          updatedAt: new Date().toISOString(),
       };
-
-      console.log("Payload to send:", payloadToSend);
 
       editClient(payloadToSend);
       onClose();
@@ -288,7 +287,7 @@ const EditClientModal: React.FC<EditClientModalProps> = ({
 };
 
 const ClientsPage = () => {
-   const { clients, products, deleteClient, deletedClient, setDeletedClient } =
+   const { clients, products, deleteClient, deletedClient, setDeletedClient, editedClient, setEditedClient } =
       useProductSupplierClientContext();
    const { navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles } =
       useUIStateContext();
@@ -337,12 +336,25 @@ const ClientsPage = () => {
    useEffect(() => {
       if (deletedClient) {
          setSuccess("客户已成功删除。");
+
          const timer = setTimeout(() => {
             setDeletedClient(false);
          }, 3000);
          return () => clearTimeout(timer);
       }
    }, [deletedClient, setDeletedClient]);
+
+   useEffect(() => {
+      if (editedClient) {
+         setSuccess("更改成功。");
+
+         const timer = setTimeout(() => {
+            setEditedClient(false);
+         }, 3000);
+         return () => clearTimeout(timer);
+      }
+
+   }, [setEditedClient, editedClient]);
 
    const handleAddClient = () => {
       toggleClientModal();
@@ -419,6 +431,7 @@ const ClientsPage = () => {
                                  fontWeight: 600,
                                  color: "text.secondary",
                                  borderBottom: `1px solid ${borderColor}`,
+                                 textWrap: "nowrap",
                               }}
                            >
                               公司名称
@@ -428,6 +441,7 @@ const ClientsPage = () => {
                                  fontWeight: 600,
                                  color: "text.secondary",
                                  borderBottom: `1px solid ${borderColor}`,
+                                 textWrap: "nowrap",
                               }}
                            >
                               联系人
@@ -437,6 +451,7 @@ const ClientsPage = () => {
                                  fontWeight: 600,
                                  color: "text.secondary",
                                  borderBottom: `1px solid ${borderColor}`,
+                                 textWrap: "nowrap",
                               }}
                            >
                               联系电话
@@ -446,6 +461,7 @@ const ClientsPage = () => {
                                  fontWeight: 600,
                                  color: "text.secondary",
                                  borderBottom: `1px solid ${borderColor}`,
+                                 textWrap: "nowrap",
                               }}
                            >
                               联系邮箱
@@ -455,6 +471,7 @@ const ClientsPage = () => {
                                  fontWeight: 600,
                                  color: "text.secondary",
                                  borderBottom: `1px solid ${borderColor}`,
+                                 textWrap: "nowrap",
                               }}
                            >
                               地址
@@ -464,6 +481,7 @@ const ClientsPage = () => {
                                  fontWeight: 600,
                                  color: "text.secondary",
                                  borderBottom: `1px solid ${borderColor}`,
+                                 textWrap: "nowrap",
                               }}
                            >
                               VAT号
@@ -473,9 +491,21 @@ const ClientsPage = () => {
                                  fontWeight: 600,
                                  color: "text.secondary",
                                  borderBottom: `1px solid ${borderColor}`,
+                                 textWrap: "nowrap",
                               }}
                            >
                               EORI号
+                           </TableCell>
+                           <TableCell
+                              align="right"
+                              sx={{
+                                 fontWeight: 600,
+                                 color: "text.secondary",
+                                 borderBottom: `1px solid ${borderColor}`,
+                                 textWrap: "nowrap",
+                              }}
+                           >
+                              上次更新
                            </TableCell>
                            <TableCell
                               align="right"
@@ -488,7 +518,7 @@ const ClientsPage = () => {
                         </TableRow>
                      </TableHead>
                      <TableBody>
-                        {clientsArray.map((client) => (
+                        {clientsArray.map((client: Clients) => (
                            <TableRow
                               key={client.clientId}
                               sx={{
@@ -569,6 +599,16 @@ const ClientsPage = () => {
                                  }}
                               >
                                  {client.eoriNumber}
+                              </TableCell>
+                              <TableCell
+                                 sx={{
+                                    borderBottom: `1px solid ${borderColor}`,
+                                    color: "text.secondary",
+                                 }}
+                              >
+                                 <TimeAgoTypography
+                                    timestamp={client.updatedAt}
+                                 />
                               </TableCell>
                               <TableCell
                                  align="right"

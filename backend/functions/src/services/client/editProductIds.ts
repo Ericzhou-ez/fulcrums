@@ -84,7 +84,7 @@ export const updateClientProducts = functions.https.onCall(
 
          // update the timestamp to reflect this modification.
          await clientRef.update({
-            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            updatedAt: new Date().toISOString(),
          });
 
          return { success: true, clientId: clientId };
