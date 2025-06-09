@@ -119,6 +119,7 @@ const ProductAssignmentDrawer: React.FC<ProductAssignmentDrawerProps> = ({
          anchor="right"
          open={open}
          onClose={onClose}
+         sx={{zIndex: 5999}}
          BackdropProps={{
             sx: {
                bgcolor: "rgba(18, 18, 18, 0.1)",

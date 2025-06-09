@@ -19,6 +19,7 @@ import {
    DialogTitle,
    DialogContent,
    DialogActions,
+   Zoom,
    TextField,
    useTheme,
    InputAdornment,
@@ -756,6 +757,37 @@ const ClientsPage = () => {
                { title: "添加新产品", link: "/dashboard/add-product" },
             ]}
          />
+
+         <Zoom in={processedClients.length > 0}>
+            <Box
+               sx={{
+                  position: "fixed",
+                  bottom: { xs: 24, md: 32 },
+                  right: { xs: 24, md: 32 },
+                  zIndex: 1300,
+                  backgroundColor: isDark
+                     ? "rgba(40, 40, 40, 0.6)"
+                     : "rgba(255, 255, 255, 0.7)",
+                  backdropFilter: "blur(6px)",
+                  border: `1px solid ${
+                     isDark
+                        ? "rgba(255, 255, 255, 0.2)"
+                        : "rgba(255, 255, 255, 0.8)"
+                  }`,
+                  borderRadius: "50px",
+                  boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.2)",
+                  py: 1,
+                  px: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+               }}
+            >
+               <Typography variant="body1" fontWeight={500}>
+                  共 {processedClients.length} 项
+               </Typography>
+            </Box>
+         </Zoom>
 
          <Footer />
       </Box>
