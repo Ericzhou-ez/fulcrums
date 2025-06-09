@@ -89,7 +89,7 @@ function SearchBar({ isDark, searchBar }: { isDark: boolean; searchBar: any }) {
             return true;
          }
 
-         return false; 
+         return false;
       }) as Product[];
 
       const filteredSuppliers = suppliersArray.filter((supplier: Supplier) =>
@@ -505,7 +505,15 @@ function SearchBar({ isDark, searchBar }: { isDark: boolean; searchBar: any }) {
                                        color: isDark ? "#eeeeee" : "#000",
                                     }}
                                  >
-                                    {option.label}
+                                    <a
+                                       href={
+                                          option.type === "supplier"
+                                             ? `/dashboard/suppliers`
+                                             : `/client/${option.data.clientId}`
+                                       }
+                                    >
+                                       {option.label}
+                                    </a>
                                  </Typography>
                               )}
                            </ListItem>

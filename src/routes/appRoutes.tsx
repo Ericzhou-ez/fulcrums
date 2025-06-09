@@ -31,6 +31,7 @@ import { Snackbar, IconButton } from "@mui/material";
 import { X as CloseIcon } from "phosphor-react";
 import ClientsPage from "../pages/dashboard/clientsPage";
 import SuppliersPage from "../pages/dashboard/suppliersPage";
+import ClientDetailsPage from "../components/dashboard/product/clientDetailsPage";
 
 export interface AppRoutesProps {
    loading: boolean;
@@ -203,6 +204,14 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
                   element={
                      <PrivateRoute>
                         <SuppliersPage />
+                     </PrivateRoute>
+                  }
+               />
+               <Route
+                  path="/client/:clientId"
+                  element={
+                     <PrivateRoute>
+                        <ClientDetailsPage />
                      </PrivateRoute>
                   }
                />

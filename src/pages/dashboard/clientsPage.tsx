@@ -509,16 +509,18 @@ const ClientsPage = () => {
                                     borderBottom: `1px solid ${borderColor}`,
                                  }}
                               >
-                                 <Typography
-                                    variant="body1"
-                                    sx={{
-                                       fontWeight: 600,
-                                       cursor: "pointer",
-                                       color: "text.primary",
-                                    }}
-                                 >
-                                    {client.companyName}
-                                 </Typography>
+                                 <a href={`/client/${client.clientId}`}>
+                                    <Typography
+                                       variant="body1"
+                                       sx={{
+                                          fontWeight: 600,
+                                          cursor: "pointer",
+                                          color: "text.primary",
+                                       }}
+                                    >
+                                       {client.companyName}
+                                    </Typography>
+                                 </a>
                               </TableCell>
                               <TableCell
                                  sx={{

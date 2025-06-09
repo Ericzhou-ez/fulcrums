@@ -400,16 +400,17 @@ const SuppliersPage = () => {
                                  },
                               }}
                            >
-                              <TableCell
-                                 component="th"
-                                 scope="row"
-                                 sx={{
-                                    borderBottom: `1px solid ${borderColor}`,
-                                    fontWeight: 600,
-                                    color: "text.primary",
-                                 }}
-                              >
-                                 {supplier.supplierName}
+                              <TableCell component="th" scope="row">
+                                 <Typography
+                                    variant="body1"
+                                    sx={{
+                                       fontWeight: 600,
+                                       cursor: "pointer",
+                                       color: "text.primary",
+                                    }}
+                                 >
+                                    {supplier.supplierName}
+                                 </Typography>
                               </TableCell>
                               <TableCell
                                  sx={{

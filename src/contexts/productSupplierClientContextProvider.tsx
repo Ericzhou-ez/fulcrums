@@ -25,6 +25,14 @@ export type ProductSupplierClientContextType = {
    addClient: (client: any) => Promise<void>;
    editClient: (client: any) => Promise<void>;
    deleteClient: (clientId: string) => Promise<void>;
+   deleteClientProducts: (
+      productIdsToRemove: string[],
+      clientId: string
+   ) => Promise<void>;
+   addClientProducts: (
+      productIdsToAdd: string[],
+      clientId: string
+   ) => Promise<void>;
    getClients: () => Promise<Object>;
    getSuppliers: () => Promise<Object>;
    toggleSaveUnsaveProduct: (productId: string) => Promise<void>;
@@ -486,6 +494,54 @@ export const ProductSupplierClientContextProvider = ({
       }
    };
 
+   const deleteClientProducts = async (productIdsToRemove: string [], clientId: string) => {
+      try {
+         setServiceLoading(true);
+
+         const deleteClientProducts = httpsCallable(
+            functions,
+            "updateClientProducts"
+         );
+         const response: any = await deleteClientProducts({
+            productIdsToRemove,
+            productIdsToAdd: [],
+            clientId,
+         });
+
+         if (response.data.success) {
+            setServiceLoading(false);
+            setErrorMessages("移除成功.");
+         }
+      } catch (err) {
+         console.error("error in deletion", err);
+         setServiceLoading(false);
+      }
+   };
+
+   const addClientProducts = async (productIdsToAdd: string [], clientId: string) => {
+      try {
+         setServiceLoading(true);
+
+         const deleteClientProducts = httpsCallable(
+            functions,
+            "updateClientProducts"
+         );
+         const response: any = await deleteClientProducts({
+            productIdsToRemove: [],
+            productIdsToAdd,
+            clientId,
+         });
+
+         if (response.data.success) {
+            setServiceLoading(false);
+            setErrorMessages("添加成功");
+         }
+      } catch (err) {
+         console.error("error in deletion", err);
+         setServiceLoading(false);
+      }
+   };
+
    async function getClients(): Promise<Object> {
       try {
          const clientsSnap = await getDocs(
@@ -605,6 +661,8 @@ export const ProductSupplierClientContextProvider = ({
             setErrorMessages,
             syncAll,
             syncState,
+            addClientProducts,
+            deleteClientProducts,
          }}
       >
          {children}
