@@ -16,8 +16,9 @@ import {
    TablePagination,
    TextField,
    InputAdornment,
+   Zoom,
 } from "@mui/material";
-import { Trash, MagnifyingGlass } from "phosphor-react";
+import { Trash, MagnifyingGlass, CheckCircle } from "phosphor-react";
 import { useThemeContext } from "../../../contexts/themeContextProvider";
 import { Product, Supplier } from "../../../types/types";
 
@@ -129,7 +130,7 @@ export const AssignedProductsTable: React.FC<AssignedProductsTableProps> = ({
             direction={isSmUp ? "row" : "column"}
             justifyContent="space-between"
             alignItems="center"
-            gap={2}
+            gap={1}
             sx={{ p: 2 }}
          >
             <TextField
@@ -148,16 +149,11 @@ export const AssignedProductsTable: React.FC<AssignedProductsTableProps> = ({
                sx={{ width: "100%" }}
             />
             {isAnySelected && (
-               <Stack direction="row" alignItems="center" spacing={1}>
-                  <Typography variant="subtitle2" color="text.secondary" noWrap>
-                     已选择 {selected.size} 项
-                  </Typography>
-                  <Tooltip title="从该客户移除所选产品">
-                     <IconButton onClick={handleUnassignClick}>
-                        <Trash />
-                     </IconButton>
-                  </Tooltip>
-               </Stack>
+               <Tooltip title="从该客户移除所选产品">
+                  <IconButton onClick={handleUnassignClick}>
+                     <Trash />
+                  </IconButton>
+               </Tooltip>
             )}
          </Stack>
 
@@ -284,6 +280,50 @@ export const AssignedProductsTable: React.FC<AssignedProductsTableProps> = ({
                `${from}-${to} / ${count}`
             }
          />
+
+         <Zoom in={products.length > 0}>
+            <Box
+               sx={{
+                  position: "fixed",
+                  bottom: { xs: 24, md: 32 },
+                  right: { xs: 24, md: 32 },
+                  zIndex: 1300,
+                  backgroundColor: isDark
+                     ? "rgba(40, 40, 40, 0.6)"
+                     : "rgba(255, 255, 255, 0.7)",
+                  backdropFilter: "blur(6px)",
+                  border: `1px solid ${
+                     isDark
+                        ? "rgba(255, 255, 255, 0.2)"
+                        : "rgba(255, 255, 255, 0.8)"
+                  }`,
+                  borderRadius: "50px",
+                  boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.2)",
+                  py: 1,
+                  px: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+               }}
+            >
+               {selected.size > 0 ? (
+                  <Stack direction="row" gap={1} alignItems="center">
+                     <CheckCircle
+                        color={isDark ? "#66bb6a" : "#2e7d32"}
+                        weight="fill"
+                        size={20}
+                     />
+                     <Typography variant="body1" fontWeight={500}>
+                        已选择 {selected.size} 项
+                     </Typography>
+                  </Stack>
+               ) : (
+                  <Typography variant="body1" fontWeight={500}>
+                     共 {products.length} 项
+                  </Typography>
+               )}
+            </Box>
+         </Zoom>
       </Paper>
    );
 };

@@ -28,7 +28,7 @@ import {
    PencilSimple as PencilSimpleIcon,
    Trash as TrashIcon,
    ShareNetwork as ExportIcon,
-   CheckCircle
+   CheckCircle,
 } from "phosphor-react";
 import { useThemeContext } from "../../../contexts/themeContextProvider";
 import { Clients, Product, Supplier } from "../../../types/types";
@@ -740,24 +740,24 @@ export function ProductTable({ productList }: { productList: Product[] }) {
             <MenuItem onClick={handleClose}>分享为链接</MenuItem>
          </Menu>
 
-         <Zoom in={isAnySelected}>
+         <Zoom in={productList.length > 0}>
             <Box
                sx={{
                   position: "fixed",
                   bottom: { xs: 24, md: 32 },
                   right: { xs: 24, md: 32 },
-                  zIndex: 1300, 
+                  zIndex: 1300,
                   backgroundColor: isDark
                      ? "rgba(40, 40, 40, 0.6)"
                      : "rgba(255, 255, 255, 0.7)",
-                  backdropFilter: "blur(10px)",
+                  backdropFilter: "blur(6px)",
                   border: `1px solid ${
                      isDark
                         ? "rgba(255, 255, 255, 0.2)"
                         : "rgba(255, 255, 255, 0.8)"
                   }`,
-                  borderRadius: "50px", 
-                  boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.15)",
+                  borderRadius: "50px",
+                  boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.2)",
                   py: 1,
                   px: 2,
                   display: "flex",
@@ -765,14 +765,22 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                   gap: 1,
                }}
             >
-               <CheckCircle
-                  color={isDark ? "#66bb6a" : "#2e7d32"} 
-                  weight="fill"
-                  size={20}
-               />
-               <Typography variant="body1" fontWeight={500}>
-                  已选择 {selected.size} 项
-               </Typography>
+               {selected.size > 0 ? (
+                  <Stack direction="row" gap={1} alignItems="center">
+                     <CheckCircle
+                        color={isDark ? "#66bb6a" : "#2e7d32"}
+                        weight="fill"
+                        size={20}
+                     />
+                     <Typography variant="body1" fontWeight={500}>
+                        已选择 {selected.size} 项
+                     </Typography>
+                  </Stack>
+               ) : (
+                  <Typography variant="body1" fontWeight={500}>
+                     共 {productList.length} 项
+                  </Typography>
+               )}
             </Box>
          </Zoom>
       </Box>

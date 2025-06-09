@@ -21,8 +21,11 @@ import {
    DialogActions,
    TextField,
    useTheme,
+   InputAdornment,
+   MenuItem,
+   Select,
 } from "@mui/material";
-import { Trash, Plus, PencilSimple } from "phosphor-react";
+import { Trash, Plus, PencilSimple, MagnifyingGlass } from "phosphor-react";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import SideNav from "../../components/dashboard/dashboardNav";
@@ -33,6 +36,7 @@ import { Clients } from "../../types/types";
 import { useThemeContext } from "../../contexts/themeContextProvider";
 import NewClientModal from "./addNewClient";
 import TimeAgoTypography from "../../components/dashboard/product/timeAgoTypography";
+import Suggestions from "../../components/dashboard/core/suggestion";
 
 interface EditClientModalProps {
    open: boolean;
@@ -287,17 +291,27 @@ const EditClientModal: React.FC<EditClientModalProps> = ({
 };
 
 const ClientsPage = () => {
-   const { clients, products, deleteClient, deletedClient, setDeletedClient, editedClient, setEditedClient } =
-      useProductSupplierClientContext();
+   const {
+      clients,
+      products,
+      deleteClient,
+      deletedClient,
+      setDeletedClient,
+      editedClient,
+      setEditedClient,
+   } = useProductSupplierClientContext();
    const { navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles } =
       useUIStateContext();
-   const { isDark } = useThemeContext();
+   const { isDark, isSmUp } = useThemeContext();
 
    const [error, setError] = useState<string | null>(null);
    const [success, setSuccess] = useState<string | null>(null);
    const [isClientModalOpen, setIsClientModalOpen] = useState(false);
    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
    const [clientToEdit, setClientToEdit] = useState<Clients | null>(null);
+
+   const [searchTerm, setSearchTerm] = useState("");
+   const [sortOrder, setSortOrder] = useState("desc");
 
    const toggleClientModal = (): void => {
       setIsClientModalOpen((prev) => !prev);
@@ -315,6 +329,28 @@ const ClientsPage = () => {
       () => (products ? Object.values(products) : []),
       [products]
    );
+
+   const processedClients = useMemo(() => {
+      let data = [...clientsArray];
+
+      if (searchTerm) {
+         const lowercasedFilter = searchTerm.toLowerCase();
+         data = data.filter(
+            (client: Clients) =>
+               client.companyName?.toLowerCase().includes(lowercasedFilter) ||
+               client.address?.toLowerCase().includes(lowercasedFilter) ||
+               client.contactName?.toLowerCase().includes(lowercasedFilter)
+         );
+      }
+
+      data.sort((a, b) => {
+         const dateA = new Date(a.updatedAt).getTime();
+         const dateB = new Date(b.updatedAt).getTime();
+         return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
+      });
+
+      return data;
+   }, [clientsArray, searchTerm, sortOrder]);
 
    const handleDeleteClient = (clientToDelete: Clients) => {
       const isAssociated = productsArray.some((p) =>
@@ -336,10 +372,7 @@ const ClientsPage = () => {
    useEffect(() => {
       if (deletedClient) {
          setSuccess("客户已成功删除。");
-
-         const timer = setTimeout(() => {
-            setDeletedClient(false);
-         }, 3000);
+         const timer = setTimeout(() => setDeletedClient(false), 3000);
          return () => clearTimeout(timer);
       }
    }, [deletedClient, setDeletedClient]);
@@ -347,13 +380,9 @@ const ClientsPage = () => {
    useEffect(() => {
       if (editedClient) {
          setSuccess("更改成功。");
-
-         const timer = setTimeout(() => {
-            setEditedClient(false);
-         }, 3000);
+         const timer = setTimeout(() => setEditedClient(false), 3000);
          return () => clearTimeout(timer);
       }
-
    }, [setEditedClient, editedClient]);
 
    const handleAddClient = () => {
@@ -403,6 +432,37 @@ const ClientsPage = () => {
             </Box>
 
             <div className="gradient-divider"></div>
+
+            <Stack
+               direction="row"
+               spacing={1}
+               alignItems="center"
+               sx={{ mt: 2, mb: 2 }}
+            >
+               <TextField
+                  fullWidth
+                  variant="outlined"
+                  size="small"
+                  placeholder="搜索公司名称, 地址, 或联系人"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                     startAdornment: (
+                        <InputAdornment position="start">
+                           <MagnifyingGlass />
+                        </InputAdornment>
+                     ),
+                  }}
+               />
+               <Select
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                  size="small"
+               >
+                  <MenuItem value="desc">最新</MenuItem>
+                  <MenuItem value="asc">最早</MenuItem>
+               </Select>
+            </Stack>
 
             <Paper
                sx={{
@@ -497,7 +557,6 @@ const ClientsPage = () => {
                               EORI号
                            </TableCell>
                            <TableCell
-                              align="right"
                               sx={{
                                  fontWeight: 600,
                                  color: "text.secondary",
@@ -518,7 +577,7 @@ const ClientsPage = () => {
                         </TableRow>
                      </TableHead>
                      <TableBody>
-                        {clientsArray.map((client: Clients) => (
+                        {processedClients.map((client: Clients) => (
                            <TableRow
                               key={client.clientId}
                               sx={{
@@ -689,6 +748,14 @@ const ClientsPage = () => {
                {error || success}
             </Alert>
          </Snackbar>
+
+         <Suggestions
+            suggestions={[
+               { title: "最近的产品", link: "/dashboard/recent" },
+               { title: "保存的产品", link: "/dashboard/saved" },
+               { title: "添加新产品", link: "/dashboard/add-product" },
+            ]}
+         />
 
          <Footer />
       </Box>

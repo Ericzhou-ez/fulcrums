@@ -21,8 +21,11 @@ import {
    DialogActions,
    TextField,
    useTheme,
+   InputAdornment,
+   Select,
+   MenuItem,
 } from "@mui/material";
-import { Trash, Plus, PencilSimple } from "phosphor-react";
+import { Trash, Plus, PencilSimple, MagnifyingGlass } from "phosphor-react";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import SideNav from "../../components/dashboard/dashboardNav";
@@ -33,6 +36,7 @@ import { Supplier } from "../../types/types";
 import { useThemeContext } from "../../contexts/themeContextProvider";
 import NewSupplierModal from "../../components/dashboard/supplier/addNewSupplierModal";
 import TimeAgoTypography from "../../components/dashboard/product/timeAgoTypography";
+import Suggestions from "../../components/dashboard/core/suggestion";
 
 interface EditSupplierModalProps {
    open: boolean;
@@ -226,13 +230,17 @@ const SuppliersPage = () => {
    } = useProductSupplierClientContext();
    const { navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles } =
       useUIStateContext();
-   const { isDark } = useThemeContext();
+   const { isDark, isSmUp } = useThemeContext();
 
    const [error, setError] = useState<string | null>(null);
    const [success, setSuccess] = useState<string | null>(null);
    const [isSupplierModalOpen, setIsSupplierModalOpen] = useState(false);
    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
    const [supplierToEdit, setSupplierToEdit] = useState<Supplier | null>(null);
+
+   // --- NEW: State for filtering and sorting ---
+   const [searchTerm, setSearchTerm] = useState("");
+   const [sortOrder, setSortOrder] = useState("desc"); // 'desc' for latest, 'asc' for oldest
 
    useEffect(() => {
       document.title = "Fulcrums | 供应商管理";
@@ -246,6 +254,31 @@ const SuppliersPage = () => {
       () => (products ? Object.values(products) : []),
       [products]
    );
+
+   const processedSuppliers = useMemo(() => {
+      let data = [...suppliersArray];
+
+      if (searchTerm) {
+         const lowercasedFilter = searchTerm.toLowerCase();
+         data = data.filter(
+            (supplier) =>
+               supplier.supplierName
+                  ?.toLowerCase()
+                  .includes(lowercasedFilter) ||
+               supplier.supplierAddress
+                  ?.toLowerCase()
+                  .includes(lowercasedFilter)
+         );
+      }
+
+      data.sort((a, b) => {
+         const dateA = new Date(a.updatedAt).getTime();
+         const dateB = new Date(b.updatedAt).getTime();
+         return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
+      });
+
+      return data;
+   }, [suppliersArray, searchTerm, sortOrder]);
 
    const handleDeleteSupplier = (supplierToDelete: Supplier) => {
       const isAssociated = productsArray.some(
@@ -267,22 +300,18 @@ const SuppliersPage = () => {
    useEffect(() => {
       if (deletedSupplier) {
          setSuccess("供应商已成功删除。");
+         const timer = setTimeout(() => setDeletedSupplier(false), 3000);
+         return () => clearTimeout(timer);
       }
-
-      setTimeout(() => {
-         setDeletedSupplier(false);
-      }, 3000);
-   }, [deletedSupplier]);
+   }, [deletedSupplier, setDeletedSupplier]);
 
    useEffect(() => {
       if (editedSupplier) {
          setSuccess("供应商已成功更新。");
+         const timer = setTimeout(() => setEditedSupplier(false), 3000);
+         return () => clearTimeout(timer);
       }
-
-      setTimeout(() => {
-         setEditedSupplier(false);
-      }, 3000);
-   }, [editedSupplier]);
+   }, [editedSupplier, setEditedSupplier]);
 
    const borderColor = isDark ? "rgba(255, 255, 255, 0.12)" : "#e0e0e0";
    return (
@@ -327,6 +356,37 @@ const SuppliersPage = () => {
             </Box>
 
             <div className="gradient-divider"></div>
+
+            <Stack
+               direction="row"
+               spacing={1}
+               alignItems="center"
+               sx={{ mt: 2, mb: 2 }}
+            >
+               <TextField
+                  fullWidth
+                  variant="outlined"
+                  size="small"
+                  placeholder="搜索供应商名称或地址"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                     startAdornment: (
+                        <InputAdornment position="start">
+                           <MagnifyingGlass />
+                        </InputAdornment>
+                     ),
+                  }}
+               />
+               <Select
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                  size="small"
+               >
+                  <MenuItem value="desc">最新</MenuItem>
+                  <MenuItem value="asc">最早</MenuItem>
+               </Select>
+            </Stack>
 
             <Paper
                sx={{
@@ -411,7 +471,7 @@ const SuppliersPage = () => {
                         </TableRow>
                      </TableHead>
                      <TableBody>
-                        {suppliersArray.map((supplier) => (
+                        {processedSuppliers.map((supplier) => (
                            <TableRow
                               key={supplier.supplierId}
                               sx={{
@@ -552,6 +612,14 @@ const SuppliersPage = () => {
                {error || success}
             </Alert>
          </Snackbar>
+
+         <Suggestions
+            suggestions={[
+               { title: "最近的产品", link: "/dashboard/recent" },
+               { title: "保存的产品", link: "/dashboard/saved" },
+               { title: "添加新产品", link: "/dashboard/add-product" },
+            ]}
+         />
 
          <Footer />
       </Box>

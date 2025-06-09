@@ -1,4 +1,3 @@
-import React from "react";
 import { Typography } from "@mui/material";
 
 const formatDate = (date: Date) => {
@@ -9,7 +8,7 @@ const formatDate = (date: Date) => {
 };
 
 const TimeAgoTypography = ({ timestamp }: { timestamp: string }) => {
-   if (!timestamp || typeof timestamp !== "string") return;
+   if (!timestamp || typeof timestamp !== "string") return null;
 
    const now = new Date();
    const past = new Date(timestamp);
