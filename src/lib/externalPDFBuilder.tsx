@@ -159,7 +159,7 @@ export async function ExternalPDFBuilder({
       const commission = (upCharge - 1) * unitPriceLocal;
       const oneBoxCbm = cbm / parseInt(p.packing); 
       const freight = (pricePerContainer / 68) * oneBoxCbm;
-      const salesPrice = unitPriceLocal + commission + freight;
+      const salesPrice = unitPriceLocal + commission;
 
       yCur -= 9;
 
