@@ -1,4 +1,3 @@
-import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import { db } from "../../utils";
 
@@ -39,7 +38,7 @@ export const editSupplier = functions.https.onCall(
       await supplierRef.set(
          {
             ...supplierData,
-            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            updatedAt: new Date().toISOString(),
          },
          {
             merge: true,

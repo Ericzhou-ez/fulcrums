@@ -30,6 +30,7 @@ import NewSupplierModal from "../../components/dashboard/supplier/addNewSupplier
 import { getSupplierIdByName } from "../../lib/supplierHelpers";
 import { OfflineDrawer } from "../../components/dashboard/core/offlineDrawer";
 import { addRecord } from "../../lib/dexieUtils";
+import Suggestions from "../../components/dashboard/core/suggestion";
 
 const AddProductForm = ({ isOnline }: { isOnline: boolean }) => {
    const { navOpen } = useUIStateContext();
@@ -313,7 +314,7 @@ const AddProductForm = ({ isOnline }: { isOnline: boolean }) => {
    }, [isFormComplete, addedProduct]);
 
    return (
-      <React.Fragment>
+      <Box mb={2}>
          {/* -------------- 产品image -------------- */}
          <ProductImage
             src={src}
@@ -946,7 +947,7 @@ const AddProductForm = ({ isOnline }: { isOnline: boolean }) => {
          />
 
          <OfflineDrawer isOnline={isOnline} />
-      </React.Fragment>
+      </Box>
    );
 };
 
@@ -982,6 +983,14 @@ const AddProductPage = () => {
          <AddProductForm isOnline={isOnline} />
 
          <div style={{ padding: "0 16px" }}>
+            <Suggestions
+               suggestions={[
+                  { title: "最近的产品", link: "/dashboard/recent" },
+                  { title: "保存的产品", link: "/dashboard/saved" },
+                  { title: "添加新产品", link: "/dashboard/add-product" },
+               ]}
+            />
+
             <Footer />
          </div>
 

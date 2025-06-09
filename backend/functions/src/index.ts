@@ -29,6 +29,7 @@ import { deleteProducts } from "./services/products/deleteProduct";
 import { addClient } from "./services/client/addClient";
 import { editClient } from "./services/client/editClient";
 import { deleteClient } from "./services/client/deleteClient";
+import { updateClientProducts } from "./services/client/editProductIds";
 
 //suplier services
 import { addSupplier } from "./services/supplier/addSupplier";
@@ -50,6 +51,7 @@ export {
    editSupplier,
    deleteSupplier,
    syncAll,
+   updateClientProducts,
 };
 
 // Start writing functions

@@ -9,6 +9,7 @@ interface ThemeContextType {
    isDark: boolean;
    isMdUp: boolean;
    isSmUp: boolean;
+   isPhoneUp: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -41,11 +42,12 @@ export const ThemeContextProvider: React.FC<{
 
    const isMdUp = useMediaQuery("(min-width:960px)");
    const isSmUp = useMediaQuery("(min-width:600px)");
+   const isPhoneUp = useMediaQuery("(min-width:480px)");
    const isDark = mode === "dark";
 
    return (
       <ThemeContext.Provider
-         value={{ mode, toggleTheme, isDark, isMdUp, isSmUp }}
+         value={{ mode, toggleTheme, isDark, isMdUp, isSmUp, isPhoneUp }}
       >
          {children}
       </ThemeContext.Provider>

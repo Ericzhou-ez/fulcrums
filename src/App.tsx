@@ -9,6 +9,7 @@ import { ThemeContextProvider } from "./contexts/themeContextProvider";
 import { useAppTheme } from "./themes/theme";
 import { AuthProvider } from "./contexts/authContexts";
 import { UserType } from "./types/types";
+import { UIStateContextProvider } from "./contexts/UIStateContextProvider";
 
 declare module "@mui/material/styles" {
    interface TypeBackground {
@@ -40,19 +41,21 @@ function App() {
             <ThemeContextProvider mode={mode} setMode={setMode}>
                <Analytics />
                <CssBaseline />
-               <BrowserRouter>
-                  <ScrollToTop />
-                  {serviceLoading && <Loading />}
-                  
-                  <AppRoutes
-                     loading={loading}
-                     setLoading={setLoading}
-                     serviceLoading={serviceLoading}
-                     setServiceLoading={setServiceLoading}
-                     user={user}
-                     setUser={setUser}
-                  />
-               </BrowserRouter>
+               <UIStateContextProvider>
+                  <BrowserRouter>
+                     <ScrollToTop />
+                     {serviceLoading && <Loading />}
+
+                     <AppRoutes
+                        loading={loading}
+                        setLoading={setLoading}
+                        serviceLoading={serviceLoading}
+                        setServiceLoading={setServiceLoading}
+                        user={user}
+                        setUser={setUser}
+                     />
+                  </BrowserRouter>
+               </UIStateContextProvider>
             </ThemeContextProvider>
          </ThemeProvider>
       </AuthProvider>

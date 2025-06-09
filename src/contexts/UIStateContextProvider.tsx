@@ -4,11 +4,12 @@ import React, {
    useMemo,
    useState,
    ReactNode,
+   useEffect,
+   useCallback,
 } from "react";
 import { useMediaQuery, useTheme } from "@mui/material";
 
 interface UIStateContextProps {
-   isModalOpen: boolean;
    navOpen: boolean;
    setNavOpen: React.Dispatch<React.SetStateAction<boolean>>;
    overlay: boolean;
@@ -34,8 +35,22 @@ export const UIStateContextProvider: React.FC<UIStateContextProviderProps> = ({
 }) => {
    const theme = useTheme();
    const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
-   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-   const [navOpen, setNavOpen] = useState<boolean>(isMdUp);
+
+   const [userNavOpenPreference, setUserNavOpenPreference] = useState<boolean>(
+      () => {
+         const savedPreference = localStorage.getItem("nav-open-preference");
+         return savedPreference !== null ? JSON.parse(savedPreference) : true;
+      }
+   );
+
+   const [navOpen, setNavOpenState] = useState<boolean>(() => {
+      const savedPreference = localStorage.getItem("nav-open-preference");
+      const initialUserPreference =
+         savedPreference !== null ? JSON.parse(savedPreference) : true;
+
+      return isMdUp ? initialUserPreference : false;
+   });
+
    const [overlay, setOverlay] = useState<boolean>(!isMdUp);
    const [navStyle, setNavStyle] = useState<
       "blend-in" | "evident" | "discrete"
@@ -46,25 +61,61 @@ export const UIStateContextProvider: React.FC<UIStateContextProviderProps> = ({
          : "blend-in";
    });
 
-   const closeOverlay = () => {
+   useEffect(() => {
+      localStorage.setItem(
+         "nav-open-preference",
+         JSON.stringify(userNavOpenPreference)
+      );
+   }, [userNavOpenPreference]);
+
+   useEffect(() => {
+      if (isMdUp) {
+         setNavOpenState(userNavOpenPreference);
+         setOverlay(false); 
+      } else {
+         setNavOpenState(false);
+         setOverlay(false);
+      }
+   }, [isMdUp, userNavOpenPreference]);
+
+   const setNavOpen: React.Dispatch<React.SetStateAction<boolean>> =
+      useCallback(
+         (newStateOrUpdater) => {
+            const newNavOpen =
+               typeof newStateOrUpdater === "function"
+                  ? newStateOrUpdater(navOpen)
+                  : newStateOrUpdater;
+
+            setNavOpenState(newNavOpen); 
+
+            if (isMdUp) {
+               setUserNavOpenPreference(newNavOpen);
+            }
+         },
+         [isMdUp, navOpen]
+      );
+
+   const closeOverlay = useCallback(() => {
       setOverlay(false);
       setNavOpen(false);
-   };
+   }, [setNavOpen]);
 
-   const mainContentStyles = (navOpen: boolean) => ({
-      marginLeft: {
-         xs: 0,
-         md: navOpen ? "240px" : "0px",
-      },
-      transition: "margin-left 0.3s ease",
-      padding: 2,
-   });
+   const mainContentStyles = useCallback(
+      (isOpen: boolean) => ({
+         marginLeft: {
+            xs: 0,
+            md: isOpen ? "240px" : "0px",
+         },
+         transition: "margin-left 0.3s ease",
+         padding: 2,
+      }),
+      []
+   ); 
 
    const value = useMemo(
       () => ({
-         isModalOpen,
          navOpen,
-         setNavOpen,
+         setNavOpen, 
          overlay,
          setOverlay,
          closeOverlay,
@@ -72,7 +123,7 @@ export const UIStateContextProvider: React.FC<UIStateContextProviderProps> = ({
          navStyle,
          setNavStyle,
       }),
-      [isModalOpen, navOpen, overlay, mainContentStyles, navStyle]
+      [navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles, navStyle]
    );
 
    return (

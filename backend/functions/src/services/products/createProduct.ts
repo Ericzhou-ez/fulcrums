@@ -165,9 +165,9 @@ export const createProduct = functions.https.onCall(
                packingVolume: { length, width, height, packingUnit },
                saved,
                updatedAt,
-               supplierId: supplierId,
+               // supplierId: supplierId, deprecated: supplier ssot
                additionalNotes,
-               clients,
+               // clients, deprecated: client ssot
                currency,
                hsCode,
                material,
