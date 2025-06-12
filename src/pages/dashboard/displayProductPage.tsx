@@ -18,7 +18,7 @@ import Footer from "../../components/core/footer";
 import SideNav from "../../components/dashboard/dashboardNav";
 import "../../styles/Add-product.css";
 import { useThemeContext } from "../../contexts/themeContextProvider";
-import { ArrowsOut, ArrowsIn, Heart, X, PlusCircle } from "phosphor-react";
+import { ArrowsOut, ArrowsIn, Heart, X } from "phosphor-react";
 import ProductDefaultImage from "../../assets/images/product-background.svg";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
 import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
@@ -31,16 +31,17 @@ import MultipleSelectChip from "../../components/core/multiselectWithChip";
 import getBase64FromBlobUrl from "../../lib/blob-to-blob64";
 import { getSupplierFromId } from "../../lib/supplierHelpers";
 
-const AddProductForm = ({ p }: { p: Product }) => {
+const AddProductForm = ({
+   p,
+   suppliers,
+}: {
+   p: Product;
+   suppliers: Record<string, Supplier>;
+}) => {
    const { isMdUp } = useThemeContext();
    const { navOpen } = useUIStateContext();
-   const {
-      editedProduct,
-      editProduct,
-      serviceLoading,
-      deleteProducts,
-      suppliers,
-   } = useProductSupplierClientContext();
+   const { editedProduct, editProduct, serviceLoading, deleteProducts } =
+      useProductSupplierClientContext();
 
    const [src, setSrc] = useState(p.image);
    const [saved, setSaved] = useState(p.saved);
@@ -75,13 +76,22 @@ const AddProductForm = ({ p }: { p: Product }) => {
       p.packingVolume?.packingUnit ?? "cm"
    );
 
-   // get supplier ID
    const [supplierId, setSupplierId] = useState(p.supplierId ?? "");
-   const [supplierName, setSupplierName] = useState("");
-   const [supplierAddress, setSupplierAddress] = useState("");
-   const [supplierPhone, setSupplierPhone] = useState("");
-   const [supplierEmail, setSupplierEmail] = useState("");
-   const [supplierNameInput, setSupplierNameInput] = useState("");
+
+   const initialSupplierDetails = suppliers[p.supplierId];
+   const initialSupplierName = initialSupplierDetails?.supplierName ?? "";
+   const initialSupplierAddress = initialSupplierDetails?.supplierAddress ?? "";
+   const initialSupplierPhone = initialSupplierDetails?.supplierPhone ?? "";
+   const initialSupplierEmail = initialSupplierDetails?.supplierEmail ?? "";
+
+   const [supplierName, setSupplierName] = useState(initialSupplierName);
+   const [supplierAddress, setSupplierAddress] = useState(
+      initialSupplierAddress
+   );
+   const [supplierPhone, setSupplierPhone] = useState(initialSupplierPhone);
+   const [supplierEmail, setSupplierEmail] = useState(initialSupplierEmail);
+   const [supplierNameInput, setSupplierNameInput] =
+      useState(initialSupplierName); // autocomplete
 
    const [selectedClient, setSelectedClient] = useState<string[]>(
       p.clients ?? []
@@ -782,14 +792,13 @@ const displayProductPage = () => {
    const { productId } = params;
    const { navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles } =
       useUIStateContext();
-
-   const { products } = useProductSupplierClientContext();
+   const { products, suppliers } = useProductSupplierClientContext();
 
    useEffect(() => {
       document.title = "Fulcrums | 产品";
    }, []);
 
-   if (!productId || !products[productId]) {
+   if (!productId || !products[productId] || Object.keys(suppliers).length === 0) {
       return (
          <Box sx={{ ...mainContentStyles(navOpen), padding: "0 !important" }}>
             <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
@@ -831,7 +840,7 @@ const displayProductPage = () => {
 
          <Nav home={false} searchBar={true} />
 
-         <AddProductForm p={curProduct} />
+         <AddProductForm p={curProduct} suppliers={suppliers} />
 
          <div style={{ padding: "0 16px" }}>
             <Footer />
