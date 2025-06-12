@@ -1,12 +1,8 @@
 import React from "react";
 import ProductCard from "./card";
 import { Product } from "../../../types/types";
-import {
-   ProductSupplierClientContextProvider,
-   useProductSupplierClientContext,
-} from "../../../contexts/productSupplierClientContextProvider";
-import { Stack, Typography } from "@mui/material";
-import Loader from "../../core/loader";
+import { Box, Button, IconButton, Tooltip } from "@mui/material";
+import { CaretRight } from "phosphor-react";
 
 interface CardSliderProp {
    isDarkMode: boolean;
@@ -26,6 +22,8 @@ const CardSlider: React.FC<CardSliderProp> = ({
             new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
       );
 
+   const seeMoreHref = isRecent ? "/dashboard/recent" : "/dashboard/saved";
+
    return (
       <div
          className={
@@ -33,11 +31,42 @@ const CardSlider: React.FC<CardSliderProp> = ({
          }
       >
          {filteredProducts.length > 0 ? (
-            filteredProducts.map(([id, product]: any) => (
-               <div className="card-slider-item" key={id}>
-                  <ProductCard item={product} isDarkMode={isDarkMode} />
-               </div>
-            ))
+            <>
+               {filteredProducts.map(([id, product]: any) => (
+                  <div className="card-slider-item" key={id}>
+                     <ProductCard item={product} isDarkMode={isDarkMode} />
+                  </div>
+               ))}
+
+               <Box
+                  className="card-slider-item"
+                  sx={{
+                     display: "flex",
+                     alignItems: "center",
+                     justifyContent: "center",
+                  }}
+               >
+                  <Tooltip
+                     title={
+                        isRecent ? "最近产品" : "已保存产品"
+                     }
+                  >
+                     <Button
+                        component="a"
+                        href={seeMoreHref}
+                        sx={{
+                           border: 1,
+                           borderColor: "divider",
+                           "&:hover": {
+                              bgcolor: "action.hover",
+                           },
+                        }}
+                     >
+                        <CaretRight size={24} weight="bold" />
+                     </Button>
+                  </Tooltip>
+               </Box>
+            </>
          ) : isRecent ? (
             <a href="/dashboard/add-product">
                <p>「上传内容即可查看&#8599;」</p>

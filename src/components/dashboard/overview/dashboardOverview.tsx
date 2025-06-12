@@ -9,6 +9,8 @@ import Footer from "../../core/footer";
 import { QuickStats10, Chart1 } from "./performance";
 import { Documentation, Help } from "./help";
 import { useProductSupplierClientContext } from "../../../contexts/productSupplierClientContextProvider";
+import { useMemo } from "react";
+import { Product } from "../../../types/types";
 
 const sampleData = [
    { name: "Jan", v1: 34, v2: 3000 },
@@ -28,8 +30,40 @@ const sampleData = [
 export default function DashboardOverview() {
    const theme = useTheme();
    const isDarkMode = theme.palette.mode === "dark";
-   const { products } =
-      useProductSupplierClientContext();
+   const { products: allProducts } = useProductSupplierClientContext();
+
+   const latestProducts: { [key: string]: Product } = useMemo(() => {
+      const productsArray = Object.values(allProducts);
+
+      const sortedProducts = [...productsArray].sort((a, b) => {
+         const dateA = new Date(a.updatedAt).getTime();
+         const dateB = new Date(b.updatedAt).getTime();
+         return dateB - dateA;
+      });
+
+      const slicedProducts = sortedProducts.slice(0, 10);
+
+      const latestProductMap: { [key: string]: Product } =
+         slicedProducts.reduce((acc, product) => {
+            acc[product.productId] = product;
+            return acc;
+         }, {} as { [key: string]: Product });
+
+      return latestProductMap;
+   }, [allProducts]);
+
+   const savedProducts: { [key: string]: Product } = useMemo(() => {
+      const filteredSaved = Object.values(allProducts).filter((p) => p.saved);
+      const slicedSavedProducts = filteredSaved.slice(0, 10);
+
+      const savedProductMap: { [key: string]: Product } =
+         slicedSavedProducts.reduce((acc, product) => {
+            acc[product.productId] = product;
+            return acc;
+         }, {} as { [key: string]: Product });
+
+      return savedProductMap;
+   }, [allProducts]);
 
    return (
       <div className="dashboard-overview">
@@ -52,14 +86,6 @@ export default function DashboardOverview() {
                         总览
                      </Typography>
                   </Box>
-                  {/* <Stack spacing={2} direction="column">
-                     <Button variant="contained" className="excel-button">
-                        导出为Excel
-                     </Button>
-                     <Button variant="contained" className="pdf-button">
-                        导出为PDF
-                     </Button>
-                  </Stack> */}
                </Stack>
 
                <div className="gradient-divider"></div>
@@ -99,7 +125,7 @@ export default function DashboardOverview() {
                   <CardSlider
                      isDarkMode={isDarkMode}
                      isRecent={true}
-                     products={products}
+                     products={latestProducts}
                   />
                </Box>
 
@@ -136,7 +162,7 @@ export default function DashboardOverview() {
                   <CardSlider
                      isDarkMode={isDarkMode}
                      isRecent={false}
-                     products={products}
+                     products={savedProducts}
                   />
                </Box>
             </Stack>
