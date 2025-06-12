@@ -28,7 +28,7 @@ const sampleData = [
 export default function DashboardOverview() {
    const theme = useTheme();
    const isDarkMode = theme.palette.mode === "dark";
-   const { products } =
+   const { products, stressTestProducts } =
       useProductSupplierClientContext();
 
    return (
@@ -52,14 +52,18 @@ export default function DashboardOverview() {
                         总览
                      </Typography>
                   </Box>
-                  {/* <Stack spacing={2} direction="column">
-                     <Button variant="contained" className="excel-button">
-                        导出为Excel
+                  <Stack spacing={2} direction="column">
+                     <Button
+                        variant="contained"
+                        className="excel-button"
+                        onClick={() => stressTestProducts(1000)}
+                     >
+                        STRESS TEST
                      </Button>
-                     <Button variant="contained" className="pdf-button">
+                     {/* <Button variant="contained" className="pdf-button">
                         导出为PDF
-                     </Button>
-                  </Stack> */}
+                     </Button> */}
+                  </Stack>
                </Stack>
 
                <div className="gradient-divider"></div>

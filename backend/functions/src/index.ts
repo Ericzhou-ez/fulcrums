@@ -37,6 +37,7 @@ import { editSupplier } from "./services/supplier/editSupplier";
 import { deleteSupplier } from "./services/supplier/deleteSupplier";
 
 import { syncAll } from "./services/syncAll";
+import { stressTestProducts } from "./services/stressTest";
 
 export {
    createUserDoc,
@@ -52,6 +53,7 @@ export {
    deleteSupplier,
    syncAll,
    updateClientProducts,
+   stressTestProducts,
 };
 
 // Start writing functions

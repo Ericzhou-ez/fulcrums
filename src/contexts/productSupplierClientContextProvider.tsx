@@ -60,6 +60,7 @@ export type ProductSupplierClientContextType = {
    setErrorMessages: React.Dispatch<React.SetStateAction<string>>;
    syncAll: (payload: SyncPayload) => Promise<void>;
    syncState: "idle" | "syncing" | "done";
+   stressTestProducts: (count: number) => Promise<void>;
 };
 
 const ProductSupplierClientContext = createContext<
@@ -632,9 +633,33 @@ export const ProductSupplierClientContextProvider = ({
       }
    }
 
+   async function stressTestProducts(count: number) {
+      try {
+         setServiceLoading(true);
+         setErrorMessages("clicked");
+
+         const stressTestProducts = httpsCallable(
+            functions,
+            "stressTestProducts"
+         );
+
+         const response: any = await stressTestProducts({ count: count });
+
+         if (response.data.success) {
+            setServiceLoading(false);
+
+            setErrorMessages(`ADDED ${count} PRODUCTS`);
+         }
+      } catch (err) {
+         setErrorMessages(`FAILED TO ADD ${count} PRODUCTS`);
+         console.warn(err);
+      }
+   }
+
    return (
       <ProductSupplierClientContext.Provider
          value={{
+            stressTestProducts,
             addProduct,
             editProduct,
             deleteProducts,
