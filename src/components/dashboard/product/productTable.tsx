@@ -174,6 +174,7 @@ export function ProductTable({ productList }: { productList: Product[] }) {
       });
 
       setIsExportModalOpen(false);
+      setSelected(new Set());
    }
 
    function exportClientCsv(
@@ -194,6 +195,7 @@ export function ProductTable({ productList }: { productList: Product[] }) {
       });
 
       setIsExportModalOpen(false);
+      setSelected(new Set());
    }
 
    // const handleCategoryChange = (e: any) => {
@@ -298,6 +300,7 @@ export function ProductTable({ productList }: { productList: Product[] }) {
 
       setPdfLoading(false);
       setPdfSuccess(true);
+      setSelected(new Set());
       setTimeout(resetExportForm, 2000);
    };
 
@@ -333,6 +336,7 @@ export function ProductTable({ productList }: { productList: Product[] }) {
 
       setPdfLoading(false);
       setPdfSuccess(true);
+      setSelected(new Set());
       setTimeout(resetExportForm, 2000);
    };
 
