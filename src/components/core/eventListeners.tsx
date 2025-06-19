@@ -28,10 +28,7 @@ export function GlobalCommandListener() {
 
    useEffect(() => {
       const handleKeyDown = (e: KeyboardEvent) => {
-         if (
-            (e.metaKey || e.ctrlKey) &&
-            e.key.toLowerCase() === "k"
-         ) {
+         if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
             setIsCommandOpen((prev) => !prev);
          }
       };
@@ -93,20 +90,19 @@ export function GlobalHomeListener() {
 }
 
 export function GlobalThemeListener() {
-   const { toggleTheme, isDark } = useThemeContext();
+   const { toggleTheme } = useThemeContext();
 
    useEffect(() => {
       const handleKeyDown = (e: KeyboardEvent) => {
          if (e.key === "Escape" && e.shiftKey) {
             e.preventDefault();
-
-            toggleTheme(isDark ? "light" : "dark");
+            toggleTheme();
          }
       };
 
       window.addEventListener("keydown", handleKeyDown);
       return () => window.removeEventListener("keydown", handleKeyDown);
-   }, [isDark]);
+   }, [toggleTheme]);
 
    return null;
 }

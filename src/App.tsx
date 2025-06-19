@@ -5,7 +5,11 @@ import { BrowserRouter } from "react-router";
 import Loading from "./components/core/loading";
 import ScrollToTop from "./components/core/scrollToTop";
 import { Analytics } from "@vercel/analytics/react";
-import { ThemeContextProvider } from "./contexts/themeContextProvider";
+import {
+   ThemeContextProvider,
+   useThemeContext,
+   ThemeMode,
+} from "./contexts/themeContextProvider";
 import { useAppTheme } from "./themes/theme";
 import { AuthProvider } from "./contexts/authContexts";
 import { UserType } from "./types/types";
@@ -17,18 +21,56 @@ declare module "@mui/material/styles" {
    }
 }
 
+function ThemedApp({
+   serviceLoading,
+   setServiceLoading,
+   loading,
+   setLoading,
+   user,
+   setUser,
+   mode,
+   setMode,
+}: any) {
+   const { effectiveMode } = useThemeContext();
+   const theme = useAppTheme(effectiveMode);
+
+   return (
+      <ThemeProvider theme={theme}>
+         <Analytics />
+         <CssBaseline />
+         <UIStateContextProvider>
+            <BrowserRouter>
+               <ScrollToTop />
+               {serviceLoading && <Loading />}
+               <AppRoutes
+                  loading={loading}
+                  setLoading={setLoading}
+                  serviceLoading={serviceLoading}
+                  setServiceLoading={setServiceLoading}
+                  user={user}
+                  setUser={setUser}
+               />
+            </BrowserRouter>
+         </UIStateContextProvider>
+      </ThemeProvider>
+   );
+}
+
 function App() {
-   const [serviceLoading, setServiceLoading] = useState(true);
-   const [loading, setLoading] = useState(true);
-   const [mode, setMode] = useState<"light" | "dark">(() => {
+   const [mode, setMode] = useState<ThemeMode>(() => {
       const savedTheme = localStorage.getItem("theme");
-      if (savedTheme === "light" || savedTheme === "dark") {
+      if (
+         savedTheme === "light" ||
+         savedTheme === "dark" ||
+         savedTheme === "system"
+      ) {
          return savedTheme;
       }
-      return "light";
+      return "system";
    });
+   const [serviceLoading, setServiceLoading] = useState(true);
+   const [loading, setLoading] = useState(true);
    const [user, setUser] = useState<UserType | null>(null);
-   const theme = useAppTheme(mode);
 
    return (
       <AuthProvider
@@ -37,27 +79,18 @@ function App() {
          setUser={setUser}
          user={user}
       >
-         <ThemeProvider theme={theme}>
-            <ThemeContextProvider mode={mode} setMode={setMode}>
-               <Analytics />
-               <CssBaseline />
-               <UIStateContextProvider>
-                  <BrowserRouter>
-                     <ScrollToTop />
-                     {serviceLoading && <Loading />}
-
-                     <AppRoutes
-                        loading={loading}
-                        setLoading={setLoading}
-                        serviceLoading={serviceLoading}
-                        setServiceLoading={setServiceLoading}
-                        user={user}
-                        setUser={setUser}
-                     />
-                  </BrowserRouter>
-               </UIStateContextProvider>
-            </ThemeContextProvider>
-         </ThemeProvider>
+         <ThemeContextProvider mode={mode} setMode={setMode}>
+            <ThemedApp
+               serviceLoading={serviceLoading}
+               setServiceLoading={setServiceLoading}
+               loading={loading}
+               setLoading={setLoading}
+               user={user}
+               setUser={setUser}
+               mode={mode}
+               setMode={setMode}
+            />
+         </ThemeContextProvider>
       </AuthProvider>
    );
 }

@@ -4,20 +4,15 @@ import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import SideNav from "../../components/dashboard/dashboardNav";
 import { PasswordForm } from "../../components/dashboard/settings/PasswordForms";
-import { ThemeSwitch } from "../../components/dashboard/settings/Appearance";
+import ThemeSwitchAppearance from "../../components/dashboard/settings/Appearance";
 import { DeleteAccount } from "../../components/dashboard/settings/DeleteAccount";
 import { useThemeContext } from "../../contexts/themeContextProvider";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
 
 const SettingPage = () => {
    const { isDark } = useThemeContext();
-   const {
-      navOpen,
-      setNavOpen,
-      overlay,
-      closeOverlay,
-      mainContentStyles,
-   } = useUIStateContext();
+   const { navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles } =
+      useUIStateContext();
 
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
@@ -47,7 +42,7 @@ const SettingPage = () => {
 
          <Stack spacing={3}>
             <PasswordForm isDark={isDark} />
-            <ThemeSwitch isDark={isDark} />
+            <ThemeSwitchAppearance isDark={isDark} />
             <DeleteAccount />
          </Stack>
 

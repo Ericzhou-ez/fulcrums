@@ -2,11 +2,7 @@ import React from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import { useMediaQuery } from "@mui/material";
 import { Sun, Moon, Desktop } from "phosphor-react";
-
-interface ThemeToggleProps {
-   currentTheme: string;
-   handleToggleTheme: any;
-}
+import { useThemeContext } from "../../contexts/themeContextProvider";
 
 const Container = styled("div")(({ theme }) => ({
    borderRadius: 9999,
@@ -30,20 +26,16 @@ const CircleButton = styled("button")<{
    alignItems: "center",
    justifyContent: "center",
    cursor: "pointer",
-   backgroundColor: isSelected
-      ? isDarkMode
-         ? "#555" 
-         : "#bbb"
-      : "transparent",
+   backgroundColor: isSelected ? (isDarkMode ? "#555" : "#bbb") : "transparent",
 
    "&:hover": {
       backgroundColor: isSelected
          ? isDarkMode
-            ? "#6668" 
-            : "#9998" 
+            ? "#6668"
+            : "#9998"
          : isDarkMode
-         ? "#444" 
-         : "#ddd3", 
+         ? "#444"
+         : "#ddd3",
    },
 
    [theme.breakpoints.down("md")]: {
@@ -51,34 +43,22 @@ const CircleButton = styled("button")<{
    },
 }));
 
-const ThemeToggle: React.FC<ThemeToggleProps> = ({
-   currentTheme,
-   handleToggleTheme,
-}) => {
-   const isSystemDark = useMediaQuery("(prefers-color-scheme: dark)");
-
-   const handleButtonClick = (selectedTheme: "light" | "dark" | "system") => {
-      const newTheme =
-         selectedTheme === "system"
-            ? isSystemDark
-               ? "dark"
-               : "light"
-            : selectedTheme;
-
-      if (newTheme === currentTheme) return;
-
-      handleToggleTheme(newTheme);
-   };
-   const isAppDarkMode = currentTheme === "dark";
+const ThemeSwitch: React.FC = () => {
+   const { mode, setMode, effectiveMode } = useThemeContext();
    const theme = useTheme();
    const isDark = theme.palette.mode === "dark";
+
+   const handleButtonClick = (selectedTheme: "light" | "dark" | "system") => {
+      if (selectedTheme === mode) return;
+      setMode(selectedTheme);
+   };
 
    return (
       <Container>
          <ButtonGroup>
             <CircleButton
-               isSelected={currentTheme === "light"}
-               isDarkMode={isAppDarkMode}
+               isSelected={mode === "light"}
+               isDarkMode={effectiveMode === "dark"}
                onClick={() => handleButtonClick("light")}
                aria-label="light mode"
             >
@@ -86,8 +66,8 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({
             </CircleButton>
 
             <CircleButton
-               isSelected={currentTheme === "system"}
-               isDarkMode={isAppDarkMode}
+               isSelected={mode === "system"}
+               isDarkMode={effectiveMode === "dark"}
                onClick={() => handleButtonClick("system")}
                aria-label="system mode"
             >
@@ -95,8 +75,8 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({
             </CircleButton>
 
             <CircleButton
-               isSelected={currentTheme === "dark"}
-               isDarkMode={isAppDarkMode}
+               isSelected={mode === "dark"}
+               isDarkMode={effectiveMode === "dark"}
                onClick={() => handleButtonClick("dark")}
                aria-label="dark mode"
             >
@@ -107,4 +87,4 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({
    );
 };
 
-export default ThemeToggle;
+export default ThemeSwitch;

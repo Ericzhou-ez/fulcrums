@@ -39,7 +39,7 @@ const options = [
    },
 ];
 
-export function ThemeSwitch({ isDark }: any) {
+export default function ThemeSwitch({ isDark }: any) {
    const { setNavStyle, navStyle } = useUIStateContext();
 
    useEffect(() => {
@@ -48,7 +48,7 @@ export function ThemeSwitch({ isDark }: any) {
 
    return (
       <>
-         <Card
+         {/* <Card
             sx={{
                borderRadius: 4,
                boxShadow: "0 2px 12px rgba(0, 0, 0, 0.1)",
@@ -137,7 +137,7 @@ export function ThemeSwitch({ isDark }: any) {
                   </RadioGroup>
                </Card>
             </CardContent>
-         </Card>
+         </Card> */}
 
          <Card
             sx={{
