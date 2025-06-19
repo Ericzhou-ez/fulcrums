@@ -43,7 +43,11 @@ const groups = [
          { key: "home", title: "主页", href: "/" },
          { key: "dashboard", title: "概览", href: "/dashboard" },
          { key: "product", title: "产品管理", href: "/dashboard/add-product" },
-         { key: "quotation", title: "报价管理", href: "/dashboard/quotation/external" },
+         {
+            key: "quotation",
+            title: "报价管理",
+            href: "/dashboard/quotation/external",
+         },
          { key: "customs", title: "报关管理", href: "/dashboard/customs" },
       ],
    },
@@ -98,7 +102,7 @@ const Footer = () => {
    const mode = useTheme();
    const theme = mode.palette.mode;
    const isDark = theme === "dark";
-   const {toggleTheme} = useThemeContext();
+   const { toggleTheme } = useThemeContext();
    const year = new Date().getFullYear();
    const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>(
       {}
@@ -306,10 +310,7 @@ const Footer = () => {
                      All Rights Reserved.
                   </Typography>
                   <div className="theme-btn-container">
-                     <ThemeSwitch
-                        currentTheme={theme}
-                        handleToggleTheme={toggleTheme}
-                     />
+                     <ThemeSwitch />
                   </div>
                </Stack>
             </Container>
