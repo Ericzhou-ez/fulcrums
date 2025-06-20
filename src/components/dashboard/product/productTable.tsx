@@ -256,8 +256,8 @@ export function ProductTable({ productList }: { productList: Product[] }) {
    };
 
    const selectedProductsList = React.useMemo(() => {
-      return products.filter((p) => selected.has(p.productId));
-   }, [products, selected]);
+      return filteredProducts.filter((p) => selected.has(p.productId));
+   }, [filteredProducts, selected]);
 
    const resetExportForm = () => {
       setIsExportModalOpen(false);

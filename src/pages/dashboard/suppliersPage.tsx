@@ -239,7 +239,6 @@ const SuppliersPage = () => {
    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
    const [supplierToEdit, setSupplierToEdit] = useState<Supplier | null>(null);
 
-   // --- NEW: State for filtering and sorting ---
    const [searchTerm, setSearchTerm] = useState("");
    const [sortOrder, setSortOrder] = useState("desc"); // 'desc' for latest, 'asc' for oldest
 

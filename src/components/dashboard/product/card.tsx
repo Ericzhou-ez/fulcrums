@@ -41,7 +41,9 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
             "&:hover": {
                boxShadow: "0 5px 9px rgba(0, 0, 0, 0.12)",
                WebkitBoxShadow: "0 5px 9px rgba(0, 0, 0, 0.12)",
-               transform: "scale(1.01)",
+               "& .product-image": {
+                  transform: "scale(1.05)",
+               },
             },
          }}
       >
@@ -58,6 +60,7 @@ export default function ProductCard({ item, isDarkMode }: CardProps) {
                boxShadow: "none",
                borderBottomLeftRadius: 0,
                borderBottomRightRadius: 0,
+               transition: "all 0.28s ease-in-out",
             }}
          />
 
