@@ -256,7 +256,7 @@ export function ProductTable({ productList }: { productList: Product[] }) {
    };
 
    const selectedProductsList = React.useMemo(() => {
-      return filteredProducts.filter((p) => selected.has(p.productId));
+      return filteredProducts.filter((p) => selected.has(p.productId)).reverse();
    }, [filteredProducts, selected]);
 
    const resetExportForm = () => {
