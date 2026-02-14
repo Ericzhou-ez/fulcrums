@@ -6,7 +6,14 @@ import "../../styles/home.css";
 import BottomCTA from "../../components/marketing/bottomCta";
 import { Faqs } from "../../components/marketing/faqs";
 import FeatureSelector from "../../components/marketing/featureSelector";
+import MarketingDemoSection from "../../components/marketing/MarketingDemoSection";
+import ProductDemo from "../../components/marketing/demos/ProductDemo";
+import QuotationDemo from "../../components/marketing/demos/QuotationDemo";
+import BorderDeclarationDemo from "../../components/marketing/demos/BorderDeclarationDemo";
 import FooterName from "../../assets/images/footerName.svg";
+import productDemoBg from "../../assets/images/product_demo.png";
+import quotationDemoBg from "../../assets/images/quotation_demo.png";
+import borderDemoBg from "../../assets/images/border_demo.png";
 import { useThemeContext } from "../../contexts/themeContextProvider";
 import { usePreloadImage } from "../../contexts/preloadAssests";
 
@@ -76,6 +83,30 @@ const Home = () => {
                activeIndex={activeIndex}
                setActiveIndex={setActiveIndex}
             />
+
+            <div className="demo-section">
+               <MarketingDemoSection
+                  demoPosition="right"
+                  title="产品追踪, 一目了然"
+                  cta={{ label: "了解产品管理", href: "/signin" }}
+                  sectionBackground="#faf8f5"
+                  demo={<ProductDemo />}
+               />
+               <MarketingDemoSection
+                  demoPosition="left"
+                  title="报价导出，一键搞定"
+                  cta={{ label: "了解报价与导出", href: "/signin" }}
+                  sectionBackground="#faf8f5"
+                  demo={<QuotationDemo />}
+               />
+               <MarketingDemoSection
+                  demoPosition="right"
+                  title="报关申报，自动生成"
+                  cta={{ label: "了解报关功能", href: "/signin" }}
+                  sectionBackground="#faf8f5"
+                  demo={<BorderDeclarationDemo />}
+               />
+            </div>
 
             <Faqs />
 
