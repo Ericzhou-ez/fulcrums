@@ -510,12 +510,11 @@
    border-radius: 16px;
    padding: 40px;
    box-sizing: border-box;
-   background-color: #faf8f5;
+   background-color: var(--background-secondary-color);
    background-size: cover;
    background-position: center;
    transition: background-color 0.25s ease;
-
-   border: 1px solid #d9d9d9;
+   border: 1px solid color-mix(in srgb, var(--text-primary-color) 18%, transparent);
 }
 
 .marketing-demo-section-inner {
@@ -645,8 +644,8 @@
    border-radius: 10px;
    overflow: hidden;
    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-   background: #fdfdfd;
-   border: 1px solid rgba(0, 0, 0, 0.08);
+   background: var(--background-color);
+   border: 1px solid color-mix(in srgb, var(--text-primary-color) 15%, transparent);
 }
 
 .macos-demo-window-titlebar {
@@ -655,8 +654,8 @@
    gap: 12px;
    height: 38px;
    padding: 0 12px;
-   background: #e4e1e0;
-   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+   background: var(--background-secondary-color);
+   border-bottom: 1px solid color-mix(in srgb, var(--text-primary-color) 15%, transparent);
 }
 
 .macos-demo-window-buttons {
@@ -668,32 +667,32 @@
    width: 12px;
    height: 12px;
    border-radius: 50%;
-   background: #a8a6a2;
+   background: color-mix(in srgb, var(--text-primary-color) 45%, transparent);
 }
 
 .macos-demo-btn-close {
-   background: #a8a6a2;
+   background: color-mix(in srgb, var(--text-primary-color) 45%, transparent);
 }
 
 .macos-demo-btn-minimize {
-   background: #a8a6a2;
+   background: color-mix(in srgb, var(--text-primary-color) 45%, transparent);
 }
 
 .macos-demo-btn-maximize {
-   background: #a8a6a2;
+   background: color-mix(in srgb, var(--text-primary-color) 45%, transparent);
 }
 
 .macos-demo-window-title {
    flex: 1;
    text-align: center;
    font-size: 13px;
-   color: rgba(0, 0, 0, 0.7);
+   color: var(--text-primary-color);
    font-weight: 600;
 }
 
 .macos-demo-window-content {
    max-height: 55dvh;
    overflow: auto;
-   background: #ffffff;
+   background: var(--background-color);
    border-radius: 0 0 10px 10px;
 }

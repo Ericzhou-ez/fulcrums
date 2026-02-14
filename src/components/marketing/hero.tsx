@@ -4,11 +4,11 @@ import React, { useEffect, useState, useRef } from "react";
 import { useMediaQuery } from "@mui/material";
 import { useLocation } from "react-router-dom";
 
-const demoVideo = [
-   "src/assets/images/border_demo.png",
-   "src/assets/images/product_demo.png",
-   "src/assets/images/quotation_demo.png",
-];
+import borderDemoImg from "../../assets/images/border_demo.png";
+import productDemoImg from "../../assets/images/product_demo.png";
+import quotationDemoImg from "../../assets/images/quotation_demo.png";
+
+const demoVideo = [borderDemoImg, productDemoImg, quotationDemoImg];
 
 interface HeroProps {
    activeIndex: number;
@@ -194,7 +194,7 @@ export default function Hero({ activeIndex = 0 }: HeroProps) {
                            loop
                            muted
                            playsInline
-                           poster="/public/demo/demo-poster.png"
+                           poster="/demo/demo-poster.png"
                         />
                      ) : (
                         <img

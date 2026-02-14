@@ -18,7 +18,7 @@ import { useThemeContext } from "../../contexts/themeContextProvider";
 import { usePreloadImage } from "../../contexts/preloadAssests";
 
 const Home = () => {
-   usePreloadImage("/public/img/heroClippedText.png");
+   usePreloadImage("/img/heroClippedText.png");
    const [footerHeight, setFooterHeight] = useState(0);
    const imgRef = useRef<HTMLImageElement | null>(null);
    const [activeIndex, setActiveIndex] = useState(1);
@@ -89,21 +89,21 @@ const Home = () => {
                   demoPosition="right"
                   title="产品追踪, 一目了然"
                   cta={{ label: "了解产品管理", href: "/signin" }}
-                  sectionBackground="#faf8f5"
+                  sectionBackground={isDark ? "#1a1816" : "#faf8f5"}
                   demo={<ProductDemo />}
                />
                <MarketingDemoSection
                   demoPosition="left"
                   title="报价导出，一键搞定"
                   cta={{ label: "了解报价与导出", href: "/signin" }}
-                  sectionBackground="#faf8f5"
+                  sectionBackground={isDark ? "#1a1816" : "#faf8f5"}
                   demo={<QuotationDemo />}
                />
                <MarketingDemoSection
                   demoPosition="right"
                   title="报关申报，自动生成"
                   cta={{ label: "了解报关功能", href: "/signin" }}
-                  sectionBackground="#faf8f5"
+                  sectionBackground={isDark ? "#1a1816" : "#faf8f5"}
                   demo={<BorderDeclarationDemo />}
                />
             </div>
