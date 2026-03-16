@@ -5,7 +5,7 @@ from bson import ObjectId
 from pymongo.database import Database
 from app.deps import get_uid_from_token
 from app.db import get_database
-from app.models.order import Order, OrderCreate, OrderUpdate, OrderStatus, TransportMode
+from app.models.order import Order, OrderCreate, OrderUpdate, OrderStatus, TransportMode, OrderProductLineItem
 from app.routers.websocket import broadcast_to_user
 
 router = APIRouter(prefix="/orders", tags=["orders"])
