@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Literal
+from typing import List, Literal, Optional
 from datetime import datetime
 
 
@@ -22,7 +22,7 @@ class Order(BaseModel):
     portOfLoading: str
     portOfDischarge: str
     transportMode: TransportMode
-    estimatedShipmentDate: str
+    estimatedShipmentDate: datetime
     createdAt: datetime
     updatedAt: datetime
     status: OrderStatus
@@ -39,7 +39,7 @@ class OrderCreate(BaseModel):
     portOfLoading: str
     portOfDischarge: str
     transportMode: TransportMode
-    estimatedShipmentDate: str
+    estimatedShipmentDate: datetime
 
 
 class OrderUpdate(BaseModel):
@@ -50,5 +50,5 @@ class OrderUpdate(BaseModel):
     portOfLoading: Optional[str] = None
     portOfDischarge: Optional[str] = None
     transportMode: Optional[TransportMode] = None
-    estimatedShipmentDate: Optional[str] = None
+    estimatedShipmentDate: Optional[datetime] = None
     status: Optional[OrderStatus] = None

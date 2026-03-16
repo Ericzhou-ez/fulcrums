@@ -7,6 +7,7 @@ from app.deps import get_uid_from_token
 from app.db import get_database
 from app.models.client import Client, ClientCreate, ClientUpdate
 from app.routers.websocket import broadcast_to_user
+from app.constants import MAX_STRING_FIELD_LENGTH
 
 router = APIRouter(prefix="/clients", tags=["clients"])
 
@@ -32,8 +33,8 @@ def validate_client_data(data: ClientCreate, errors: List[str]):
     }
     
     for k, v in client_data.items():
-        if isinstance(v, str) and len(v.strip()) >= 250:
-            errors.append(f"{v} for {k} is longer than 250 characters")
+        if isinstance(v, str) and len(v.strip()) >= MAX_STRING_FIELD_LENGTH:
+            errors.append(f"{v} for {k} is longer than {MAX_STRING_FIELD_LENGTH} characters")
 
 
 @router.get("", response_model=List[Client])

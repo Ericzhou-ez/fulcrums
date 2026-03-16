@@ -1,3 +1,3 @@
-from .firebase_storage import upload_blob_as_jpg
+from .firebase_storage import upload_base64_image
 
-__all__ = ["upload_blob_as_jpg"]
+__all__ = ["upload_base64_image"]

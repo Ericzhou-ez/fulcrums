@@ -14,27 +14,13 @@ VALID_STATUSES: List[OrderStatus] = ["draft", "shipped", "customs_clearance", "d
 VALID_TRANSPORT_MODES: List[TransportMode] = ["sea", "air", "road", "rail"]
 
 
-def validate_order_products(products: List[dict]) -> List[dict]:
+def validate_order_products(products: List[OrderProductLineItem]) -> List[dict]:
     """Validate and normalize order products."""
     validated = []
     for item in products:
-        if not isinstance(item, dict):
-            continue
-        product_id = item.get("productId", "").strip()
-        quantity = item.get("quantity", 0)
-        
-        if isinstance(quantity, str):
-            try:
-                quantity = max(0, int(quantity))
-            except:
-                quantity = 0
-        elif isinstance(quantity, (int, float)):
-            quantity = max(0, int(quantity))
-        else:
-            quantity = 0
-        
-        if product_id and quantity > 0:
-            validated.append({"productId": product_id, "quantity": quantity})
+        # Pydantic already handles type coercion and validation
+        if item.quantity > 0:
+            validated.append({"productId": item.productId, "quantity": item.quantity})
     
     if len(validated) == 0:
         raise HTTPException(
@@ -85,8 +71,8 @@ async def create_order(
             detail=f"客户 {order_data.clientId} 不存在"
         )
     
-    # Validate products
-    validated_products = validate_order_products([p.model_dump() for p in order_data.products])
+    # Validate products (Pydantic already handles type coercion)
+    validated_products = validate_order_products(order_data.products)
     product_ids = list(set(p["productId"] for p in validated_products))
     
     product_count = db.products.count_documents({
@@ -196,7 +182,7 @@ async def update_order(
         update_data["clientId"] = order_data.clientId
     
     if order_data.products is not None:
-        validated_products = validate_order_products([p.model_dump() for p in order_data.products])
+        validated_products = validate_order_products(order_data.products)
         product_ids = list(set(p["productId"] for p in validated_products))
         
         product_count = db.products.count_documents({

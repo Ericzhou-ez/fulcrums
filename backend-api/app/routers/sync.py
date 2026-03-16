@@ -8,8 +8,9 @@ from app.db import get_database
 from app.models.supplier import Supplier
 from app.models.client import Client
 from app.models.product import Product
-from app.utils.firebase_storage import upload_blob_as_jpg
+from app.utils.firebase_storage import upload_base64_image
 from app.routers.websocket import broadcast_to_user
+from app.constants import MAX_SUPPLIERS_SYNC, MAX_CLIENTS_SYNC, MAX_PRODUCTS_SYNC
 from pydantic import BaseModel
 
 router = APIRouter(prefix="/sync", tags=["sync"])
@@ -33,10 +34,10 @@ async def sync_all(
     products = payload.products
     
     # Validate limits
-    if len(suppliers) > 50 or len(clients) > 50 or len(products) > 120:
+    if len(suppliers) > MAX_SUPPLIERS_SYNC or len(clients) > MAX_CLIENTS_SYNC or len(products) > MAX_PRODUCTS_SYNC:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="超过批量上限：最多 50 供应商 / 50 客户 / 120 产品"
+            detail=f"超过批量上限：最多 {MAX_SUPPLIERS_SYNC} 供应商 / {MAX_CLIENTS_SYNC} 客户 / {MAX_PRODUCTS_SYNC} 产品"
         )
     
     now = datetime.utcnow()
@@ -108,7 +109,7 @@ async def sync_all(
             # It's a base64 image, upload it
             image_path = f"users/{uid}/products/{product_id}.jpg"
             try:
-                image_url = await upload_blob_as_jpg(b64_image, product_id, image_path)
+                image_url = await upload_base64_image(b64_image, product_id, image_path)
             except Exception as e:
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

@@ -6,7 +6,7 @@ from pymongo.database import Database
 from app.deps import get_uid_from_token
 from app.db import get_database
 from app.models.product import Product, ProductCreate, ProductUpdate
-from app.utils.firebase_storage import upload_blob_as_jpg
+from app.utils.firebase_storage import upload_base64_image
 from app.routers.websocket import broadcast_to_user
 from firebase_admin import storage
 
@@ -106,7 +106,7 @@ async def create_product(
     
     # Upload image
     image_path = f"users/{uid}/products/{product_id}.jpg"
-    image_url = await upload_blob_as_jpg(
+    image_url = await upload_base64_image(
         product_data.image,
         product_id,
         image_path
@@ -203,17 +203,27 @@ async def update_product(
         if product.get("image"):
             try:
                 bucket = storage.bucket()
-                # Extract path from URL
                 old_url = product["image"]
                 if "firebasestorage.googleapis.com" in old_url:
                     # Parse and delete old image
-                    pass  # Optional: implement image deletion
-            except:
-                pass
+                    # Extract blob path from Firebase Storage URL
+                    # Format: https://firebasestorage.googleapis.com/v0/b/{bucket}/o/{path}?alt=media&token={token}
+                    try:
+                        # Extract the path part from the URL
+                        path_part = old_url.split(f"firebasestorage.googleapis.com/v0/b/{bucket.name}/o/")[1].split("?alt=media")[0]
+                        # Decode URL encoding (%2F -> /)
+                        old_blob_path = path_part.replace('%2F', '/')
+                        old_blob = bucket.blob(old_blob_path)
+                        if old_blob.exists():
+                            old_blob.delete()
+                    except Exception as e:
+                        print(f"Failed to delete old image: {e}")
+            except Exception as e:
+                print(f"Error processing old image deletion: {e}")
         
         # Upload new image
         image_path = f"users/{uid}/products/{product_id}.jpg"
-        image_url = await upload_blob_as_jpg(
+        image_url = await upload_base64_image(
             product_data.image,
             product_id,
             image_path
@@ -328,69 +338,77 @@ async def delete_products(
             detail="必须提供一个有效的产品 ID array"
         )
     
-    results = []
+    # Collect product IDs that actually exist and belong to the user
+    existing_products = list(db.products.find({"userId": uid, "productId": {"$in": product_ids}}))
+    existing_product_ids = [p["productId"] for p in existing_products]
     
-    for product_id in product_ids:
-        try:
-            product = db.products.find_one({
-                "userId": uid,
-                "productId": product_id
-            })
-            
-            if not product:
-                results.append({
-                    "productId": product_id,
-                    "status": "rejected",
-                    "reason": f"产品 {product_id} 不存在"
-                })
-                continue
-            
-            # Delete image from Firebase Storage
-            if product.get("image") and "firebasestorage.googleapis.com" in product.get("image", ""):
-                try:
-                    bucket = storage.bucket()
-                    blob_path = f"users/{uid}/products/{product_id}.jpg"
-                    blob = bucket.blob(blob_path)
+    if not existing_product_ids:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="没有找到要删除的产品"
+        )
+
+    # Prepare results for all requested product_ids
+    results = []
+    rejected_product_ids = set(product_ids) - set(existing_product_ids)
+    for rejected_id in rejected_product_ids:
+        results.append({
+            "productId": rejected_id,
+            "status": "rejected",
+            "reason": f"产品 {rejected_id} 不存在"
+        })
+
+    # Bulk delete images from Firebase Storage
+    bucket = storage.bucket()
+    for product in existing_products:
+        if product.get("image") and "firebasestorage.googleapis.com" in product.get("image", ""):
+            try:
+                blob_path = f"users/{uid}/products/{product['productId']}.jpg"
+                blob = bucket.blob(blob_path)
+                if blob.exists():
                     blob.delete()
-                except Exception as e:
-                    # Log but don't fail
-                    print(f"Failed to delete image: {e}")
-            
-            # Remove productId from clients
-            clients = product.get("clients", [])
-            if clients:
-                db.clients.update_many(
-                    {"userId": uid, "clientId": {"$in": clients}},
-                    {"$pull": {"productIds": product_id}}
-                )
-            
-            # Remove productId from supplier
-            supplier_id = product.get("supplierId")
-            if supplier_id:
-                db.suppliers.update_one(
-                    {"userId": uid, "supplierId": supplier_id},
-                    {"$pull": {"productIds": product_id}}
-                )
-            
-            # Delete product
-            db.products.delete_one({
-                "userId": uid,
-                "productId": product_id
-            })
-            
-            results.append({
-                "productId": product_id,
-                "status": "fulfilled",
-                "reason": None
-            })
-        except Exception as e:
-            results.append({
-                "productId": product_id,
-                "status": "rejected",
-                "reason": str(e)
-            })
+            except Exception as e:
+                print(f"Failed to delete image for product {product['productId']}: {e}")
+
+    # Collect all unique client IDs and supplier IDs from existing products
+    all_client_ids = set()
+    all_supplier_ids = set()
+    for product in existing_products:
+        clients = product.get("clients", [])
+        if clients:
+            all_client_ids.update(clients)
+        supplier_id = product.get("supplierId")
+        if supplier_id:
+            all_supplier_ids.add(supplier_id)
+
+    # Bulk remove productIds from clients
+    if all_client_ids:
+        db.clients.update_many(
+            {"userId": uid, "clientId": {"$in": list(all_client_ids)}},
+            {"$pullAll": {"productIds": existing_product_ids}}
+        )
+
+    # Bulk remove productIds from suppliers
+    if all_supplier_ids:
+        db.suppliers.update_many(
+            {"userId": uid, "supplierId": {"$in": list(all_supplier_ids)}},
+            {"$pullAll": {"productIds": existing_product_ids}}
+        )
+
+    # Bulk delete products from the products collection
+    delete_result = db.products.delete_many({
+        "userId": uid,
+        "productId": {"$in": existing_product_ids}
+    })
+
+    for product_id in existing_product_ids:
+        results.append({
+            "productId": product_id,
+            "status": "fulfilled",
+            "reason": None
+        })
     
     # Broadcast update via WebSocket
-    await broadcast_to_user(uid, {"type": "products", "action": "deleted", "productIds": product_ids})
+    await broadcast_to_user(uid, {"type": "products", "action": "deleted", "productIds": existing_product_ids})
     
     return {"success": True, "summary": results}

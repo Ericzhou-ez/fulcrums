@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     firebase_project_id: str
     firebase_storage_bucket: str
     firebase_service_account_path: str | None = None
-    cors_origins: str = "http://localhost:5173,https://fulcrums.ca"
+    cors_origins: str = ""  # Default to empty string, requiring explicit configuration
     
     class Config:
         env_file = ".env"

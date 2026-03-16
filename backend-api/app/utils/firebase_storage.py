@@ -13,6 +13,9 @@ def parse_base64_image(image_input: str) -> tuple[str, bytes]:
         
     Returns:
         Tuple of (mime_type, image_bytes)
+        
+    Raises:
+        ValueError: If mime type cannot be determined or image cannot be decoded
     """
     # Try to match data URI format: data:image/jpeg;base64,...
     match = re.match(r"^data:(image/[a-z]+);base64,(.+)$", image_input, re.IGNORECASE)
@@ -21,9 +24,12 @@ def parse_base64_image(image_input: str) -> tuple[str, bytes]:
         mime = match.group(1)
         data = match.group(2).replace(" ", "")
     else:
-        # Assume raw base64 string and default to jpeg
-        mime = "image/jpeg"
-        data = image_input.replace(" ", "")
+        # If mime type cannot be determined, raise an error
+        # Client should always provide the mime type in data URI format
+        raise ValueError(
+            "Image input must be in data URI format (data:image/type;base64,...). "
+            "Cannot determine mime type from raw base64 string."
+        )
     
     try:
         image_bytes = base64.b64decode(data)
@@ -34,16 +40,19 @@ def parse_base64_image(image_input: str) -> tuple[str, bytes]:
         raise ValueError(f"Failed to decode base64 image: {str(e)}")
 
 
-async def upload_blob_as_jpg(
+async def upload_base64_image(
     image_input: str,
     token: str,
     path: str
 ) -> str:
     """
-    Upload a base64 image to Firebase Storage as JPG.
+    Upload a base64 image to Firebase Storage.
+    
+    The function determines the content type from the input data URI format
+    and uploads the image with the appropriate mime type.
     
     Args:
-        image_input: Base64 image string
+        image_input: Base64 image string in data URI format (data:image/type;base64,...)
         token: Token to use for the file (typically productId)
         path: Storage path (e.g., "users/{uid}/products/{productId}.jpg")
         
