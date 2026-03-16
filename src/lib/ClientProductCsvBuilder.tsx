@@ -18,6 +18,7 @@ export function exportExternalProductCSV({
    const headerEn = [
       "DESIGNATION CN",
       "DESIGNATION EN",
+      "ID",
       "COL",
       "Pack L",
       "Pack W",
@@ -29,11 +30,13 @@ export function exportExternalProductCSV({
       `Freight Cost (${currency})`,
       `Total Price (${currency})`,
       "Gross Weight",
+      "Quantity (Units)",
    ];
 
    const headerZh = [
       "品名",
       "品名(英)",
+      "ID",
       "装箱量",
       "长 (m)",
       "宽 (m)",
@@ -45,6 +48,7 @@ export function exportExternalProductCSV({
       `运费 (${currency})`,
       `总价 (${currency})`,
       "毛重",
+      "数量",
    ];
 
    const csvEscape = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
@@ -86,6 +90,7 @@ export function exportExternalProductCSV({
       return [
          p.productChineseName ?? "",
          p.productEnglishName ?? "",
+         p.productId ?? "",
          p.packing ?? "",
          isNaN(Lm) ? "" : Lm.toFixed(2),
          isNaN(Wm) ? "" : Wm.toFixed(2),
@@ -101,6 +106,7 @@ export function exportExternalProductCSV({
                  p.packingMass?.packingMassUnit
               }`
             : "",
+         "",
       ];
    });
 

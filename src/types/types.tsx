@@ -85,3 +85,59 @@ export type SyncPayload = {
    suppliers: Supplier[];
    clients: Clients[];
 };
+
+export type OrderStatus =
+   | "draft" // being built
+   | "shipped" // in transit
+   | "customs_clearance"
+   | "delivered" // complete
+   | "cancelled";
+
+export type OrderProductLineItem = {
+   productId: string;
+   quantity: number;
+};
+
+export type Order = {
+   orderId: string;
+   orderName: string;
+   clientId: string;
+   products: OrderProductLineItem[];
+   incoterms: string;
+   portOfLoading: string;
+   portOfDischarge: string;
+   transportMode: "sea" | "air" | "road" | "rail";
+   estimatedShipmentDate: string;
+   createdAt: string;
+   updatedAt: string;
+   status: OrderStatus;
+};
+
+export type OrderEditPayload = {
+   orderId: string;
+   orderName: string;
+   clientId: string;
+   products: OrderProductLineItem[];
+   incoterms: string;
+   portOfLoading: string;
+   portOfDischarge: string;
+   transportMode: "sea" | "air" | "road" | "rail";
+   estimatedShipmentDate: string;
+   status: OrderStatus;
+};
+
+export const INCOTERMS = [
+   "EXW", // Ex Works
+   "FCA", // Free Carrier
+   "CPT", // Carriage Paid To
+   "CIP", // Carriage and Insurance Paid To
+   "DAP", // Delivered at Place
+   "DPU", // Delivered at Place Unloaded
+   "DDP", // Delivered Duty Paid
+   "FAS", // Free Alongside Ship
+   "FOB", // Free on Board
+   "CFR", // Cost and Freight
+   "CIF", // Cost, Insurance and Freight
+] as const;
+
+export type Incoterm = (typeof INCOTERMS)[number];

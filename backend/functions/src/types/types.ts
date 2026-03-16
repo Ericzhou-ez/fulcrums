@@ -60,3 +60,32 @@ export type Clients = {
    productIds: string[];
    updatedAt: string;
 };
+
+export type OrderStatus =
+   | "draft" // being built
+   | "shipped" // in transit
+   | "customs_clearance"
+   | "delivered" // complete
+   | "cancelled";
+
+export type OrderProductLineItem = {
+   productId: string;
+   quantity: number;
+};
+
+export type Order = {
+   orderId: string;
+   orderName: string;
+   clientId: string;
+   products: OrderProductLineItem[];
+
+   incoterms: string; // FOB, CIF, DDP, EXW
+   portOfLoading: string; 
+   portOfDischarge: string; 
+   transportMode: "sea" | "air" | "road" | "rail";
+   estimatedShipmentDate: string;
+
+   createdAt: string;
+   updatedAt: string;
+   status: OrderStatus;
+};

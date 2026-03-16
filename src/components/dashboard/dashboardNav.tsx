@@ -97,32 +97,11 @@ const navItems: NavGroupType[] = [
       ],
    },
    {
-      key: "client-management",
-      title: "客户",
-      icon: "Users",
-      items: [],
-      href: "/dashboard/clients",
-   },
-   {
-      key: "supplier-management",
-      title: "供应商",
-      icon: "ShoppingBagOpen",
-      items: [],
-      href: "/dashboard/suppliers",
-   },
-   {
       key: "purchasing-order",
       title: "订单",
       icon: "Table",
       items: [],
       href: "/dashboard/purchasing-order",
-   },
-   {
-      key: "quotation",
-      title: "报价",
-      icon: "NotePencil",
-      items: [],
-      href: "/dashboard/quotation",
    },
    {
       key: "group-customs",
@@ -145,6 +124,20 @@ const navItems: NavGroupType[] = [
             href: "/dashboard/customs/declaration",
          },
       ],
+   },
+   {
+      key: "client-management",
+      title: "客户",
+      icon: "Users",
+      items: [],
+      href: "/dashboard/clients",
+   },
+   {
+      key: "supplier-management",
+      title: "供应商",
+      icon: "ShoppingBagOpen",
+      items: [],
+      href: "/dashboard/suppliers",
    },
 ];
 

@@ -1,7 +1,7 @@
 import { PDFDocument, StandardFonts, rgb, PDFImage } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 import { Product } from "../types/types";
-import { wrapText, hasChinese } from "./helpers";
+import { wrapText, wrapTextMaxLines, hasChinese } from "./helpers";
 
 export async function ExternalPDFBuilder({
    products,
@@ -22,7 +22,7 @@ export async function ExternalPDFBuilder({
    pdfDoc.registerFontkit(fontkit);
    const latin = await pdfDoc.embedFont(StandardFonts.Helvetica);
    const noto = await pdfDoc.embedFont(
-      await fetch("/fonts/NotoSansSC-Regular.ttf").then((r) => r.arrayBuffer())
+      await fetch("/fonts/NotoSansSC-Regular.ttf").then((r) => r.arrayBuffer()),
    );
 
    const pageW = 750,
@@ -46,7 +46,7 @@ export async function ExternalPDFBuilder({
       val: string,
       x: number,
       y: number,
-      maxW: number
+      maxW: number,
    ): number => {
       page.drawText(lab, { x, y, size: sizeRow, font: latin });
       const valX = x + latin.widthOfTextAtSize(lab, sizeRow) + 4;
@@ -116,26 +116,40 @@ export async function ExternalPDFBuilder({
 
       const p = productList[i];
 
-      wrapText(p.productEnglishName, latin, sizeEN, cellW - 12).forEach(
-         (ln) => {
-            page.drawText(ln, {
-               x: x0 + 6 + 0.4,
-               y: yCur,
-               size: sizeEN,
-               font: latin,
-            });
-            yCur -= sizeEN + lead;
-         }
+      const titleEN = wrapTextMaxLines(
+         p.productEnglishName ?? "",
+         latin,
+         cellW - 12,
+         2,
+         6,
+         sizeEN,
       );
+      titleEN.lines.forEach((ln) => {
+         page.drawText(ln, {
+            x: x0 + 6 + 0.4,
+            y: yCur,
+            size: titleEN.size,
+            font: latin,
+         });
+         yCur -= titleEN.size + lead;
+      });
 
-      wrapText(p.productChineseName, noto, sizeCN, cellW - 12).forEach((ln) => {
+      const titleCN = wrapTextMaxLines(
+         p.productChineseName ?? "",
+         noto,
+         cellW - 12,
+         2,
+         5,
+         sizeCN,
+      );
+      titleCN.lines.forEach((ln) => {
          page.drawText(ln, {
             x: x0 + 6,
             y: yCur,
-            size: sizeCN,
+            size: titleCN.size,
             font: noto,
          });
-         yCur -= sizeCN + lead;
+         yCur -= titleCN.size + lead;
       });
 
       const cbm =
@@ -145,19 +159,19 @@ export async function ExternalPDFBuilder({
                  parseFloat(p.packingVolume.height)) /
               1_000_000
             : p.packingVolume.packingUnit === "m"
-            ? parseFloat(p.packingVolume.length) *
-              parseFloat(p.packingVolume.width) *
-              parseFloat(p.packingVolume.height)
-            : p.packingVolume.packingUnit === "L"
-            ? (parseFloat(p.packingVolume.length) *
-                 parseFloat(p.packingVolume.width) *
-                 parseFloat(p.packingVolume.height)) /
-              1_000
-            : 0;
+              ? parseFloat(p.packingVolume.length) *
+                parseFloat(p.packingVolume.width) *
+                parseFloat(p.packingVolume.height)
+              : p.packingVolume.packingUnit === "L"
+                ? (parseFloat(p.packingVolume.length) *
+                     parseFloat(p.packingVolume.width) *
+                     parseFloat(p.packingVolume.height)) /
+                  1_000
+                : 0;
 
       const unitPriceLocal = parseFloat(p.unitPrice) / conversionRate;
       const commission = (upCharge - 1) * unitPriceLocal;
-      const oneBoxCbm = cbm / parseInt(p.packing); 
+      const oneBoxCbm = cbm / parseInt(p.packing);
       const freight = (pricePerContainer / 68) * oneBoxCbm;
       const salesPrice = unitPriceLocal + commission;
 
@@ -167,7 +181,7 @@ export async function ExternalPDFBuilder({
          `Exw: ${currency}${salesPrice.toFixed(4)}`,
          latin,
          sizePrice,
-         cellW - 12
+         cellW - 12,
       ).forEach((ln) => {
          page.drawText(ln, {
             x: x0 + 6 + 0.8,
@@ -182,6 +196,7 @@ export async function ExternalPDFBuilder({
       yCur -= 5;
 
       const rows: string[][] = [
+         ["ID", p.productId ?? ""],
          [
             "UnitPrice:",
             `¥${
@@ -234,7 +249,9 @@ export async function ExternalPDFBuilder({
             : []),
       ].filter(
          ([, value]) =>
-            value !== undefined && value !== null && String(value).trim() !== ""
+            value !== undefined &&
+            value !== null &&
+            String(value).trim() !== "",
       );
 
       for (const [lab, val] of rows) {

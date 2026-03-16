@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Typography, Box, Alert, Button, Stack } from "@mui/material";
 import ProductCard from "../../components/dashboard/product/minProductCard";
 import "../../styles/RecentProductPage.css";
@@ -16,11 +16,16 @@ import { SquaresFour, ListBullets } from "phosphor-react";
 import Loader from "../../components/core/loader";
 import Suggestions from "../../components/dashboard/core/suggestion";
 
+const GRID_PAGE_SIZE = 20;
+
 const RecentProductsPage = () => {
    const { isDark, isMdUp, isSmUp } = useThemeContext();
-   const { products, errorMessages } = useProductSupplierClientContext();
+   const { getProductsPage } = useProductSupplierClientContext();
 
-   const productList = products;
+   const recentPageItems = React.useMemo(
+      () => getProductsPage(0, GRID_PAGE_SIZE, { sortOrder: "desc" }).items,
+      [getProductsPage]
+   );
 
    useEffect(() => {
       document.title = "Fulcrums | 最近";
@@ -109,12 +114,16 @@ const RecentProductsPage = () => {
 
          {viewMode === "grid" ? (
             <div className="cards-grid">
-               {Object.entries(productList).map(([id, product]) => (
-                  <ProductCard key={id} item={product} isDarkMode={isDark} />
+               {recentPageItems.map((product) => (
+                  <ProductCard
+                     key={product.productId}
+                     item={product}
+                     isDarkMode={isDark}
+                  />
                ))}
             </div>
          ) : (
-            <ProductTable productList={Object.values(productList)} />
+            <ProductTable />
          )}
 
          <Suggestions

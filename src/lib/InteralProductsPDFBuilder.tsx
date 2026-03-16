@@ -24,7 +24,7 @@ export async function BuildInternalProductPDF({
    pdfDoc.registerFontkit(fontkit);
    const latin = await pdfDoc.embedFont(StandardFonts.Helvetica);
    const noto = await pdfDoc.embedFont(
-      await fetch("/fonts/NotoSansSC-Regular.ttf").then((r) => r.arrayBuffer())
+      await fetch("/fonts/NotoSansSC-Regular.ttf").then((r) => r.arrayBuffer()),
    );
 
    const pageW = 750,
@@ -47,7 +47,7 @@ export async function BuildInternalProductPDF({
       val: string,
       x: number,
       y: number,
-      maxW: number
+      maxW: number,
    ): number => {
       page.drawText(lab, { x, y, size: sizeRow, font: latin });
       const valX = x + latin.widthOfTextAtSize(lab, sizeRow) + 4;
@@ -137,7 +137,7 @@ export async function BuildInternalProductPDF({
                font: latin,
             });
             yCur -= sizeEN + lead;
-         }
+         },
       );
 
       yCur -= 3;
@@ -149,15 +149,15 @@ export async function BuildInternalProductPDF({
                  parseFloat(p.packingVolume.height)) /
               1_000_000
             : p.packingVolume.packingUnit === "m"
-            ? parseFloat(p.packingVolume.length) *
-              parseFloat(p.packingVolume.width) *
-              parseFloat(p.packingVolume.height)
-            : p.packingVolume.packingUnit === "L"
-            ? (parseFloat(p.packingVolume.length) *
-                 parseFloat(p.packingVolume.width) *
-                 parseFloat(p.packingVolume.height)) /
-              1_000
-            : 0;
+              ? parseFloat(p.packingVolume.length) *
+                parseFloat(p.packingVolume.width) *
+                parseFloat(p.packingVolume.height)
+              : p.packingVolume.packingUnit === "L"
+                ? (parseFloat(p.packingVolume.length) *
+                     parseFloat(p.packingVolume.width) *
+                     parseFloat(p.packingVolume.height)) /
+                  1_000
+                : 0;
 
       const unitPriceLocal = parseFloat(p.unitPrice) / conversionRate;
       const commission = (upCharge - 1) * unitPriceLocal;
@@ -213,7 +213,9 @@ export async function BuildInternalProductPDF({
          ["Additional Notes:", p.additionalNotes ?? ""],
       ].filter(
          ([, value]) =>
-            value !== undefined && value !== null && String(value).trim() !== ""
+            value !== undefined &&
+            value !== null &&
+            String(value).trim() !== "",
       );
 
       for (const [lab, val] of rows) {

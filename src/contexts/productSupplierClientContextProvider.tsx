@@ -5,8 +5,39 @@ import React, {
    ReactNode,
    useEffect,
    useMemo,
+   useCallback,
 } from "react";
-import { Product, Supplier, Clients, SyncPayload } from "../types/types";
+import {
+   Product,
+   Supplier,
+   Clients,
+   SyncPayload,
+   OrderProductLineItem,
+   Order,
+   OrderStatus,
+   OrderEditPayload,
+} from "../types/types";
+
+export type OrderCreatePayload = {
+   orderName: string;
+   clientId: string;
+   products: OrderProductLineItem[];
+   incoterms: string;
+   portOfLoading: string;
+   portOfDischarge: string;
+   transportMode: "sea" | "air" | "road" | "rail";
+   estimatedShipmentDate: string;
+};
+
+export type { OrderEditPayload };
+
+export type ProductTableFilters = {
+   searchTerm?: string;
+   selectedClient?: string;
+   selectedSupplier?: string;
+   sortOrder?: "asc" | "desc";
+   savedOnly?: boolean;
+};
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { getDocs, collection, onSnapshot } from "firebase/firestore";
 import { db } from "../configs/firebase";
@@ -60,6 +91,19 @@ export type ProductSupplierClientContextType = {
    setErrorMessages: React.Dispatch<React.SetStateAction<string>>;
    syncAll: (payload: SyncPayload) => Promise<void>;
    syncState: "idle" | "syncing" | "done";
+   getFilteredProducts: (filters: ProductTableFilters) => Product[];
+   getProductsPage: (
+      page: number,
+      pageSize: number,
+      filters: ProductTableFilters
+   ) => { items: Product[]; total: number };
+   getRecentProducts: (limit: number) => Product[];
+   getSavedProducts: (limit: number) => Product[];
+   createOrder: (payload: OrderCreatePayload) => Promise<void>;
+   orders: Record<string, Order>;
+   editOrder: (payload: OrderEditPayload) => Promise<void>;
+   deleteOrder: (orderId: string) => Promise<void>;
+   updateOrderState: (orderId: string, status: OrderStatus) => Promise<void>;
 };
 
 const ProductSupplierClientContext = createContext<
@@ -112,6 +156,8 @@ export const ProductSupplierClientContextProvider = ({
       [key: string]: Supplier;
    }>({});
 
+   const [orders, setOrders] = useState<Record<string, Order>>({});
+
    const functions = getFunctions();
    const navigate = useNavigate();
 
@@ -121,20 +167,15 @@ export const ProductSupplierClientContextProvider = ({
       []
    );
 
-   // listen to dexie changes and merge with firestore clients
+   // Merge firestore clients with dexie (so clients list is populated even before Dexie resolves)
    useEffect(() => {
-      if (!dexieClients) {
-         return;
-      }
-
       const merged = { ...firestoreClients };
-
-      dexieClients.forEach((client) => {
-         if (!merged[client.clientId]) {
+      const fromDexie = dexieClients ?? [];
+      fromDexie.forEach((client) => {
+         if (client?.clientId && !merged[client.clientId]) {
             merged[client.clientId] = client;
          }
       });
-
       setClients(merged);
    }, [dexieClients, firestoreClients]);
 
@@ -243,6 +284,74 @@ export const ProductSupplierClientContextProvider = ({
       return augmentedProducts;
    }, [firestoreProducts, clients, suppliers]);
 
+   const getFilteredProducts = useCallback(
+      (filters: ProductTableFilters) => {
+         let data = Object.values(products);
+         const {
+            searchTerm = "",
+            selectedClient = "all",
+            selectedSupplier = "all",
+            sortOrder = "desc",
+            savedOnly = false,
+         } = filters;
+
+         if (savedOnly) {
+            data = data.filter((p) => p.saved === true);
+         }
+         if (searchTerm) {
+            const lower = searchTerm.toLowerCase();
+            data = data.filter(
+               (item) =>
+                  item.productEnglishName.toLowerCase().includes(lower) ||
+                  item.productChineseName.includes(searchTerm) ||
+                  item.hsCode.includes(searchTerm)
+            );
+         }
+         if (selectedClient !== "all") {
+            data = data.filter((p) => p.clients?.includes(selectedClient));
+         }
+         if (selectedSupplier !== "all") {
+            data = data.filter((p) => p.supplierId === selectedSupplier);
+         }
+         data = [...data].sort((a, b) => {
+            const dateA = new Date(a.updatedAt).getTime();
+            const dateB = new Date(b.updatedAt).getTime();
+            return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
+         });
+         return data;
+      },
+      [products]
+   );
+
+   const getProductsPage = useCallback(
+      (page: number, pageSize: number, filters: ProductTableFilters) => {
+         const list = getFilteredProducts(filters);
+         const start = page * pageSize;
+         return {
+            items: list.slice(start, start + pageSize),
+            total: list.length,
+         };
+      },
+      [getFilteredProducts]
+   );
+
+   const getRecentProducts = useCallback(
+      (limit: number) => {
+         return getFilteredProducts({ sortOrder: "desc" }).slice(0, limit);
+      },
+      [getFilteredProducts]
+   );
+
+   const getSavedProducts = useCallback(
+      (limit: number) => {
+         return getFilteredProducts({
+            savedOnly: true,
+            sortOrder: "desc",
+         }).slice(0, limit);
+      },
+      [getFilteredProducts]
+   );
+
    // listen to firestore client changes
    useEffect(() => {
       if (!user?.uid) {
@@ -320,6 +429,26 @@ export const ProductSupplierClientContextProvider = ({
          }
       );
 
+      return unsub;
+   }, [user?.uid]);
+
+   // Firestore listener for orders (real-time sync)
+   useEffect(() => {
+      if (!user?.uid) return;
+      const unsub = onSnapshot(
+         collection(db, "users", user.uid, "orders"),
+         (snap) => {
+            const map: Record<string, Order> = {};
+            snap.forEach((doc) => {
+               const o = doc.data() as Order;
+               map[o.orderId] = o;
+            });
+            setOrders(map);
+         },
+         (err) => {
+            console.error("Firestore listener error (orders):", err);
+         }
+      );
       return unsub;
    }, [user?.uid]);
 
@@ -549,6 +678,67 @@ export const ProductSupplierClientContextProvider = ({
       }
    };
 
+   const createOrder = async (payload: OrderCreatePayload) => {
+      try {
+         setServiceLoading(true);
+         const createOrderFn = httpsCallable(functions, "createOrder");
+         const response: any = await createOrderFn(payload);
+         if (response?.data?.success) {
+            setServiceLoading(false);
+            setErrorMessages("订单已创建");
+         }
+      } catch (err: any) {
+         setServiceLoading(false);
+         const message =
+            typeof err === "string" ? err : err?.message ?? "创建订单失败";
+         setErrorMessages(message);
+      }
+   };
+
+   const editOrder = async (payload: OrderEditPayload) => {
+      try {
+         setServiceLoading(true);
+         const fn = httpsCallable(functions, "editOrder");
+         const response: any = await fn(payload);
+         if (response?.data?.success) {
+            setServiceLoading(false);
+            setErrorMessages("订单已更新");
+         }
+      } catch (err: any) {
+         setServiceLoading(false);
+         setErrorMessages(err?.message ?? "更新订单失败");
+      }
+   };
+
+   const deleteOrder = async (orderId: string) => {
+      try {
+         setServiceLoading(true);
+         const fn = httpsCallable(functions, "deleteOrder");
+         const response: any = await fn({ orderId });
+         if (response?.data?.success) {
+            setServiceLoading(false);
+            setErrorMessages("订单已删除");
+         }
+      } catch (err: any) {
+         setServiceLoading(false);
+         setErrorMessages(err?.message ?? "删除订单失败");
+      }
+   };
+
+   const updateOrderState = async (orderId: string, status: OrderStatus) => {
+      try {
+         setServiceLoading(true);
+         const fn = httpsCallable(functions, "updateOrderState");
+         const response: any = await fn({ orderId, status });
+         if (response?.data?.success) {
+            setServiceLoading(false);
+         }
+      } catch (err: any) {
+         setServiceLoading(false);
+         setErrorMessages(err?.message ?? "更新状态失败");
+      }
+   };
+
    async function getClients(): Promise<Object> {
       try {
          const clientsSnap = await getDocs(
@@ -668,8 +858,17 @@ export const ProductSupplierClientContextProvider = ({
             setErrorMessages,
             syncAll,
             syncState,
+            getFilteredProducts,
+            getProductsPage,
+            getRecentProducts,
+            getSavedProducts,
             addClientProducts,
             deleteClientProducts,
+            createOrder,
+            orders,
+            editOrder,
+            deleteOrder,
+            updateOrderState,
             setDeletedSupplier,
             setEditedSupplier,
             setEditedClient,

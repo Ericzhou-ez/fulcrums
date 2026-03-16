@@ -32,6 +32,9 @@ import { X as CloseIcon } from "phosphor-react";
 import ClientsPage from "../pages/dashboard/clientsPage";
 import SuppliersPage from "../pages/dashboard/suppliersPage";
 import ClientDetailsPage from "../components/dashboard/product/clientDetailsPage";
+import OrdersPage from "../components/dashboard/order/orderPage";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 export interface AppRoutesProps {
    loading: boolean;
@@ -67,159 +70,167 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
    return loading ? (
       <Loading />
    ) : (
-      <UserServiceProvider
-         setUser={setUser}
-         user={user}
-         serviceLoading={serviceLoading}
-         setServiceLoading={setServiceLoading}
-         errorMessage={errorMessage}
-         setErrorMessage={setErrorMessage}
-         successMessage={successMessage}
-         setSuccessMessage={setSuccessMessage}
-      >
-         <ProductSupplierClientContextProvider
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+         <UserServiceProvider
+            setUser={setUser}
+            user={user}
             serviceLoading={serviceLoading}
             setServiceLoading={setServiceLoading}
-            errorMessages={errorMessages}
-            setErrorMessages={setErrorMessages}
+            errorMessage={errorMessage}
+            setErrorMessage={setErrorMessage}
+            successMessage={successMessage}
+            setSuccessMessage={setSuccessMessage}
          >
-            <GlobalKeyListener />
-            <GlobalCommandListener />
-            <GlobalProfileListener />
-            <GlobalHomeListener />
-            <GlobalThemeListener />
+            <ProductSupplierClientContextProvider
+               serviceLoading={serviceLoading}
+               setServiceLoading={setServiceLoading}
+               errorMessages={errorMessages}
+               setErrorMessages={setErrorMessages}
+            >
+               <GlobalKeyListener />
+               <GlobalCommandListener />
+               <GlobalProfileListener />
+               <GlobalHomeListener />
+               <GlobalThemeListener />
 
-            {errorMessages && (
-               <Snackbar
-                  open={!!errorMessages}
-                  autoHideDuration={5000}
-                  message={errorMessages}
-                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                  action={action}
-                  onClose={() => setErrorMessages("")}
-               />
-            )}
+               {errorMessages && (
+                  <Snackbar
+                     open={!!errorMessages}
+                     autoHideDuration={5000}
+                     message={errorMessages}
+                     anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                     action={action}
+                     onClose={() => setErrorMessages("")}
+                  />
+               )}
 
-            <Routes>
-               <Route
-                  path="/signin"
-                  element={
-                     loading ? (
-                        <Loading />
-                     ) : signedIn ? (
-                        <Navigate to="/dashboard" />
-                     ) : (
-                        <SignInPage />
-                     )
-                  }
-               />
-               <Route path="/components" element={<Components />} />
-               <Route path="/" element={<Home />} />
-               <Route path="/terms" element={<TermsOfServicePage />} />
-               <Route path="/contact" element={<ContactPage />} />
-               <Route path="/privacy" element={<PrivacyPolicyPage />} />
-
-               <Route
-                  path="/product/:productId"
-                  element={
-                     <PrivateRoute>
-                        <DisplayProductPage />
-                     </PrivateRoute>
-                  }
-               />
-               <Route
-                  path="/dashboard"
-                  element={
-                     <PrivateRoute>
-                        <Dashboard />
-                     </PrivateRoute>
-                  }
-               />
-               <Route
-                  path="/dashboard/settings"
-                  element={
-                     <PrivateRoute>
-                        <SettingPage />
-                     </PrivateRoute>
-                  }
-               />
-               <Route
-                  path="/dashboard/quotation/internal"
-                  element={
-                     <PrivateRoute>
-                        <InternalQuotationPage />
-                     </PrivateRoute>
-                  }
-               />
-               <Route
-                  path="/dashboard/quotation/external"
-                  element={
-                     <PrivateRoute>
-                        <ExternalQuotationPage />
-                     </PrivateRoute>
-                  }
-               />
-               <Route
-                  path="/dashboard/add-product"
-                  element={
-                     <PrivateRoute>
-                        <AddProductPage />
-                     </PrivateRoute>
-                  }
-               />
-               <Route
-                  path="/dashboard/search"
-                  element={
-                     <PrivateRoute>
-                        <SearchPage />
-                     </PrivateRoute>
-                  }
-               />
-               <Route
-                  path="/dashboard/recent"
-                  element={
-                     <PrivateRoute>
-                        <RecentProductsPage />
-                     </PrivateRoute>
-                  }
-               />
-               <Route
-                  path="/dashboard/saved"
-                  element={
-                     <PrivateRoute>
-                        <SavedPage />
-                     </PrivateRoute>
-                  }
-               />
-               <Route
-                  path="/dashboard/clients"
-                  element={
-                     <PrivateRoute>
-                        <ClientsPage />
-                     </PrivateRoute>
-                  }
-               />
-               <Route
-                  path="/dashboard/suppliers"
-                  element={
-                     <PrivateRoute>
-                        <SuppliersPage />
-                     </PrivateRoute>
-                  }
-               />
-               <Route
-                  path="/client/:clientId"
-                  element={
-                     <PrivateRoute>
-                        <ClientDetailsPage />
-                     </PrivateRoute>
-                  }
-               />
-
-               <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-         </ProductSupplierClientContextProvider>
-      </UserServiceProvider>
+               <Routes>
+                  <Route
+                     path="/signin"
+                     element={
+                        loading ? (
+                           <Loading />
+                        ) : signedIn ? (
+                           <Navigate to="/dashboard" />
+                        ) : (
+                           <SignInPage />
+                        )
+                     }
+                  />
+                  <Route path="/components" element={<Components />} />
+                  <Route path="/" element={<Home />} />
+                  <Route path="/terms" element={<TermsOfServicePage />} />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                  <Route
+                     path="/product/:productId"
+                     element={
+                        <PrivateRoute>
+                           <DisplayProductPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/dashboard"
+                     element={
+                        <PrivateRoute>
+                           <Dashboard />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/dashboard/settings"
+                     element={
+                        <PrivateRoute>
+                           <SettingPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/dashboard/quotation/internal"
+                     element={
+                        <PrivateRoute>
+                           <InternalQuotationPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/dashboard/quotation/external"
+                     element={
+                        <PrivateRoute>
+                           <ExternalQuotationPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/dashboard/add-product"
+                     element={
+                        <PrivateRoute>
+                           <AddProductPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/dashboard/search"
+                     element={
+                        <PrivateRoute>
+                           <SearchPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/dashboard/recent"
+                     element={
+                        <PrivateRoute>
+                           <RecentProductsPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/dashboard/saved"
+                     element={
+                        <PrivateRoute>
+                           <SavedPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/dashboard/clients"
+                     element={
+                        <PrivateRoute>
+                           <ClientsPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/dashboard/suppliers"
+                     element={
+                        <PrivateRoute>
+                           <SuppliersPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/client/:clientId"
+                     element={
+                        <PrivateRoute>
+                           <ClientDetailsPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route
+                     path="/dashboard/purchasing-order"
+                     element={
+                        <PrivateRoute>
+                           <OrdersPage />
+                        </PrivateRoute>
+                     }
+                  />
+                  <Route path="*" element={<NotFoundPage />} />
+               </Routes>
+            </ProductSupplierClientContextProvider>
+         </UserServiceProvider>
+      </LocalizationProvider>
    );
 };
 

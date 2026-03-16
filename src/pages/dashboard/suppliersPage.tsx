@@ -2,16 +2,6 @@ import React, { useState, useEffect, useMemo } from "react";
 import {
    Typography,
    Box,
-   Paper,
-   Table,
-   TableBody,
-   TableCell,
-   TableContainer,
-   TableHead,
-   TableRow,
-   Tooltip,
-   IconButton,
-   Stack,
    Button,
    Snackbar,
    Alert,
@@ -21,12 +11,9 @@ import {
    DialogActions,
    TextField,
    useTheme,
-   InputAdornment,
-   Select,
-   MenuItem,
-   Zoom,
+   Stack,
 } from "@mui/material";
-import { Trash, Plus, PencilSimple, MagnifyingGlass } from "phosphor-react";
+import { Plus } from "phosphor-react";
 import Nav from "../../components/core/nav";
 import Footer from "../../components/core/footer";
 import SideNav from "../../components/dashboard/dashboardNav";
@@ -34,9 +21,8 @@ import "../../styles/quotation.css";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
 import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
 import { Supplier } from "../../types/types";
-import { useThemeContext } from "../../contexts/themeContextProvider";
 import NewSupplierModal from "../../components/dashboard/supplier/addNewSupplierModal";
-import TimeAgoTypography from "../../components/dashboard/product/timeAgoTypography";
+import { SupplierTable } from "../../components/dashboard/supplier/supplierTable";
 import Suggestions from "../../components/dashboard/core/suggestion";
 
 interface EditSupplierModalProps {
@@ -221,7 +207,6 @@ const EditSupplierModal: React.FC<EditSupplierModalProps> = ({
 
 const SuppliersPage = () => {
    const {
-      suppliers,
       products,
       deleteSupplier,
       deletedSupplier,
@@ -231,7 +216,6 @@ const SuppliersPage = () => {
    } = useProductSupplierClientContext();
    const { navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles } =
       useUIStateContext();
-   const { isDark, isSmUp } = useThemeContext();
 
    const [error, setError] = useState<string | null>(null);
    const [success, setSuccess] = useState<string | null>(null);
@@ -239,46 +223,14 @@ const SuppliersPage = () => {
    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
    const [supplierToEdit, setSupplierToEdit] = useState<Supplier | null>(null);
 
-   const [searchTerm, setSearchTerm] = useState("");
-   const [sortOrder, setSortOrder] = useState("desc"); // 'desc' for latest, 'asc' for oldest
-
-   useEffect(() => {
-      document.title = "Fulcrums | 供应商管理";
-   }, []);
-
-   const suppliersArray = useMemo(
-      () => (suppliers ? Object.values(suppliers) : []),
-      [suppliers]
-   );
    const productsArray = useMemo(
       () => (products ? Object.values(products) : []),
       [products]
    );
 
-   const processedSuppliers = useMemo(() => {
-      let data = [...suppliersArray];
-
-      if (searchTerm) {
-         const lowercasedFilter = searchTerm.toLowerCase();
-         data = data.filter(
-            (supplier) =>
-               supplier.supplierName
-                  ?.toLowerCase()
-                  .includes(lowercasedFilter) ||
-               supplier.supplierAddress
-                  ?.toLowerCase()
-                  .includes(lowercasedFilter)
-         );
-      }
-
-      data.sort((a, b) => {
-         const dateA = new Date(a.updatedAt).getTime();
-         const dateB = new Date(b.updatedAt).getTime();
-         return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
-      });
-
-      return data;
-   }, [suppliersArray, searchTerm, sortOrder]);
+   useEffect(() => {
+      document.title = "Fulcrums | 供应商管理";
+   }, []);
 
    const handleDeleteSupplier = (supplierToDelete: Supplier) => {
       const isAssociated = productsArray.some(
@@ -313,7 +265,6 @@ const SuppliersPage = () => {
       }
    }, [editedSupplier, setEditedSupplier]);
 
-   const borderColor = isDark ? "rgba(255, 255, 255, 0.12)" : "#e0e0e0";
    return (
       <Box className="recent-products-page" sx={mainContentStyles(navOpen)}>
          <SideNav navOpen={navOpen} setNavOpen={setNavOpen} />
@@ -357,211 +308,10 @@ const SuppliersPage = () => {
 
             <div className="gradient-divider"></div>
 
-            <Stack
-               direction="row"
-               spacing={1}
-               alignItems="center"
-               sx={{ mt: 2, mb: 2 }}
-            >
-               <TextField
-                  fullWidth
-                  variant="outlined"
-                  size="small"
-                  placeholder="搜索供应商名称或地址"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  InputProps={{
-                     startAdornment: (
-                        <InputAdornment position="start">
-                           <MagnifyingGlass />
-                        </InputAdornment>
-                     ),
-                  }}
-               />
-               <Select
-                  value={sortOrder}
-                  onChange={(e) => setSortOrder(e.target.value)}
-                  size="small"
-               >
-                  <MenuItem value="desc">最新</MenuItem>
-                  <MenuItem value="asc">最早</MenuItem>
-               </Select>
-            </Stack>
-
-            <Paper
-               sx={{
-                  borderRadius: "15px",
-                  border: `1px solid ${borderColor}`,
-                  boxShadow: isDark ? "none" : "0 4px 20px rgba(0,0,0,0.07)",
-                  overflow: "hidden",
-                  backgroundColor: "background.paper",
-               }}
-            >
-               <TableContainer>
-                  <Table
-                     sx={{
-                        minWidth: 800,
-                     }}
-                     aria-label="suppliers table"
-                  >
-                     <TableHead
-                        sx={{
-                           backgroundColor: isDark ? "#191919" : "#f9fafb",
-                        }}
-                     >
-                        <TableRow>
-                           <TableCell
-                              sx={{
-                                 fontWeight: 600,
-                                 color: "text.secondary",
-                                 borderBottom: `1px solid ${borderColor}`,
-                                 textWrap: "nowrap",
-                              }}
-                           >
-                              供应商名称
-                           </TableCell>
-                           <TableCell
-                              sx={{
-                                 fontWeight: 600,
-                                 color: "text.secondary",
-                                 borderBottom: `1px solid ${borderColor}`,
-                                 textWrap: "nowrap",
-                              }}
-                           >
-                              地址
-                           </TableCell>
-                           <TableCell
-                              sx={{
-                                 fontWeight: 600,
-                                 color: "text.secondary",
-                                 borderBottom: `1px solid ${borderColor}`,
-                                 textWrap: "nowrap",
-                              }}
-                           >
-                              电话
-                           </TableCell>
-                           <TableCell
-                              sx={{
-                                 fontWeight: 600,
-                                 color: "text.secondary",
-                                 borderBottom: `1px solid ${borderColor}`,
-                                 textWrap: "nowrap",
-                              }}
-                           >
-                              邮箱
-                           </TableCell>
-                           <TableCell
-                              sx={{
-                                 fontWeight: 600,
-                                 color: "text.secondary",
-                                 borderBottom: `1px solid ${borderColor}`,
-                                 textWrap: "nowrap",
-                              }}
-                           >
-                              上次更新
-                           </TableCell>
-                           <TableCell
-                              align="right"
-                              sx={{
-                                 fontWeight: 600,
-                                 color: "text.secondary",
-                                 borderBottom: `1px solid ${borderColor}`,
-                              }}
-                           ></TableCell>
-                        </TableRow>
-                     </TableHead>
-                     <TableBody>
-                        {processedSuppliers.map((supplier) => (
-                           <TableRow
-                              key={supplier.supplierId}
-                              sx={{
-                                 "&:last-child td, &:last-child th": {
-                                    border: 0,
-                                 },
-                                 "&:hover": {
-                                    backgroundColor: isDark
-                                       ? "rgba(255, 255, 255, 0.08)"
-                                       : "#f5f5f5",
-                                 },
-                              }}
-                           >
-                              <TableCell component="th" scope="row">
-                                 <Typography
-                                    variant="body1"
-                                    sx={{
-                                       fontWeight: 600,
-                                       cursor: "pointer",
-                                       color: "text.primary",
-                                    }}
-                                 >
-                                    {supplier.supplierName}
-                                 </Typography>
-                              </TableCell>
-                              <TableCell
-                                 sx={{
-                                    borderBottom: `1px solid ${borderColor}`,
-                                    color: "text.secondary",
-                                 }}
-                              >
-                                 {supplier.supplierAddress}
-                              </TableCell>
-                              <TableCell
-                                 sx={{
-                                    borderBottom: `1px solid ${borderColor}`,
-                                    color: "text.secondary",
-                                 }}
-                              >
-                                 {supplier.supplierPhone}
-                              </TableCell>
-                              <TableCell
-                                 sx={{
-                                    borderBottom: `1px solid ${borderColor}`,
-                                    color: "text.secondary",
-                                 }}
-                              >
-                                 {supplier.supplierEmail}
-                              </TableCell>
-                              <TableCell
-                                 sx={{
-                                    borderBottom: `1px solid ${borderColor}`,
-                                    color: "text.secondary",
-                                 }}
-                              >
-                                 <TimeAgoTypography
-                                    timestamp={supplier.updatedAt}
-                                 />
-                              </TableCell>
-                              <TableCell
-                                 align="right"
-                                 sx={{
-                                    borderBottom: `1px solid ${borderColor}`,
-                                 }}
-                              >
-                                 <Tooltip title="删除">
-                                    <IconButton
-                                       onClick={() =>
-                                          handleDeleteSupplier(supplier)
-                                       }
-                                    >
-                                       <Trash />
-                                    </IconButton>
-                                 </Tooltip>
-                                 <Tooltip title="编辑">
-                                    <IconButton
-                                       onClick={() =>
-                                          handleEditSupplier(supplier)
-                                       }
-                                    >
-                                       <PencilSimple />
-                                    </IconButton>
-                                 </Tooltip>
-                              </TableCell>
-                           </TableRow>
-                        ))}
-                     </TableBody>
-                  </Table>
-               </TableContainer>
-            </Paper>
+            <SupplierTable
+               onEdit={handleEditSupplier}
+               onDelete={handleDeleteSupplier}
+            />
          </Box>
 
          {overlay && (
@@ -620,37 +370,6 @@ const SuppliersPage = () => {
                { title: "添加新产品", link: "/dashboard/add-product" },
             ]}
          />
-
-         <Zoom in={processedSuppliers.length > 0}>
-            <Box
-               sx={{
-                  position: "fixed",
-                  bottom: { xs: 24, md: 32 },
-                  right: { xs: 24, md: 32 },
-                  zIndex: 1300,
-                  backgroundColor: isDark
-                     ? "rgba(40, 40, 40, 0.6)"
-                     : "rgba(255, 255, 255, 0.7)",
-                  backdropFilter: "blur(6px)",
-                  border: `1px solid ${
-                     isDark
-                        ? "rgba(255, 255, 255, 0.2)"
-                        : "rgba(255, 255, 255, 0.8)"
-                  }`,
-                  borderRadius: "50px",
-                  boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.2)",
-                  py: 1,
-                  px: 2,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-               }}
-            >
-               <Typography variant="body1" fontWeight={500}>
-                  共 {processedSuppliers.length} 项
-               </Typography>
-            </Box>
-         </Zoom>
 
          <Footer />
       </Box>

@@ -1,4 +1,5 @@
 import * as React from "react";
+import type { SelectChangeEvent } from "@mui/material";
 import {
    Box,
    Card,
@@ -21,6 +22,7 @@ import {
    Alert,
    Menu,
    Zoom,
+   Skeleton,
 } from "@mui/material";
 import {
    Image as ImageIcon,
@@ -49,66 +51,264 @@ const symbolToCurrencyCode: Record<string, string> = {
    "€": "EUR",
 };
 
-export function ProductTable({ productList }: { productList: Product[] }) {
-   const { toggleSaveUnsaveProduct, deleteProducts, clients, suppliers } =
-      useProductSupplierClientContext();
+const ROWS_PER_PAGE_OPTIONS = [5, 20, 50] as const;
+const DEFAULT_ROWS_PER_PAGE = 20;
+const ROWS_PER_PAGE_STORAGE_KEY = "productTable.rowsPerPage";
 
-   async function toggleSave(productId: string) {
-      await toggleSaveUnsaveProduct(productId);
-   }
+function getStoredRowsPerPage(): number {
+   if (typeof window === "undefined") return DEFAULT_ROWS_PER_PAGE;
+   const stored = localStorage.getItem(ROWS_PER_PAGE_STORAGE_KEY);
+   if (stored == null) return DEFAULT_ROWS_PER_PAGE;
+   const n = parseInt(stored, 10);
+   return ROWS_PER_PAGE_OPTIONS.includes(n as (typeof ROWS_PER_PAGE_OPTIONS)[number])
+      ? n
+      : DEFAULT_ROWS_PER_PAGE;
+}
 
+function productsToRecord(products: Product[]): Record<string, Product> {
+   return products.reduce((acc, product) => {
+      acc[product.productId] = product;
+      return acc;
+   }, {} as Record<string, Product>);
+}
+
+function isValidExportParams(
+   upCharge: number,
+   conversionRate: number,
+   pricePerContainer: number
+): boolean {
+   return (
+      upCharge >= 1.01 &&
+      upCharge < 10 &&
+      !isNaN(upCharge) &&
+      conversionRate > 0 &&
+      !isNaN(conversionRate) &&
+      pricePerContainer > 0 &&
+      !isNaN(pricePerContainer)
+   );
+}
+
+type ProductTableRowProps = {
+   row: Product;
+   suppliers: Record<string, Supplier>;
+   isSelected: boolean;
+   onToggleSelect: () => void;
+   onToggleSave: (productId: string) => void;
+};
+
+function ProductTableRow({
+   row,
+   suppliers,
+   isSelected,
+   onToggleSelect,
+   onToggleSave,
+}: ProductTableRowProps) {
+   const priceString = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: symbolToCurrencyCode[row.currency] ?? "CNY",
+   }).format(parseFloat(row.unitPrice));
+
+   return (
+      <TableRow key={row.productId} selected={isSelected} hover>
+         <TableCell padding="checkbox">
+            <Checkbox checked={isSelected} onChange={onToggleSelect} />
+         </TableCell>
+         <TableCell>
+            <Stack direction="row" spacing={2} alignItems="center">
+               {row.image ? (
+                  <Box
+                     sx={{
+                        width: 80,
+                        height: 80,
+                        borderRadius: 1,
+                        bgcolor: "var(--mui-palette-background-level2)",
+                        backgroundImage: `url(${row.image})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        flexShrink: 0,
+                     }}
+                  />
+               ) : (
+                  <Box
+                     sx={{
+                        width: 80,
+                        height: 80,
+                        borderRadius: 1,
+                        bgcolor: "var(--mui-palette-background-level2)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                     }}
+                  >
+                     <ImageIcon fontSize="var(--icon-fontSize-lg)" />
+                  </Box>
+               )}
+               <Box
+                  sx={{
+                     maxWidth: "80%",
+                     overflow: "hidden",
+                     textOverflow: "ellipsis",
+                  }}
+               >
+                  <a href={`/product/${row.productId}`}>
+                     <Typography
+                        variant="subtitle1"
+                        fontSize={{ xs: "0.9rem", md: "1.1rem" }}
+                        noWrap
+                        className="link"
+                     >
+                        {row.productChineseName}
+                     </Typography>
+                  </a>
+                  <Typography
+                     variant="body2"
+                     color="text.secondary"
+                     fontWeight={500}
+                     noWrap
+                  >
+                     {row.productEnglishName}
+                  </Typography>
+               </Box>
+            </Stack>
+         </TableCell>
+         <TableCell>
+            <Typography variant="inherit">
+               {suppliers[row.supplierId]?.supplierName}
+            </Typography>
+         </TableCell>
+         <TableCell>
+            <Typography variant="inherit" noWrap>
+               {row.packing}
+            </Typography>
+         </TableCell>
+         <TableCell>
+            <Typography variant="inherit">{priceString}</Typography>
+         </TableCell>
+         <TableCell>
+            <TimeAgoTypography timestamp={row.updatedAt} />
+         </TableCell>
+         <TableCell>
+            <Stack
+               direction="row"
+               justifyContent="space-between"
+               alignItems="center"
+            >
+               <Stack direction="row">
+                  <a href={`/product/${row.productId}`}>
+                     <IconButton>
+                        <PencilSimpleIcon />
+                     </IconButton>
+                  </a>
+                  <div onClick={() => onToggleSave(row.productId)}>
+                     <Tooltip title="收藏">
+                        <HeartComponent saved={row.saved} />
+                     </Tooltip>
+                  </div>
+               </Stack>
+            </Stack>
+         </TableCell>
+      </TableRow>
+   );
+}
+
+const tableScrollContainerSx = {
+   overflowX: "auto" as const,
+   "&::-webkit-scrollbar": { display: "none" },
+   scrollbarWidth: "none" as const,
+   msOverflowStyle: "none" as const,
+};
+
+type ProductTableProps = {
+   productList?: Product[];
+   savedOnly?: boolean;
+};
+
+export function ProductTable({
+   productList,
+   savedOnly = false,
+}: ProductTableProps) {
+   const {
+      toggleSaveUnsaveProduct,
+      deleteProducts,
+      clients,
+      suppliers,
+      getProductsPage,
+      getFilteredProducts,
+      serviceLoading,
+   } = useProductSupplierClientContext();
    const { navOpen } = useUIStateContext();
    const { isDark, isSmUp } = useThemeContext();
-   const [searchTerm, setSearchTerm] = React.useState("");
-   // const [category, setCategory] = React.useState("all");
-   const [selectedClient, setSelectedClient] = React.useState("all");
-   const [client, setClient] = React.useState<Clients[] | undefined>(undefined);
 
+   const isContextMode = productList === undefined;
+
+   const toggleSave = React.useCallback(
+      (productId: string) => toggleSaveUnsaveProduct(productId),
+      [toggleSaveUnsaveProduct]
+   );
+
+   // Filter & sort state
+   const [searchTerm, setSearchTerm] = React.useState("");
+   const [selectedClient, setSelectedClient] = React.useState("all");
+   const [selectedSupplier, setSelectedSupplier] = React.useState("all");
+   const [sortOrder, setSortOrder] = React.useState("desc");
+   const [products, setProducts] = React.useState<Product[]>([]);
+   const [client, setClient] = React.useState<Clients[] | undefined>(undefined);
    const [supplier, setSupplier] = React.useState<Supplier[] | undefined>(
       undefined
    );
-   const [selectedSupplier, setSelectedSupplier] = React.useState("all");
 
-   const [sortOrder, setSortOrder] = React.useState("desc");
-   const [products, setProducts] = React.useState<Product[]>([]);
+   // Selection & pagination (rowsPerPage persisted to localStorage)
+   const [selected, setSelected] = React.useState<Set<string>>(new Set());
+   const [page, setPage] = React.useState(0);
+   const [rowsPerPage, setRowsPerPage] = React.useState(getStoredRowsPerPage);
 
+   const isTableLoading = isContextMode && serviceLoading;
+
+   // Export & menu UI
    const [pdfLoading, setPdfLoading] = React.useState(false);
    const [pdfSuccess, setPdfSuccess] = React.useState(false);
-
    const [currency, setCurrency] = React.useState("$");
    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
    const [isExportModalOpen, setIsExportModalOpen] = React.useState(false);
    const [exportMode, setExportMode] = React.useState<"csv" | "pdf" | "">("");
 
-   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+   const openExportMenu = (event: React.MouseEvent<HTMLElement>) =>
       setAnchorEl(event.currentTarget);
-   };
-
-   const toggleCurrency = (currency: string) => {
-      currency === "$" ? setCurrency("€") : setCurrency("$");
-   };
-
-   const handleClose = () => {
-      setAnchorEl(null);
-   };
+   const closeExportMenu = () => setAnchorEl(null);
+   const toggleCurrency = (next: string) =>
+      setCurrency(next === "$" ? "€" : "$");
 
    React.useEffect(() => {
-      setProducts(productList);
-   }, [productList]);
-
+      if (!isContextMode && productList) setProducts(productList);
+   }, [isContextMode, productList]);
    React.useEffect(() => {
       setClient(Object.values(clients));
       setSupplier(Object.values(suppliers));
    }, [clients, suppliers]);
 
-   const [selected, setSelected] = React.useState<Set<string>>(new Set());
-   const [page, setPage] = React.useState(0);
-   const [rowsPerPage, setRowsPerPage] = React.useState(20);
+   const filters = React.useMemo(
+      () => ({
+         searchTerm,
+         selectedClient,
+         selectedSupplier,
+         sortOrder: sortOrder as "asc" | "desc",
+         savedOnly,
+      }),
+      [searchTerm, selectedClient, selectedSupplier, sortOrder, savedOnly]
+   );
+
+   const pageResult = React.useMemo(
+      () =>
+         isContextMode
+            ? getProductsPage(page, rowsPerPage, filters)
+            : { items: [] as Product[], total: 0 },
+      [isContextMode, getProductsPage, page, rowsPerPage, filters]
+   );
 
    const filteredProducts = React.useMemo(() => {
+      if (isContextMode) return getFilteredProducts(filters);
       let data = [...products];
-
       if (searchTerm) {
          const lowerSearch = searchTerm.toLowerCase();
          data = data.filter(
@@ -118,36 +318,38 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                item.hsCode.includes(searchTerm)
          );
       }
-
-      // if (category !== "all") {
-      //    data = data.filter((item) => item?.hsCode === category);
-      // }
-
       if (selectedClient !== "all") {
          data = data.filter((p) => p.clients?.includes(selectedClient));
       }
-
       if (selectedSupplier !== "all") {
          data = data.filter((p) => p.supplierId === selectedSupplier);
       }
-
       data.sort((a, b) => {
          const dateA = new Date(a.updatedAt).getTime();
          const dateB = new Date(b.updatedAt).getTime();
-
-         return sortOrder === "desc"
-            ? dateB - dateA // latest first
-            : dateA - dateB; // oldest first
+         return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
       });
-
       return data;
-   }, [products, searchTerm, sortOrder, selectedClient, selectedSupplier]);
+   }, [
+      isContextMode,
+      getFilteredProducts,
+      filters,
+      products,
+      searchTerm,
+      selectedClient,
+      selectedSupplier,
+      sortOrder,
+   ]);
 
    const displayedProducts = React.useMemo(() => {
+      if (isContextMode) return pageResult.items;
       const startIndex = page * rowsPerPage;
-      const endIndex = startIndex + rowsPerPage;
-      return filteredProducts.slice(startIndex, endIndex);
-   }, [filteredProducts, page, rowsPerPage]);
+      return filteredProducts.slice(startIndex, startIndex + rowsPerPage);
+   }, [isContextMode, pageResult.items, filteredProducts, page, rowsPerPage]);
+
+   const totalCount = isContextMode
+      ? pageResult.total
+      : filteredProducts.length;
 
    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setSearchTerm(e.target.value);
@@ -161,18 +363,14 @@ export function ProductTable({ productList }: { productList: Product[] }) {
       pricePerContainer: number
    ) {
       exportInternalProductCSV({
-         products: selectedProductsList.reduce((acc, product) => {
-            acc[product.productId] = product;
-            return acc;
-         }, {} as Record<string, Product>),
+         products: selectedProductsRecord,
          upCharge: upChargeNum,
-         suppliers: suppliers,
-         clients: clients,
-         exchangeRate: exchangeRate,
-         currency: currency,
-         pricePerContainer: pricePerContainer,
+         suppliers,
+         clients,
+         exchangeRate,
+         currency,
+         pricePerContainer,
       });
-
       setIsExportModalOpen(false);
       setSelected(new Set());
    }
@@ -184,26 +382,17 @@ export function ProductTable({ productList }: { productList: Product[] }) {
       pricePerContainer: number
    ) {
       exportExternalProductCSV({
-         products: selectedProductsList.reduce((acc, product) => {
-            acc[product.productId] = product;
-            return acc;
-         }, {} as Record<string, Product>),
+         products: selectedProductsRecord,
          upCharge: upChargeNum,
-         exchangeRate: exchangeRate,
-         currency: currency,
-         pricePerContainer: pricePerContainer,
+         exchangeRate,
+         currency,
+         pricePerContainer,
       });
-
       setIsExportModalOpen(false);
       setSelected(new Set());
    }
 
-   // const handleCategoryChange = (e: any) => {
-   //    setCategory(e.target.value);
-   //    setPage(0);
-   // };
-
-   const handleSortChange = (e: any) => {
+   const handleSortChange = (e: SelectChangeEvent<string>) => {
       setSortOrder(e.target.value);
       setPage(0);
    };
@@ -238,10 +427,10 @@ export function ProductTable({ productList }: { productList: Product[] }) {
 
    const handleDeleteSelected = async () => {
       const idsToDelete = Array.from(selected);
-
-      setProducts((prev) => prev.filter((p) => !selected.has(p.productId)));
+      if (!isContextMode) {
+         setProducts((prev) => prev.filter((p) => !selected.has(p.productId)));
+      }
       setSelected(new Set());
-
       await deleteProducts(idsToDelete);
    };
 
@@ -251,13 +440,24 @@ export function ProductTable({ productList }: { productList: Product[] }) {
    const handleChangeRowsPerPage = (
       event: React.ChangeEvent<HTMLInputElement>
    ) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
+      const value = parseInt(event.target.value, 10);
+      setRowsPerPage(value);
       setPage(0);
+      try {
+         localStorage.setItem(ROWS_PER_PAGE_STORAGE_KEY, String(value));
+      } catch {
+         // ignore quota or disabled storage
+      }
    };
 
    const selectedProductsList = React.useMemo(() => {
       return filteredProducts.filter((p) => selected.has(p.productId)).reverse();
    }, [filteredProducts, selected]);
+
+   const selectedProductsRecord = React.useMemo(
+      () => productsToRecord(selectedProductsList),
+      [selectedProductsList]
+   );
 
    const resetExportForm = () => {
       setIsExportModalOpen(false);
@@ -272,24 +472,12 @@ export function ProductTable({ productList }: { productList: Product[] }) {
       currency: string,
       pricePerContainerNum: number
    ) => {
-      if (
-         upChargeNum < 1.01 ||
-         upChargeNum >= 10 ||
-         isNaN(upChargeNum) ||
-         conversionRateNum <= 0 ||
-         isNaN(conversionRateNum) ||
-         pricePerContainerNum <= 0 ||
-         isNaN(pricePerContainerNum)
-      )
+      if (!isValidExportParams(upChargeNum, conversionRateNum, pricePerContainerNum))
          return;
 
       setPdfLoading(true);
-
       await BuildInternalProductPDF({
-         products: selectedProductsList.reduce((acc, product) => {
-            acc[product.productId] = product;
-            return acc;
-         }, {} as Record<string, Product>),
+         products: selectedProductsRecord,
          conversionRate: conversionRateNum,
          currency,
          upCharge: upChargeNum,
@@ -310,24 +498,12 @@ export function ProductTable({ productList }: { productList: Product[] }) {
       currency: string,
       pricePerContainerNum: number
    ) => {
-      if (
-         upChargeNum < 1.01 ||
-         upChargeNum >= 10 ||
-         isNaN(upChargeNum) ||
-         conversionRateNum <= 0 ||
-         isNaN(conversionRateNum) ||
-         pricePerContainerNum <= 0 ||
-         isNaN(pricePerContainerNum)
-      )
+      if (!isValidExportParams(upChargeNum, conversionRateNum, pricePerContainerNum))
          return;
 
       setPdfLoading(true);
-
       await ExternalPDFBuilder({
-         products: selectedProductsList.reduce((acc, product) => {
-            acc[product.productId] = product;
-            return acc;
-         }, {} as Record<string, Product>),
+         products: selectedProductsRecord,
          upCharge: upChargeNum,
          conversionRate: conversionRateNum,
          currency,
@@ -418,9 +594,9 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                   </Select>
                   <Select
                      size="small"
-                     value={selectedSupplier} // "all" or a suplierName
+                     value={selectedSupplier}
                      onChange={(e) => {
-                        setSelectedSupplier(e.target.value); // supplierId
+                        setSelectedSupplier(e.target.value);
                         setPage(0);
                      }}
                   >
@@ -431,19 +607,6 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                         </MenuItem>
                      ))}
                   </Select>
-                  {/* <Select
-                     size="small"
-                     value={category}
-                     onChange={handleCategoryChange}
-                     name="category"
-                  >
-                     <MenuItem value="all">所有类别</MenuItem>
-                     {typeOptions.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                           {option.label}
-                        </MenuItem>
-                     ))}
-                  </Select> */}
                   {isAnySelected && (
                      <Stack
                         direction="row"
@@ -453,7 +616,7 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                         <IconButton onClick={handleDeleteSelected}>
                            <TrashIcon weight="bold" />
                         </IconButton>
-                        <IconButton onClick={handleClick}>
+                        <IconButton onClick={openExportMenu}>
                            <ExportIcon weight="bold" />
                         </IconButton>
                      </Stack>
@@ -462,16 +625,7 @@ export function ProductTable({ productList }: { productList: Product[] }) {
             </Stack>
             <Divider sx={{ mt: 5 }} />
 
-            <Box
-               sx={{
-                  overflowX: "auto",
-                  "&::-webkit-scrollbar": {
-                     display: "none",
-                  },
-                  scrollbarWidth: "none",
-                  msOverflowStyle: "none",
-               }}
-            >
+            <Box sx={tableScrollContainerSx}>
                <Table
                   sx={{
                      "& .MuiTableCell-root": {
@@ -516,167 +670,74 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                      </TableRow>
                   </TableHead>
                   <TableBody>
-                     {displayedProducts.map((row) => {
-                        const rowSelected = selected.has(row.productId);
-
-                        const priceString = new Intl.NumberFormat("en-US", {
-                           style: "currency",
-                           currency:
-                              symbolToCurrencyCode[row.currency] ?? "CNY",
-                        }).format(parseFloat(row.unitPrice));
-
-                        return (
-                           <TableRow
-                              key={row.productId}
-                              selected={rowSelected}
-                              hover
-                           >
+                     {isTableLoading ? (
+                        Array.from({ length: rowsPerPage }).map((_, i) => (
+                           <TableRow key={`skeleton-${i}`}>
                               <TableCell padding="checkbox">
-                                 <Checkbox
-                                    checked={rowSelected}
-                                    onChange={() =>
-                                       handleToggleOne(row.productId)
-                                    }
-                                 />
+                                 <Skeleton variant="rounded" width={24} height={24} />
                               </TableCell>
                               <TableCell>
-                                 <Stack
-                                    direction="row"
-                                    spacing={2}
-                                    alignItems="center"
-                                 >
-                                    {row.image ? (
-                                       <Box
-                                          sx={{
-                                             width: 80,
-                                             height: 80,
-                                             borderRadius: 1,
-                                             bgcolor:
-                                                "var(--mui-palette-background-level2)",
-                                             backgroundImage: `url(${row.image})`,
-                                             backgroundSize: "cover",
-                                             backgroundPosition: "center",
-                                             flexShrink: 0,
-                                          }}
-                                       />
-                                    ) : (
-                                       <Box
-                                          sx={{
-                                             width: 80,
-                                             height: 80,
-                                             borderRadius: 1,
-                                             bgcolor:
-                                                "var(--mui-palette-background-level2)",
-                                             display: "flex",
-                                             alignItems: "center",
-                                             justifyContent: "center",
-                                             flexShrink: 0,
-                                          }}
-                                       >
-                                          <ImageIcon fontSize="var(--icon-fontSize-lg)" />
-                                       </Box>
-                                    )}
-                                    <Box
-                                       sx={{
-                                          maxWidth: "80%",
-                                          overflow: "hidden",
-                                          textOverflow: "ellipsis",
-                                       }}
-                                    >
-                                       <a href={`/product/${row.productId}`}>
-                                          <Typography
-                                             variant="subtitle1"
-                                             fontSize={{
-                                                xs: "0.9rem",
-                                                md: "1.1rem",
-                                             }}
-                                             noWrap
-                                             className="link"
-                                          >
-                                             {row.productChineseName}
-                                          </Typography>
-                                       </a>
-                                       <Typography
-                                          variant="body2"
-                                          color="text.secondary"
-                                          fontWeight={500}
-                                          noWrap
-                                       >
-                                          {row.productEnglishName}
-                                       </Typography>
-                                    </Box>
-                                 </Stack>
-                              </TableCell>
-
-                              <TableCell>
-                                 <Typography variant="inherit">
-                                    {suppliers[row.supplierId]?.supplierName}
-                                 </Typography>
-                              </TableCell>
-
-                              <TableCell>
-                                 <Typography variant="inherit" noWrap>
-                                    {row.packing}
-                                 </Typography>
-                              </TableCell>
-
-                              <TableCell>
-                                 <Typography variant="inherit">
-                                    {priceString}
-                                 </Typography>
-                              </TableCell>
-
-                              <TableCell>
-                                 <TimeAgoTypography timestamp={row.updatedAt} />
-                              </TableCell>
-
-                              <TableCell>
-                                 <Stack
-                                    direction="row"
-                                    justifyContent="space-between"
-                                    alignItems="center"
-                                 >
-                                    <Stack direction="row">
-                                       <a href={`/product/${row.productId}`}>
-                                          <IconButton>
-                                             <PencilSimpleIcon />
-                                          </IconButton>
-                                       </a>
-                                       <div
-                                          onClick={() =>
-                                             toggleSave(row.productId)
-                                          }
-                                       >
-                                          <Tooltip title="收藏">
-                                             <HeartComponent
-                                                saved={row.saved}
-                                             />
-                                          </Tooltip>
-                                       </div>
+                                 <Stack direction="row" spacing={2} alignItems="center">
+                                    <Skeleton
+                                       variant="rounded"
+                                       width={80}
+                                       height={80}
+                                       sx={{ flexShrink: 0 }}
+                                    />
+                                    <Stack spacing={0.5}>
+                                       <Skeleton variant="text" width={200} />
+                                       <Skeleton variant="text" width={80} />
                                     </Stack>
                                  </Stack>
                               </TableCell>
+                              <TableCell>
+                                 <Skeleton variant="text" width={90} />
+                              </TableCell>
+                              <TableCell>
+                                 <Skeleton variant="text" width={20} />
+                              </TableCell>
+                              <TableCell>
+                                 <Skeleton variant="text" width={20} />
+                              </TableCell>
+                              <TableCell>
+                                 <Skeleton variant="text" width={80} />
+                              </TableCell>
+                              <TableCell>
+                                 <Skeleton variant="rounded" width={32} height={32} />
+                              </TableCell>
                            </TableRow>
-                        );
-                     })}
-
-                     {displayedProducts.length === 0 && (
-                        <TableRow>
-                           <TableCell colSpan={6}>
-                              <Typography variant="body2" textAlign="center">
-                                 没有找到相关产品
-                              </Typography>
-                           </TableCell>
-                        </TableRow>
+                        ))
+                     ) : (
+                        <>
+                           {displayedProducts.map((row) => (
+                              <ProductTableRow
+                                 key={row.productId}
+                                 row={row}
+                                 suppliers={suppliers}
+                                 isSelected={selected.has(row.productId)}
+                                 onToggleSelect={() => handleToggleOne(row.productId)}
+                                 onToggleSave={toggleSave}
+                              />
+                           ))}
+                           {displayedProducts.length === 0 && (
+                              <TableRow>
+                                 <TableCell colSpan={7}>
+                                    <Typography variant="body2" textAlign="center">
+                                       没有找到相关产品
+                                    </Typography>
+                                 </TableCell>
+                              </TableRow>
+                           )}
+                        </>
                      )}
                   </TableBody>
                </Table>
             </Box>
 
             <TablePagination
-               rowsPerPageOptions={[5, 20, 50]}
+               rowsPerPageOptions={[...ROWS_PER_PAGE_OPTIONS]}
                component="div"
-               count={filteredProducts.length}
+               count={totalCount}
                rowsPerPage={rowsPerPage}
                page={page}
                onPageChange={handleChangePage}
@@ -715,7 +776,7 @@ export function ProductTable({ productList }: { productList: Product[] }) {
          <Menu
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
-            onClose={handleClose}
+            onClose={closeExportMenu}
             keepMounted
             PaperProps={{
                classes: {
@@ -725,7 +786,7 @@ export function ProductTable({ productList }: { productList: Product[] }) {
          >
             <MenuItem
                onClick={() => {
-                  handleClose();
+                  closeExportMenu();
                   setIsExportModalOpen(true);
                   setExportMode("pdf");
                }}
@@ -734,17 +795,17 @@ export function ProductTable({ productList }: { productList: Product[] }) {
             </MenuItem>
             <MenuItem
                onClick={() => {
-                  handleClose();
+                  closeExportMenu();
                   setIsExportModalOpen(true);
                   setExportMode("csv");
                }}
             >
                导出为EXCEL
             </MenuItem>
-            <MenuItem onClick={handleClose}>分享为链接</MenuItem>
+            <MenuItem onClick={closeExportMenu}>分享为链接</MenuItem>
          </Menu>
 
-         <Zoom in={productList.length > 0}>
+         <Zoom in={totalCount > 0}>
             <Box
                sx={{
                   position: "fixed",
@@ -781,9 +842,9 @@ export function ProductTable({ productList }: { productList: Product[] }) {
                      </Typography>
                   </Stack>
                ) : (
-                  <Typography variant="body1" fontWeight={500}>
-                     共 {productList.length} 项
-                  </Typography>
+                     <Typography variant="body1" fontWeight={500}>
+                     共 {totalCount} 项
+                     </Typography>
                )}
             </Box>
          </Zoom>

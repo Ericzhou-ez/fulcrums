@@ -112,10 +112,10 @@ export default function Hero({ activeIndex = 0 }: HeroProps) {
                   align="center"
                   sx={{
                      fontSize: {
-                        xs: "4rem",
+                        xs: "3.8rem",
                         sm: "4.8rem",
-                        md: "6.5rem",
-                        lg: "7.2rem",
+                        md: "6.2rem",
+                        lg: "6.6rem",
                      },
                      fontWeight: 700,
                      lineHeight: 1.2,

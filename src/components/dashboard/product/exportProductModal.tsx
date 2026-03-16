@@ -11,14 +11,12 @@ import {
    Button,
    Typography,
    Box,
-   useTheme,
    Slide,
    SlideProps,
 } from "@mui/material";
 import Loader from "../../core/loader";
 import { useThemeContext } from "../../../contexts/themeContextProvider";
 import React from "react";
-import { exportInternalProductCSV } from "../../../lib/InternalProductCSVBuilder";
 
 interface SubmitProps {
    currency: string;

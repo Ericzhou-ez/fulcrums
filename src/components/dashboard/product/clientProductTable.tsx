@@ -17,26 +17,43 @@ import {
    TextField,
    InputAdornment,
    Zoom,
+   Skeleton,
 } from "@mui/material";
 import { Trash, MagnifyingGlass, CheckCircle } from "phosphor-react";
 import { useThemeContext } from "../../../contexts/themeContextProvider";
 import { Product, Supplier } from "../../../types/types";
 
+const ROWS_PER_PAGE_OPTIONS = [5, 10, 20] as const;
+const DEFAULT_ROWS_PER_PAGE = 5;
+const ROWS_PER_PAGE_STORAGE_KEY = "clientProductTable.rowsPerPage";
+
+function getStoredRowsPerPage(): number {
+   if (typeof window === "undefined") return DEFAULT_ROWS_PER_PAGE;
+   const stored = localStorage.getItem(ROWS_PER_PAGE_STORAGE_KEY);
+   if (stored == null) return DEFAULT_ROWS_PER_PAGE;
+   const n = parseInt(stored, 10);
+   return ROWS_PER_PAGE_OPTIONS.includes(n as (typeof ROWS_PER_PAGE_OPTIONS)[number])
+      ? n
+      : DEFAULT_ROWS_PER_PAGE;
+}
+
 interface AssignedProductsTableProps {
    products: Product[];
    suppliers: { [key: string]: Supplier };
    onUnassign: (productIds: string[]) => void;
+   isLoading?: boolean;
 }
 
 export const AssignedProductsTable: React.FC<AssignedProductsTableProps> = ({
    products,
    suppliers,
    onUnassign,
+   isLoading = false,
 }) => {
    const { isDark, isSmUp } = useThemeContext();
    const [selected, setSelected] = useState<Set<string>>(new Set());
    const [page, setPage] = useState(0);
-   const [rowsPerPage, setRowsPerPage] = useState(5);
+   const [rowsPerPage, setRowsPerPage] = useState(getStoredRowsPerPage);
    const [searchTerm, setSearchTerm] = useState("");
 
    const filteredProducts = useMemo(() => {
@@ -109,8 +126,14 @@ export const AssignedProductsTable: React.FC<AssignedProductsTableProps> = ({
    const handleChangeRowsPerPage = (
       event: React.ChangeEvent<HTMLInputElement>
    ) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
+      const value = parseInt(event.target.value, 10);
+      setRowsPerPage(value);
       setPage(0);
+      try {
+         localStorage.setItem(ROWS_PER_PAGE_STORAGE_KEY, String(value));
+      } catch {
+         /* ignore */
+      }
    };
 
    const borderColor = isDark ? "rgba(255, 255, 255, 0.12)" : "#e0e0e0";
@@ -189,80 +212,111 @@ export const AssignedProductsTable: React.FC<AssignedProductsTableProps> = ({
                   </TableRow>
                </TableHead>
                <TableBody>
-                  {paginatedProducts.map((product) => {
-                     const supplierName =
-                        suppliers[product.supplierId]?.supplierName ||
-                        "未知供应商";
-
-                     return (
-                        <TableRow
-                           key={product.productId}
-                           hover
-                           onClick={() => handleToggleOne(product.productId)}
-                           role="checkbox"
-                           aria-checked={selected.has(product.productId)}
-                           selected={selected.has(product.productId)}
-                           sx={{ cursor: "pointer" }}
-                        >
+                  {isLoading ? (
+                     Array.from({ length: rowsPerPage }).map((_, i) => (
+                        <TableRow key={`skeleton-${i}`}>
                            <TableCell padding="checkbox">
-                              <Checkbox
-                                 checked={selected.has(product.productId)}
-                              />
+                              <Skeleton variant="rounded" width={24} height={24} />
                            </TableCell>
                            <TableCell>
-                              <Stack
-                                 direction="row"
-                                 spacing={2}
-                                 alignItems="center"
-                              >
-                                 <Box
-                                    sx={{
-                                       width: 60,
-                                       height: 60,
-                                       borderRadius: 1,
-                                       bgcolor: "background.level2",
-                                       backgroundImage: `url(${product.image})`,
-                                       backgroundSize: "cover",
-                                       backgroundPosition: "center",
-                                       flexShrink: 0,
-                                    }}
+                              <Stack direction="row" spacing={2} alignItems="center">
+                                 <Skeleton
+                                    variant="rounded"
+                                    width={60}
+                                    height={60}
+                                    sx={{ flexShrink: 0 }}
                                  />
-
-                                 <Box>
-                                    <a
-                                       style={{ all: "unset" }}
-                                       href={`/product/${product.productId}`}
-                                    >
-                                       <Typography
-                                          variant="subtitle2"
-                                          color="text.primary"
-                                       >
-                                          {product.productChineseName}
-                                       </Typography>
-                                       <Typography
-                                          variant="body2"
-                                          color="text.secondary"
-                                       >
-                                          {product.productEnglishName}
-                                       </Typography>
-                                    </a>
-                                 </Box>
+                                 <Stack spacing={0.5}>
+                                    <Skeleton variant="text" width={100} />
+                                    <Skeleton variant="text" width={80} />
+                                 </Stack>
                               </Stack>
                            </TableCell>
-                           <TableCell sx={{ color: "text.secondary" }}>
-                              {supplierName}
+                           <TableCell>
+                              <Skeleton variant="text" width={90} />
                            </TableCell>
                         </TableRow>
-                     );
-                  })}
-                  {filteredProducts.length === 0 && (
-                     <TableRow>
-                        <TableCell colSpan={3} align="center">
-                           <Typography sx={{ py: 3 }} color="text.secondary">
-                              没有找到相关产品。
-                           </Typography>
-                        </TableCell>
-                     </TableRow>
+                     ))
+                  ) : (
+                     <>
+                        {paginatedProducts.map((product) => {
+                           const supplierName =
+                              suppliers[product.supplierId]?.supplierName ||
+                              "未知供应商";
+
+                           return (
+                              <TableRow
+                                 key={product.productId}
+                                 hover
+                                 onClick={() => handleToggleOne(product.productId)}
+                                 role="checkbox"
+                                 aria-checked={selected.has(product.productId)}
+                                 selected={selected.has(product.productId)}
+                                 sx={{ cursor: "pointer" }}
+                              >
+                                 <TableCell padding="checkbox">
+                                    <Checkbox
+                                       checked={selected.has(product.productId)}
+                                    />
+                                 </TableCell>
+                                 <TableCell>
+                                    <Stack
+                                       direction="row"
+                                       spacing={2}
+                                       alignItems="center"
+                                    >
+                                       <Box
+                                          sx={{
+                                             width: 60,
+                                             height: 60,
+                                             borderRadius: 1,
+                                             bgcolor: "background.level2",
+                                             backgroundImage: `url(${product.image})`,
+                                             backgroundSize: "cover",
+                                             backgroundPosition: "center",
+                                             flexShrink: 0,
+                                          }}
+                                       />
+
+                                       <Box>
+                                          <a
+                                             style={{ all: "unset" }}
+                                             href={`/product/${product.productId}`}
+                                          >
+                                             <Typography
+                                                variant="subtitle2"
+                                                color="text.primary"
+                                             >
+                                                {product.productChineseName}
+                                             </Typography>
+                                             <Typography
+                                                variant="body2"
+                                                color="text.secondary"
+                                             >
+                                                {product.productEnglishName}
+                                             </Typography>
+                                          </a>
+                                       </Box>
+                                    </Stack>
+                                 </TableCell>
+                                 <TableCell sx={{ color: "text.secondary" }}>
+                                    {supplierName}
+                                 </TableCell>
+                              </TableRow>
+                           );
+                        })}
+                        {filteredProducts.length === 0 && (
+                           <TableRow>
+                              <TableCell padding="checkbox" />
+                              <TableCell>
+                                 <Typography sx={{ py: 3 }} color="text.secondary">
+                                    没有找到相关产品。
+                                 </Typography>
+                              </TableCell>
+                              <TableCell />
+                           </TableRow>
+                        )}
+                     </>
                   )}
                </TableBody>
             </Table>
@@ -281,7 +335,7 @@ export const AssignedProductsTable: React.FC<AssignedProductsTableProps> = ({
             }
          />
 
-         <Zoom in={products.length > 0}>
+         <Zoom in={filteredProducts.length > 0 || isLoading}>
             <Box
                sx={{
                   position: "fixed",
@@ -319,7 +373,7 @@ export const AssignedProductsTable: React.FC<AssignedProductsTableProps> = ({
                   </Stack>
                ) : (
                   <Typography variant="body1" fontWeight={500}>
-                     共 {products.length} 项
+                     共 {filteredProducts.length} 项
                   </Typography>
                )}
             </Box>

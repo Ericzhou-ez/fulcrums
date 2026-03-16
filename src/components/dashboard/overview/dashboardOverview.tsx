@@ -27,43 +27,35 @@ const sampleData = [
    { name: "Dec", v1: 58, v2: 7700 },
 ];
 
+const CARD_SLIDER_LIMIT = 10;
+
 export default function DashboardOverview() {
    const theme = useTheme();
    const isDarkMode = theme.palette.mode === "dark";
-   const { products: allProducts } = useProductSupplierClientContext();
+   const { getRecentProducts, getSavedProducts } =
+      useProductSupplierClientContext();
 
    const latestProducts: { [key: string]: Product } = useMemo(() => {
-      const productsArray = Object.values(allProducts);
-
-      const sortedProducts = [...productsArray].sort((a, b) => {
-         const dateA = new Date(a.updatedAt).getTime();
-         const dateB = new Date(b.updatedAt).getTime();
-         return dateB - dateA;
-      });
-
-      const slicedProducts = sortedProducts.slice(0, 10);
-
-      const latestProductMap: { [key: string]: Product } =
-         slicedProducts.reduce((acc, product) => {
+      const items = getRecentProducts(CARD_SLIDER_LIMIT);
+      return items.reduce(
+         (acc, product) => {
             acc[product.productId] = product;
             return acc;
-         }, {} as { [key: string]: Product });
-
-      return latestProductMap;
-   }, [allProducts]);
+         },
+         {} as { [key: string]: Product }
+      );
+   }, [getRecentProducts]);
 
    const savedProducts: { [key: string]: Product } = useMemo(() => {
-      const filteredSaved = Object.values(allProducts).filter((p) => p.saved);
-      const slicedSavedProducts = filteredSaved.slice(0, 10);
-
-      const savedProductMap: { [key: string]: Product } =
-         slicedSavedProducts.reduce((acc, product) => {
+      const items = getSavedProducts(CARD_SLIDER_LIMIT);
+      return items.reduce(
+         (acc, product) => {
             acc[product.productId] = product;
             return acc;
-         }, {} as { [key: string]: Product });
-
-      return savedProductMap;
-   }, [allProducts]);
+         },
+         {} as { [key: string]: Product }
+      );
+   }, [getSavedProducts]);
 
    return (
       <div className="dashboard-overview">

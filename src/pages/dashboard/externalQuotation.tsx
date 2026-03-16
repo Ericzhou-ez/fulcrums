@@ -6,7 +6,6 @@ import SideNav from "../../components/dashboard/dashboardNav";
 import "../../styles/quotation.css";
 import { useEffect } from "react";
 import { useUIStateContext } from "../../contexts/UIStateContextProvider";
-import { ExternalPDFBuilder } from "../../lib/externalPDFBuilder";
 import { useProductSupplierClientContext } from "../../contexts/productSupplierClientContextProvider";
 
 const ExternalQuotationPage = () => {
@@ -15,7 +14,6 @@ const ExternalQuotationPage = () => {
    }, []);
 
    const { products } = useProductSupplierClientContext();
-   console.log(products);
 
    const { navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles } =
       useUIStateContext();

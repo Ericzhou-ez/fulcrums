@@ -300,6 +300,7 @@ const ClientDetailsPage = () => {
       suppliers,
       addClientProducts,
       deleteClientProducts,
+      serviceLoading,
    } = useProductSupplierClientContext();
    const { navOpen, setNavOpen, overlay, closeOverlay, mainContentStyles } =
       useUIStateContext();
@@ -407,6 +408,7 @@ const ClientDetailsPage = () => {
                products={assignedProducts}
                suppliers={suppliers}
                onUnassign={handleUnassignProducts}
+               isLoading={serviceLoading}
             />
          </Box>
 

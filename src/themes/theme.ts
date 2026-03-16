@@ -1,9 +1,14 @@
 import { createTheme, Theme } from "@mui/material";
 import { useEffect, useMemo } from "react";
+import type {} from "@mui/x-date-pickers/themeAugmentation";
 import { MuiInputBase } from "./components/input-base";
 import { MuiButton } from "./components/buttons";
 import { MuiAutocomplete } from "./components/autocomplete";
 import { MuiSnackbar, MuiSnackbarContent } from "./components/snackbar";
+import {
+   MuiPickersOutlinedInput,
+   MuiPickerPopper,
+} from "./components/date-pickers";
 
 export function useAppTheme(mode: "light" | "dark"): Theme {
    const theme = useMemo(() => {
@@ -46,6 +51,8 @@ export function useAppTheme(mode: "light" | "dark"): Theme {
             MuiAutocomplete,
             MuiSnackbar,
             MuiSnackbarContent,
+            MuiPickersOutlinedInput,
+            MuiPickerPopper,
          },
       });
    }, [mode]);

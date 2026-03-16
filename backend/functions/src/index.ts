@@ -38,6 +38,12 @@ import { deleteSupplier } from "./services/supplier/deleteSupplier";
 
 import { syncAll } from "./services/syncAll";
 
+// order services
+import { createOrder } from "./services/order/createOrder";
+import { editOrder } from "./services/order/editOrder";
+import { deleteOrder } from "./services/order/deleteOrder";
+import { updateOrderState } from "./services/order/updateOrderState";
+
 export {
    createUserDoc,
    createProduct,
@@ -52,6 +58,10 @@ export {
    deleteSupplier,
    syncAll,
    updateClientProducts,
+   createOrder,
+   editOrder,
+   deleteOrder,
+   updateOrderState,
 };
 
 // Start writing functions

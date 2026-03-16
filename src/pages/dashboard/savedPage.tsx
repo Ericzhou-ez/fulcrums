@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Typography, Box, Alert, Button, Stack } from "@mui/material";
 import ProductCard from "../../components/dashboard/product/minProductCard";
 import "../../styles/RecentProductPage.css";
@@ -16,14 +16,21 @@ import { SquaresFour, ListBullets } from "phosphor-react";
 import Loader from "../../components/core/loader";
 import Suggestions from "../../components/dashboard/core/suggestion";
 
+const GRID_PAGE_SIZE = 20;
+
 const SavedPage = () => {
    const { isDark, isSmUp, isMdUp } = useThemeContext();
-   const { products, errorMessages } = useProductSupplierClientContext();
+   const { getProductsPage } = useProductSupplierClientContext();
 
-   // Filter for saved products
-   const savedProducts = Object.entries(products).filter(
-      ([, product]) => product.saved === true
+   const savedPageItems = useMemo(
+      () =>
+         getProductsPage(0, GRID_PAGE_SIZE, {
+            savedOnly: true,
+            sortOrder: "desc",
+         }).items,
+      [getProductsPage]
    );
+
    const [viewMode, setViewMode] = useState(isMdUp ? "table" : "grid");
 
    useEffect(() => {
@@ -107,14 +114,16 @@ const SavedPage = () => {
 
          {viewMode === "grid" ? (
             <div className="cards-grid">
-               {savedProducts.map(([id, product]) => (
-                  <ProductCard key={id} item={product} isDarkMode={isDark} />
+               {savedPageItems.map((product) => (
+                  <ProductCard
+                     key={product.productId}
+                     item={product}
+                     isDarkMode={isDark}
+                  />
                ))}
             </div>
          ) : (
-            <ProductTable
-               productList={savedProducts.map(([id, product]) => product)}
-            />
+            <ProductTable savedOnly />
          )}
 
          <Suggestions
