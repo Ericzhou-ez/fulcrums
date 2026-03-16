@@ -38,13 +38,12 @@ export type ProductTableFilters = {
    sortOrder?: "asc" | "desc";
    savedOnly?: boolean;
 };
-import { getFunctions, httpsCallable } from "firebase/functions";
-import { getDocs, collection, onSnapshot } from "firebase/firestore";
-import { db } from "../configs/firebase";
 import { db as DexieDataBase } from "../lib/dexieUtils";
 import { useAuth } from "./authContexts";
 import { useNavigate } from "react-router";
 import { useLiveQuery } from "dexie-react-hooks";
+import { apiClient } from "../lib/apiClient";
+import { websocketClient, WebSocketMessage } from "../lib/websocketClient";
 
 export type ProductSupplierClientContextType = {
    addProduct: (product: any) => Promise<void>;
@@ -158,7 +157,6 @@ export const ProductSupplierClientContextProvider = ({
 
    const [orders, setOrders] = useState<Record<string, Order>>({});
 
-   const functions = getFunctions();
    const navigate = useNavigate();
 
    const dexieClients = useLiveQuery(() => DexieDataBase.clients.toArray(), []);
@@ -166,6 +164,15 @@ export const ProductSupplierClientContextProvider = ({
       () => DexieDataBase.suppliers.toArray(),
       []
    );
+
+   // Cleanup WebSocket on unmount
+   useEffect(() => {
+      return () => {
+         if (!user?.uid) {
+            websocketClient.disconnect();
+         }
+      };
+   }, [user?.uid]);
 
    // Merge firestore clients with dexie (so clients list is populated even before Dexie resolves)
    useEffect(() => {
@@ -195,60 +202,62 @@ export const ProductSupplierClientContextProvider = ({
       setSuppliers(merged);
    }, [dexieSuppliers, firestoreSuppliers]);
 
-   // listen to firestore product change
+   // Fetch products initially and listen to WebSocket updates
    useEffect(() => {
-      if (!user) {
+      if (!user?.uid) {
          setServiceLoading(false);
          return;
       }
 
-      if (!user?.uid) {
-         console.error("User not authenticated");
-         return;
-      }
+      let mounted = true;
 
-      const unsub = onSnapshot(
-         collection(db, "users", user.uid, "products"),
-         (snapshot) => {
-            let products: { [key: string]: Product } = {};
-
-            snapshot.forEach((doc) => {
-               const product = doc.data() as Product;
-               products[product.productId] = product;
+      // Initial fetch
+      apiClient
+         .getProducts()
+         .then((productsList) => {
+            if (!mounted) return;
+            const productsMap: { [key: string]: Product } = {};
+            productsList.forEach((product: Product) => {
+               productsMap[product.productId] = product;
             });
-
-            setFirestoreProducts(products);
+            setFirestoreProducts(productsMap);
             setServiceLoading(false);
-         },
-         (error) => {
-            console.error("Firestore listener error:", error);
-
-            let message = "";
-            switch (error.code) {
-               case "permission-denied":
-                  message = "权限不足，无法访问产品数据";
-                  break;
-               case "unavailable":
-                  message = "网络错误，请尝试重新连接";
-                  break;
-               case "resource-exhausted":
-                  message = "服务器繁忙，请稍后再试";
-                  break;
-               default:
-                  message = "产品加载失败，请稍后再试";
-            }
-
-            setErrorMessages(message);
+         })
+         .catch((error) => {
+            if (!mounted) return;
+            console.error("Error fetching products:", error);
+            setErrorMessages("产品加载失败，请稍后再试");
             setServiceLoading(false);
+            setTimeout(() => setErrorMessages(""), 5000);
+         });
 
-            setTimeout(() => {
-               setErrorMessages("");
-            }, 5000);
+      // WebSocket connection and listener
+      websocketClient.connect().catch((error) => {
+         console.error("Failed to connect WebSocket:", error);
+      });
+
+      const unsubscribe = websocketClient.subscribe((message: WebSocketMessage) => {
+         if (message.type === "products") {
+            // Refetch products on update
+            apiClient
+               .getProducts()
+               .then((productsList) => {
+                  if (!mounted) return;
+                  const productsMap: { [key: string]: Product } = {};
+                  productsList.forEach((product: Product) => {
+                     productsMap[product.productId] = product;
+                  });
+                  setFirestoreProducts(productsMap);
+               })
+               .catch((error) => {
+                  console.error("Error refetching products:", error);
+               });
          }
-      );
+      });
 
       return () => {
-         unsub();
+         mounted = false;
+         unsubscribe();
       };
    }, [user?.uid]);
 
@@ -352,238 +361,262 @@ export const ProductSupplierClientContextProvider = ({
       [getFilteredProducts]
    );
 
-   // listen to firestore client changes
+   // Fetch clients initially and listen to WebSocket updates
    useEffect(() => {
       if (!user?.uid) {
          return;
       }
 
-      const unsub = onSnapshot(
-         collection(db, "users", user.uid, "clients"),
-         (snap) => {
+      let mounted = true;
+
+      // Initial fetch
+      apiClient
+         .getClients()
+         .then((clientsList) => {
+            if (!mounted) return;
             const map: Record<string, Clients> = {};
-            snap.forEach((doc) => {
-               const c = doc.data() as Clients;
-               map[c.clientId] = c; // keyed by clientId
+            clientsList.forEach((c: Clients) => {
+               map[c.clientId] = c;
             });
-
             setFirestoreClients(map);
-         },
-         (err) => {
-            console.error("Firestore listener error (clients):", err);
-            let msg = "";
-            switch (err.code) {
-               case "permission-denied":
-                  msg = "权限不足，无法访问客户数据";
-                  break;
-               case "unavailable":
-                  msg = "网络错误，请尝试重新连接";
-                  break;
-               case "resource-exhausted":
-                  msg = "服务器繁忙，请稍后再试";
-                  break;
-               default:
-                  msg = "客户加载失败，请稍后再试";
-            }
-            console.error(msg);
-         }
-      );
+         })
+         .catch((err) => {
+            console.error("Error fetching clients:", err);
+         });
 
-      return unsub;
+      // WebSocket listener
+      const unsubscribe = websocketClient.subscribe((message: WebSocketMessage) => {
+         if (message.type === "clients") {
+            apiClient
+               .getClients()
+               .then((clientsList) => {
+                  if (!mounted) return;
+                  const map: Record<string, Clients> = {};
+                  clientsList.forEach((c: Clients) => {
+                     map[c.clientId] = c;
+                  });
+                  setFirestoreClients(map);
+               })
+               .catch((err) => {
+                  console.error("Error refetching clients:", err);
+               });
+         }
+      });
+
+      return () => {
+         mounted = false;
+         unsubscribe();
+      };
    }, [user?.uid]);
 
-   // listen to firestore supplier changes
+   // Fetch suppliers initially and listen to WebSocket updates
    useEffect(() => {
       if (!user?.uid) {
          return;
       }
 
-      const unsub = onSnapshot(
-         collection(db, "users", user.uid, "suppliers"),
-         (snap) => {
+      let mounted = true;
+
+      // Initial fetch
+      apiClient
+         .getSuppliers()
+         .then((suppliersList) => {
+            if (!mounted) return;
             const map: Record<string, Supplier> = {};
-            snap.forEach((doc) => {
-               const c = doc.data() as Supplier;
-               map[c.supplierId] = c;
+            suppliersList.forEach((s: Supplier) => {
+               map[s.supplierId] = s;
             });
-
             setFirestoreSuppliers(map);
-         },
-         (err) => {
-            console.error("Firestore listener error (suppliers):", err);
-            let msg = "";
-            switch (err.code) {
-               case "permission-denied":
-                  msg = "权限不足，无法访问客户数据";
-                  break;
-               case "unavailable":
-                  msg = "网络错误，请尝试重新连接";
-                  break;
-               case "resource-exhausted":
-                  msg = "服务器繁忙，请稍后再试";
-                  break;
-               default:
-                  msg = "客户加载失败，请稍后再试";
-            }
-            console.error(msg);
-         }
-      );
+         })
+         .catch((err) => {
+            console.error("Error fetching suppliers:", err);
+         });
 
-      return unsub;
+      // WebSocket listener
+      const unsubscribe = websocketClient.subscribe((message: WebSocketMessage) => {
+         if (message.type === "suppliers") {
+            apiClient
+               .getSuppliers()
+               .then((suppliersList) => {
+                  if (!mounted) return;
+                  const map: Record<string, Supplier> = {};
+                  suppliersList.forEach((s: Supplier) => {
+                     map[s.supplierId] = s;
+                  });
+                  setFirestoreSuppliers(map);
+               })
+               .catch((err) => {
+                  console.error("Error refetching suppliers:", err);
+               });
+         }
+      });
+
+      return () => {
+         mounted = false;
+         unsubscribe();
+      };
    }, [user?.uid]);
 
-   // Firestore listener for orders (real-time sync)
+   // Fetch orders initially and listen to WebSocket updates
    useEffect(() => {
       if (!user?.uid) return;
-      const unsub = onSnapshot(
-         collection(db, "users", user.uid, "orders"),
-         (snap) => {
+
+      let mounted = true;
+
+      // Initial fetch
+      apiClient
+         .getOrders()
+         .then((ordersList) => {
+            if (!mounted) return;
             const map: Record<string, Order> = {};
-            snap.forEach((doc) => {
-               const o = doc.data() as Order;
+            ordersList.forEach((o: Order) => {
                map[o.orderId] = o;
             });
             setOrders(map);
-         },
-         (err) => {
-            console.error("Firestore listener error (orders):", err);
+         })
+         .catch((err) => {
+            console.error("Error fetching orders:", err);
+         });
+
+      // WebSocket listener
+      const unsubscribe = websocketClient.subscribe((message: WebSocketMessage) => {
+         if (message.type === "orders") {
+            apiClient
+               .getOrders()
+               .then((ordersList) => {
+                  if (!mounted) return;
+                  const map: Record<string, Order> = {};
+                  ordersList.forEach((o: Order) => {
+                     map[o.orderId] = o;
+                  });
+                  setOrders(map);
+               })
+               .catch((err) => {
+                  console.error("Error refetching orders:", err);
+               });
          }
-      );
-      return unsub;
+      });
+
+      return () => {
+         mounted = false;
+         unsubscribe();
+      };
    }, [user?.uid]);
 
    const addProduct = async (product: Product) => {
       try {
          setServiceLoading(true);
-         const createProduct = httpsCallable(functions, "createProduct");
-         const response: any = await createProduct(product);
+         const response = await apiClient.createProduct(product);
 
-         if (response.data.success) {
+         if (response.success) {
             setAddedProduct(true);
             setServiceLoading(false);
          }
-      } catch (err) {
-         console.error("Error calling createProduct function: ", err);
+      } catch (err: any) {
+         console.error("Error calling createProduct: ", err);
          setServiceLoading(false);
          setAddedProduct(false);
+         setErrorMessages(err?.message || "创建产品失败");
       }
    };
 
    const editProduct = async (product: any) => {
       try {
-         const editProduct = httpsCallable(functions, "editProduct");
-         const response: any = await editProduct(product);
+         setServiceLoading(true);
+         const response = await apiClient.updateProduct(product.productId, product);
 
-         if (response.data.success) {
+         if (response) {
             setServiceLoading(false);
             setEditedProduct(true);
          }
-      } catch (err) {
+      } catch (err: any) {
          console.error(err);
          setEditedProduct(false);
          setServiceLoading(false);
+         setErrorMessages(err?.message || "更新产品失败");
       }
    };
 
    const deleteProducts = async (productId: string[]) => {
       try {
          setServiceLoading(true);
+         const response = await apiClient.deleteProducts(productId);
 
-         const deleteProducts = httpsCallable(functions, "deleteProducts");
-         const response: any = await deleteProducts({
-            productIds: productId,
-         });
-
-         if (response.data.success) {
+         if (response.success) {
             setServiceLoading(false);
             setDeletedProduct(true);
             navigate(-1);
          }
-      } catch (err) {
+      } catch (err: any) {
          console.error("error in deletion", err);
          setServiceLoading(false);
+         setErrorMessages(err?.message || "删除产品失败");
       }
    };
 
    const addSupplier = async (supplier: any) => {
       try {
          setServiceLoading(true);
-         const editProduct = httpsCallable(functions, "addSupplier");
-         const response: any = await editProduct(supplier);
+         const response = await apiClient.createSupplier(supplier);
 
-         if (response.data.success) {
+         if (response.success) {
             setServiceLoading(false);
             setErrorMessages("添加成功");
          }
-      } catch (err) {
+      } catch (err: any) {
          setServiceLoading(false);
-
-         const message =
-            typeof err === "string" ? err : (err as any)?.message ?? "未知错误";
-
+         const message = typeof err === "string" ? err : err?.message ?? "未知错误";
          setErrorMessages(message);
-
-         console.error("Failed to add client: " + err);
+         console.error("Failed to add supplier: " + err);
       }
    };
 
    const editSupplier = async (supplier: any) => {
       try {
          setServiceLoading(true);
+         const response = await apiClient.updateSupplier(supplier.supplierId, supplier);
 
-         const editSupplier = httpsCallable(functions, "editSupplier");
-         const response: any = await editSupplier(supplier);
-
-         if (response.data.success) {
+         if (response) {
             setServiceLoading(false);
             setEditedSupplier(true);
          }
-      } catch (err) {
+      } catch (err: any) {
          console.error("error in edit " + supplier, err);
          setServiceLoading(false);
+         setErrorMessages(err?.message || "更新供应商失败");
       }
    };
 
    const deleteSupplier = async (supplierId: string) => {
       try {
          setServiceLoading(true);
+         const response = await apiClient.deleteSupplier(supplierId);
 
-         const deleteSupplier = httpsCallable(functions, "deleteSupplier");
-         const response: any = await deleteSupplier({
-            supplierId,
-         });
-
-         if (response.data.success) {
+         if (response.success) {
             setServiceLoading(false);
             setDeletedSupplier(true);
          }
-      } catch (err) {
+      } catch (err: any) {
          console.error("error in deletion", err);
          setServiceLoading(false);
+         setErrorMessages(err?.message || "删除供应商失败");
       }
    };
 
    const addClient = async (client: any) => {
       try {
          setServiceLoading(true);
+         const response = await apiClient.createClient(client);
 
-         const addNewClient = httpsCallable(functions, "addClient");
-         const response: any = await addNewClient(client);
-
-         if (response.data.success) {
+         if (response.success) {
             setAddedClient(true);
             setServiceLoading(false);
-
             setErrorMessages("添加成功");
          }
       } catch (err: any) {
          setServiceLoading(false);
-
-         const message =
-            typeof err === "string" ? err : err?.message ?? "未知错误";
-
+         const message = typeof err === "string" ? err : err?.message ?? "未知错误";
          setErrorMessages(message);
-
          console.error("Failed to add client: " + err);
       }
    };
@@ -591,36 +624,32 @@ export const ProductSupplierClientContextProvider = ({
    const editClient = async (client: any) => {
       try {
          setServiceLoading(true);
+         const response = await apiClient.updateClient(client.clientId, client);
 
-         const editClient = httpsCallable(functions, "editClient");
-         const response: any = await editClient(client);
-
-         if (response.data.success) {
+         if (response) {
             setServiceLoading(false);
             setEditedClient(true);
          }
-      } catch (err) {
+      } catch (err: any) {
          console.error("error in edit " + client, err);
          setServiceLoading(false);
+         setErrorMessages(err?.message || "更新客户失败");
       }
    };
 
    const deleteClient = async (clientId: string) => {
       try {
          setServiceLoading(true);
+         const response = await apiClient.deleteClient(clientId);
 
-         const deleteProducts = httpsCallable(functions, "deleteClient");
-         const response: any = await deleteProducts({
-            clientId: clientId,
-         });
-
-         if (response.data.success) {
+         if (response.success) {
             setServiceLoading(false);
             setDeletedClient(true);
          }
-      } catch (err) {
+      } catch (err: any) {
          console.error("error in deletion", err);
          setServiceLoading(false);
+         setErrorMessages(err?.message || "删除客户失败");
       }
    };
 
@@ -630,24 +659,22 @@ export const ProductSupplierClientContextProvider = ({
    ) => {
       try {
          setServiceLoading(true);
-
-         const deleteClientProducts = httpsCallable(
-            functions,
-            "updateClientProducts"
+         // Get current client to update productIds
+         const client = await apiClient.getClient(clientId);
+         const currentProductIds = (client.productIds || []) as string[];
+         const updatedProductIds = currentProductIds.filter(
+            (id) => !productIdsToRemove.includes(id)
          );
-         const response: any = await deleteClientProducts({
-            productIdsToRemove,
-            productIdsToAdd: [],
-            clientId,
-         });
+         const response = await apiClient.updateClientProducts(clientId, updatedProductIds);
 
-         if (response.data.success) {
+         if (response.success) {
             setServiceLoading(false);
             setErrorMessages("移除成功.");
          }
-      } catch (err) {
+      } catch (err: any) {
          console.error("error in deletion", err);
          setServiceLoading(false);
+         setErrorMessages(err?.message || "移除产品失败");
       }
    };
 
@@ -657,40 +684,34 @@ export const ProductSupplierClientContextProvider = ({
    ) => {
       try {
          setServiceLoading(true);
+         // Get current client to update productIds
+         const client = await apiClient.getClient(clientId);
+         const currentProductIds = (client.productIds || []) as string[];
+         const updatedProductIds = [...new Set([...currentProductIds, ...productIdsToAdd])];
+         const response = await apiClient.updateClientProducts(clientId, updatedProductIds);
 
-         const deleteClientProducts = httpsCallable(
-            functions,
-            "updateClientProducts"
-         );
-         const response: any = await deleteClientProducts({
-            productIdsToRemove: [],
-            productIdsToAdd,
-            clientId,
-         });
-
-         if (response.data.success) {
+         if (response.success) {
             setServiceLoading(false);
             setErrorMessages("添加成功");
          }
-      } catch (err) {
-         console.error("error in deletion", err);
+      } catch (err: any) {
+         console.error("error in adding products", err);
          setServiceLoading(false);
+         setErrorMessages(err?.message || "添加产品失败");
       }
    };
 
    const createOrder = async (payload: OrderCreatePayload) => {
       try {
          setServiceLoading(true);
-         const createOrderFn = httpsCallable(functions, "createOrder");
-         const response: any = await createOrderFn(payload);
-         if (response?.data?.success) {
+         const response = await apiClient.createOrder(payload);
+         if (response?.success) {
             setServiceLoading(false);
             setErrorMessages("订单已创建");
          }
       } catch (err: any) {
          setServiceLoading(false);
-         const message =
-            typeof err === "string" ? err : err?.message ?? "创建订单失败";
+         const message = typeof err === "string" ? err : err?.message ?? "创建订单失败";
          setErrorMessages(message);
       }
    };
@@ -698,9 +719,8 @@ export const ProductSupplierClientContextProvider = ({
    const editOrder = async (payload: OrderEditPayload) => {
       try {
          setServiceLoading(true);
-         const fn = httpsCallable(functions, "editOrder");
-         const response: any = await fn(payload);
-         if (response?.data?.success) {
+         const response = await apiClient.updateOrder(payload.orderId, payload);
+         if (response) {
             setServiceLoading(false);
             setErrorMessages("订单已更新");
          }
@@ -713,9 +733,8 @@ export const ProductSupplierClientContextProvider = ({
    const deleteOrder = async (orderId: string) => {
       try {
          setServiceLoading(true);
-         const fn = httpsCallable(functions, "deleteOrder");
-         const response: any = await fn({ orderId });
-         if (response?.data?.success) {
+         const response = await apiClient.deleteOrder(orderId);
+         if (response?.success) {
             setServiceLoading(false);
             setErrorMessages("订单已删除");
          }
@@ -728,9 +747,8 @@ export const ProductSupplierClientContextProvider = ({
    const updateOrderState = async (orderId: string, status: OrderStatus) => {
       try {
          setServiceLoading(true);
-         const fn = httpsCallable(functions, "updateOrderState");
-         const response: any = await fn({ orderId, status });
-         if (response?.data?.success) {
+         const response = await apiClient.updateOrderState(orderId, status);
+         if (response?.success) {
             setServiceLoading(false);
          }
       } catch (err: any) {
@@ -741,16 +759,13 @@ export const ProductSupplierClientContextProvider = ({
 
    async function getClients(): Promise<Object> {
       try {
-         const clientsSnap = await getDocs(
-            collection(db, "users", uid ? uid : "", "clients")
-         );
-         const clients = clientsSnap.docs.reduce((acc, doc) => {
-            acc[doc.id] = doc.data();
-            return acc;
-         }, {} as { [key: string]: any });
-
-         setClients(clients);
-         return clients;
+         const clientsList = await apiClient.getClients();
+         const clientsMap: { [key: string]: any } = {};
+         clientsList.forEach((client: Clients) => {
+            clientsMap[client.clientId] = client;
+         });
+         setClients(clientsMap);
+         return clientsMap;
       } catch (error) {
          console.error("Error fetching clients:", error);
          return {};
@@ -759,16 +774,13 @@ export const ProductSupplierClientContextProvider = ({
 
    async function getSuppliers(): Promise<Object> {
       try {
-         const suppliersSnap = await getDocs(
-            collection(db, "users", uid ? uid : "", "suppliers")
-         );
-         const suppliers = suppliersSnap.docs.reduce((acc, doc) => {
-            acc[doc.id] = doc.data();
-            return acc;
-         }, {} as { [key: string]: any });
-
-         setSuppliers(suppliers);
-         return suppliers;
+         const suppliersList = await apiClient.getSuppliers();
+         const suppliersMap: { [key: string]: any } = {};
+         suppliersList.forEach((supplier: Supplier) => {
+            suppliersMap[supplier.supplierId] = supplier;
+         });
+         setSuppliers(suppliersMap);
+         return suppliersMap;
       } catch (error) {
          console.error("Error fetching suppliers:", error);
          return {};
@@ -777,12 +789,7 @@ export const ProductSupplierClientContextProvider = ({
 
    async function toggleSaveUnsaveProduct(productId: string) {
       try {
-         const saveUnsavedProduct = httpsCallable(
-            functions,
-            "saveUnsavedProduct"
-         );
-
-         await saveUnsavedProduct(productId);
+         await apiClient.toggleSaveProduct(productId);
       } catch (err) {
          console.warn(err);
       }
@@ -791,15 +798,9 @@ export const ProductSupplierClientContextProvider = ({
    async function syncAll(payload: SyncPayload) {
       try {
          setSyncState("syncing");
+         const response = await apiClient.syncAll(payload);
 
-         const syncAllFn = httpsCallable<SyncPayload, { success: boolean }>(
-            getFunctions(),
-            "syncAll"
-         );
-
-         const { data } = await syncAllFn(payload);
-
-         if (data?.success) {
+         if (response?.success) {
             await Promise.all([
                DexieDataBase.products.clear(),
                DexieDataBase.suppliers.clear(),
@@ -811,7 +812,7 @@ export const ProductSupplierClientContextProvider = ({
          } else {
             setErrorMessages("信息可能破坏了。");
             setSyncState("idle");
-            throw new Error("Cloud function returned failure");
+            throw new Error("Sync returned failure");
          }
       } catch (err: any) {
          console.error("SyncAll failed:", err);
